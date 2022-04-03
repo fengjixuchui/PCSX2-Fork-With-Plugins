@@ -283,6 +283,18 @@ void SysCoreThread::GameStartingInThread()
 	R3000SymbolMap.UpdateActiveSymbols();
 	sApp.PostAppMethod(&Pcsx2App::resetDebugger);
 
+#ifdef _WIN32
+	auto dll = L"scripts\\PCSX2PluginInjector.asi";
+	auto h = LoadLibraryW(dll);
+	auto LoadPlugins = (void (*)(uint32_t&, uintptr_t, size_t, uintptr_t, size_t, bool, int&, int&, bool&, AspectRatioType&))GetProcAddress(h, "LoadPlugins");
+	if (LoadPlugins != NULL)
+	{
+		LoadPlugins(ElfCRC, (uintptr_t)&eeMem->Main, sizeof(eeMem->Main), ElfTextRange.first, ElfTextRange.second, true,
+			g_Conf->GSWindow.WindowSize.x, g_Conf->GSWindow.WindowSize.y, g_Conf->GSWindow.IsFullscreen, g_Conf->EmuOptions.GS.AspectRatio);
+	}
+	//FreeLibrary(h);
+#endif
+
 	ApplyLoadedPatches(PPT_ONCE_ON_LOAD);
 	ApplyLoadedPatches(PPT_COMBINED_0_1);
 #ifdef USE_SAVESLOT_UI_UPDATES

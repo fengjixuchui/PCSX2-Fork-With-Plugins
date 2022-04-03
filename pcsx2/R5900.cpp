@@ -551,6 +551,9 @@ void __fastcall eeGameStarting()
 {
 	if (!g_GameStarted)
 	{
+		// we are using a retail BIOS, which will not map the upper memory, so we must do it manually
+		vtlb_VMap(0x02000000, 0x02000000, 0x06000000);
+
 		//Console.WriteLn( Color_Green, "(R5900) ELF Entry point! [addr=0x%08X]", ElfEntry );
 		g_GameStarted = true;
 		g_GameLoading = false;
