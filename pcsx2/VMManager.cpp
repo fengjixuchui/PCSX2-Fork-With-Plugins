@@ -1082,7 +1082,7 @@ void VMManager::Internal::GameStartingOnCPUThread()
 	R3000SymbolMap.UpdateActiveSymbols();
 
 #ifdef _WIN32
-	auto dll = L"scripts\\PCSX2PluginInjector.asi";
+	auto dll = L"PCSX2PluginInjector.asi";
 	auto h = LoadLibraryW(dll);
 	auto LoadPlugins = (void (*)(uint32_t&, uintptr_t, size_t, uintptr_t, size_t, bool, const u32&, const u32&, bool&, AspectRatioType&))GetProcAddress(h, "LoadPlugins");
 	if (LoadPlugins != NULL)

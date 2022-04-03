@@ -284,7 +284,7 @@ void SysCoreThread::GameStartingInThread()
 	sApp.PostAppMethod(&Pcsx2App::resetDebugger);
 
 #ifdef _WIN32
-	auto dll = L"scripts\\PCSX2PluginInjector.asi";
+	auto dll = L"PCSX2PluginInjector.asi";
 	auto h = LoadLibraryW(dll);
 	auto LoadPlugins = (void (*)(uint32_t&, uintptr_t, size_t, uintptr_t, size_t, bool, int&, int&, bool&, AspectRatioType&))GetProcAddress(h, "LoadPlugins");
 	if (LoadPlugins != NULL)
