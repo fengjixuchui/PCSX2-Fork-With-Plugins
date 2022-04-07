@@ -2748,7 +2748,7 @@ SCES-51164:
   name: "Mark of Kri, The"
   region: "PAL-M5"
   gsHWFixes:
-    interlace: 3 # Game requires bob delinterlacing when auto
+    deinterlace: 3 # Game requires bob deinterlacing when auto.
 SCES-51176:
   name: "Disney's Treasure Planet"
   region: "PAL-M4"
@@ -6190,7 +6190,7 @@ SCUS-97140:
   region: "NTSC-U"
   compat: 5
   gsHWFixes:
-    interlace: 3 # Game requires bob delinterlacing when auto
+    deinterlace: 3 # Game requires bob deinterlacing when auto.
   patches:
     DBD09DD4:
       content: |-
@@ -6412,7 +6412,7 @@ SCUS-97201:
   name: "Mark of Kri, The"
   region: "NTSC-U"
   gsHWFixes:
-    interlace: 3 # Game requires bob delinterlacing when auto
+    deinterlace: 3 # Game requires bob deinterlacing when auto.
 SCUS-97203:
   name: "Wild ARMs 3"
   region: "NTSC-U"
@@ -6492,7 +6492,7 @@ SCUS-97222:
   name: "Mark of Kri [Demo]"
   region: "NTSC-U"
   gsHWFixes:
-    interlace: 3 # Game requires bob delinterlacing when auto
+    deinterlace: 3 # Game requires bob deinterlacing when auto.
 SCUS-97223:
   name: "NFL GameDay 2003 [Demo]"
   region: "NTSC-U"
@@ -8908,7 +8908,7 @@ SLES-50273:
   name: "Legion - The Legend of Excalibur"
   region: "PAL-M5"
   gsHWFixes:
-    preloadFrameData: 1
+    preloadFrameData: 1 # Reduces black ground textures.
 SLES-50274:
   name: "Arctic Thunder"
   region: "PAL-M3"
@@ -11388,6 +11388,8 @@ SLES-51547:
   region: "PAL-M5"
   clampModes:
     vuClampMode: 3 # Fixes SPS menus.
+  gameFixes:
+    - VUSyncHack # Fixes SPS in game.
 SLES-51548:
   name: "This is Football"
   region: "PAL-M3"
@@ -15829,7 +15831,7 @@ SLES-53621:
   region: "PAL-M5"
   compat: 5
   gsHWFixes:
-    interlace: 3 # Game requires bob delinterlacing when auto
+    deinterlace: 3 # Game requires bob deinterlacing when auto.
 SLES-53623:
   name: "Spongebob SquarePants - Battle for Bikini Bottom"
   region: "PAL-F"
@@ -24842,7 +24844,7 @@ SLPM-65310:
   name: "Mark of Kri, The"
   region: "NTSC-J"
   gsHWFixes:
-    interlace: 3 # Game requires bob delinterlacing when auto
+    deinterlace: 3 # Game requires bob deinterlacing when auto.
 SLPM-65311:
   name: "Violet no Atelier - Gramnad no Renkinjutsushi"
   region: "NTSC-J"
@@ -28141,7 +28143,7 @@ SLPM-66327:
   name: "Wallace and Gromit - The Curse of the Were-Rabbit"
   region: "NTSC-J"
   gsHWFixes:
-    interlace: 3 # Game requires bob delinterlacing when auto
+    deinterlace: 3 # Game requires bob deinterlacing when auto.
 SLPM-66328:
   name: "Call of Duty 2 - Big Red One"
   region: "NTSC-J"
@@ -35849,7 +35851,7 @@ SLUS-20048:
   region: "NTSC-U"
   compat: 5
   gsHWFixes:
-    preloadFrameData: 1
+    preloadFrameData: 1 # Reduces black ground textures.
 SLUS-20049:
   name: "MLB Slugfest 2003"
   region: "NTSC-U"
@@ -41508,7 +41510,7 @@ SLUS-21312:
   region: "NTSC-U"
   compat: 5
   gsHWFixes:
-    interlace: 3 # Game requires bob delinterlacing when auto
+    deinterlace: 3 # Game requires bob deinterlacing when auto.
 SLUS-21313:
   name: "Friends - The One with all the Trivia"
   region: "NTSC-U"
@@ -43679,7 +43681,7 @@ SLUS-21787:
   gameFixes:
     - EETimingHack
 SLUS-21788:
-  name: "Ar tonelico Ii - Melody Of Metafalica"
+  name: "Ar tonelico II - Melody Of Metafalica"
   region: "NTSC-U"
   compat: 5
   roundModes:
