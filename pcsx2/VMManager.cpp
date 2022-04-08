@@ -1027,16 +1027,18 @@ void VMManager::Internal::GameStartingOnCPUThread()
 	R3000SymbolMap.UpdateActiveSymbols();
 
 #ifdef _WIN32
-	auto dll = L"PCSX2PluginInjector.asi";
-	auto h = LoadLibraryW(dll);
-	auto LoadPlugins = (void (*)(uint32_t&, uintptr_t, size_t, uintptr_t, size_t, bool, const u32&, const u32&, bool&, AspectRatioType&))GetProcAddress(h, "LoadPlugins");
-	if (LoadPlugins != NULL)
+	auto GetPCSX2PluginInjector = []() -> HMODULE {
+		constexpr auto dll = L"PCSX2PluginInjector.asi";
+		auto hm = GetModuleHandleW(dll);
+		return (hm ? hm : LoadLibraryW(dll));
+	};
+	auto LoadPlugins = (void (*)(uint32_t&, uintptr_t, size_t, uintptr_t, size_t, bool, const u32&, const u32&, bool&, AspectRatioType&))GetProcAddress(GetPCSX2PluginInjector(), "LoadPlugins");
+	if (LoadPlugins)
 	{
 		static bool fullscreen = false;
 		LoadPlugins(ElfCRC, (uintptr_t)&eeMem->Main, sizeof(eeMem->Main), ElfTextRange.first, ElfTextRange.second, true,
 			Host::GetHostDisplay()->GetWindowInfo().surface_width, Host::GetHostDisplay()->GetWindowInfo().surface_height, fullscreen, EmuConfig.GS.AspectRatio);
 	}
-	//FreeLibrary(h);
 #endif
 
 	UpdateRunningGame(false);

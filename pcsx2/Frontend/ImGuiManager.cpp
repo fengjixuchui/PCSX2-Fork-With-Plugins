@@ -644,9 +644,75 @@ static void DrawPerformanceOverlay()
 #undef DRAW_LINE
 }
 
+static void DrawPluginsOverlay()
+{
+#ifdef _WIN32
+	auto GetPCSX2PluginInjector = []() -> HMODULE {
+		constexpr auto dll = L"PCSX2PluginInjector.asi";
+		auto hm = GetModuleHandleW(dll);
+		return (hm ? hm : LoadLibraryW(dll));
+	};
+	auto GetOSDVectorSize = (size_t(*)())GetProcAddress(GetPCSX2PluginInjector(), "GetOSDVectorSize");
+	auto GetOSDVectorData = (const char* (*)(size_t index))GetProcAddress(GetPCSX2PluginInjector(), "GetOSDVectorData");
+	if (GetOSDVectorSize != NULL && GetOSDVectorData != NULL)
+	{
+		if (GetOSDVectorSize())
+		{
+			const float scale = s_global_scale;
+			const float shadow_offset = std::ceil(1.0f * scale);
+			const float margin = std::ceil(10.0f * scale);
+			const float spacing = std::ceil(5.0f * scale);
+			float position_y = margin;
+
+			ImDrawList* dl = ImGui::GetBackgroundDrawList();
+			FastFormatAscii text;
+			ImVec2 text_size;
+
+#define DRAW_LINE(font, text, color) \
+	do \
+	{ \
+		text_size = \
+			font->CalcTextSizeA(font->FontSize, std::numeric_limits<float>::max(), -1.0f, (text), nullptr, nullptr); \
+		dl->AddText( \
+			font, font->FontSize, \
+			ImVec2(margin + shadow_offset, position_y + shadow_offset), \
+			IM_COL32(0, 0, 0, 100), (text)); \
+		dl->AddText(font, font->FontSize, ImVec2(margin, position_y), color, \
+			(text)); \
+		position_y += text_size.y + spacing; \
+	} while (0)
+
+#ifdef PCSX2_CORE
+			const bool paused = (VMManager::GetState() == VMState::Paused);
+#else
+			constexpr bool paused = false;
+#endif
+
+			if (!paused)
+			{
+				for (size_t i = 0; i < GetOSDVectorSize(); i++)
+				{
+					auto x = GetOSDVectorData(i);
+					std::string_view s(GetOSDVectorData(i), 255);
+					if (!s.empty() && s[0] != 0)
+					{
+						text.Clear();
+						text.Write("%s", s.data());
+						DRAW_LINE(s_fixed_font, text.c_str(), IM_COL32(255, 255, 255, 255));
+					}
+				}
+			}
+
+#undef DRAW_LINE
+		}
+	}
+#endif
+}
+
 void ImGuiManager::RenderOSD()
 {
 	DrawPerformanceOverlay();
+	DrawPluginsOverlay();
 
 	AcquirePendingOSDMessages();
 	DrawOSDMessages();

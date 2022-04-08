@@ -284,15 +284,17 @@ void SysCoreThread::GameStartingInThread()
 	sApp.PostAppMethod(&Pcsx2App::resetDebugger);
 
 #ifdef _WIN32
-	auto dll = L"PCSX2PluginInjector.asi";
-	auto h = LoadLibraryW(dll);
-	auto LoadPlugins = (void (*)(uint32_t&, uintptr_t, size_t, uintptr_t, size_t, bool, int&, int&, bool&, AspectRatioType&))GetProcAddress(h, "LoadPlugins");
-	if (LoadPlugins != NULL)
+	auto GetPCSX2PluginInjector = []() -> HMODULE {
+		constexpr auto dll = L"PCSX2PluginInjector.asi";
+		auto hm = GetModuleHandleW(dll);
+		return (hm ? hm : LoadLibraryW(dll));
+	};
+	auto LoadPlugins = (void (*)(uint32_t&, uintptr_t, size_t, uintptr_t, size_t, bool, int&, int&, bool&, AspectRatioType&))GetProcAddress(GetPCSX2PluginInjector(), "LoadPlugins");
+	if (LoadPlugins)
 	{
 		LoadPlugins(ElfCRC, (uintptr_t)&eeMem->Main, sizeof(eeMem->Main), ElfTextRange.first, ElfTextRange.second, true,
 			g_Conf->GSWindow.WindowSize.x, g_Conf->GSWindow.WindowSize.y, g_Conf->GSWindow.IsFullscreen, g_Conf->EmuOptions.GS.AspectRatio);
 	}
-	//FreeLibrary(h);
 #endif
 
 	ApplyLoadedPatches(PPT_ONCE_ON_LOAD);
