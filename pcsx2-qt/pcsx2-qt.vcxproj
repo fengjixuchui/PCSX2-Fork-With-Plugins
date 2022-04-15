@@ -67,6 +67,7 @@
       <!-- https://github.com/PCSX2/pcsx2/commit/16431653e4d92fda4069031897e24fbe4688d36a -->
       <FloatingPointModel>Precise</FloatingPointModel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ConformanceMode>true</ConformanceMode>
       <AdditionalOptions>/Zc:__cplusplus /Zo /utf-8%(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -74,6 +75,7 @@
       <LargeAddressAware>Yes</LargeAddressAware>
       <AdditionalDependencies>comctl32.lib;ws2_32.lib;shlwapi.lib;winmm.lib;rpcrt4.lib;iphlpapi.lib;dsound.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalDependencies>dxguid.lib;dinput8.lib;hid.lib;PowrProf.lib;d3dcompiler.lib;d3d11.lib;dxgi.lib;strmiids.lib;opengl32.lib;comsuppw.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(QtEntryPointLib);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

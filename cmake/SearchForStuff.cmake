@@ -238,10 +238,13 @@ if(NOT USE_SYSTEM_YAML)
 	endif()
 endif()
 
+# We could use a system version of zstd, but is it going to be recent enough?
+add_subdirectory(3rdparty/zstd EXCLUDE_FROM_ALL)
+
 if(QT_BUILD)
 	# Default to bundled Qt6 for Windows.
 	if(WIN32 AND NOT DEFINED Qt6_DIR)
-		set(Qt6_DIR ${CMAKE_SOURCE_DIR}/3rdparty/qt/6.2.2/msvc2019_64/lib/cmake/Qt6)
+		set(Qt6_DIR ${CMAKE_SOURCE_DIR}/3rdparty/qt/6.3.0/msvc2019_64/lib/cmake/Qt6)
 	endif()
 
 	# Find the Qt components that we need.
@@ -265,6 +268,7 @@ endif()
 
 add_subdirectory(3rdparty/simpleini EXCLUDE_FROM_ALL)
 add_subdirectory(3rdparty/imgui EXCLUDE_FROM_ALL)
+add_subdirectory(3rdparty/libzip EXCLUDE_FROM_ALL)
 
 if(USE_OPENGL)
 	add_subdirectory(3rdparty/glad EXCLUDE_FROM_ALL)

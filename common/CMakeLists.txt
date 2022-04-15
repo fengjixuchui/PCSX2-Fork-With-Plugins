@@ -19,7 +19,6 @@ target_sources(common PRIVATE
 	FastFormatString.cpp
 	FastJmp.cpp
 	FileSystem.cpp
-	IniInterface.cpp
 	Mutex.cpp
 	Misc.cpp
 	MD5Digest.cpp
@@ -27,7 +26,6 @@ target_sources(common PRIVATE
 	PrecompiledHeader.cpp
 	Perf.cpp
 	ProgressCallback.cpp
-	pxStreams.cpp
 	pxTranslate.cpp
 	RwMutex.cpp
 	Semaphore.cpp
@@ -84,7 +82,6 @@ target_sources(common PRIVATE
 	PrecompiledHeader.h
 	ProgressCallback.h
 	pxForwardDefs.h
-	pxStreams.h
 	RedtapeWindows.h
 	RwMutex.h
 	SafeArray.h
@@ -98,7 +95,6 @@ target_sources(common PRIVATE
 	Threading.h
 	TraceLog.h
 	WindowInfo.h
-	wxBaseTools.h
 	emitter/cpudetect_internal.h
 	emitter/implement/dwshift.h
 	emitter/implement/group1.h

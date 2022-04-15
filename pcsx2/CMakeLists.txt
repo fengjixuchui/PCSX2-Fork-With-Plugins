@@ -1109,6 +1109,7 @@ set(pcsx2GuiSources
 	gui/ExecutorThread.cpp
 	gui/FrameForGS.cpp
 	gui/GlobalCommands.cpp
+	gui/IniInterface.cpp
 	gui/i18n.cpp
 	gui/IsoDropTarget.cpp
 	gui/MainFrame.cpp
@@ -1172,6 +1173,7 @@ set(pcsx2GuiHeaders
 	gui/DriveList.h
 	gui/GSFrame.h
 	gui/i18n.h
+	gui/IniInterface.h
 	gui/IsoDropTarget.h
 	gui/MainFrame.h
 	gui/MSWstuff.h
@@ -1260,6 +1262,7 @@ if(NOT PCSX2_CORE)
 	)
 	list(APPEND pcsx2OSXSources
 		Linux/LnxConsolePipe.cpp
+		Darwin/DarwinKeyCodes.cpp
 	)
 	list(APPEND pcsx2FreeBSDSources
 		Linux/LnxConsolePipe.cpp
@@ -1392,7 +1395,6 @@ set(pcsx2WindowsSources
 	windows/FlatFileReaderWindows.cpp
 	windows/Optimus.cpp
 	windows/VCprojects/IopSif.cpp
-	windows/WinCompressNTFS.cpp
 	windows/WinConsolePipe.cpp
 	windows/WinKeyCodes.cpp
 	windows/WinPowerProfile.cpp
@@ -1598,6 +1600,7 @@ target_link_libraries(PCSX2_FLAGS INTERFACE
 	fmt::fmt
 	ryml
 	chdr-static
+	zip
 	wxWidgets::all
 	ZLIB::ZLIB
 	PkgConfig::SOUNDTOUCH
