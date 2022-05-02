@@ -269,7 +269,7 @@ GSTexture* GSRendererHW::GetOutput(int i, int& y_offset)
 
 	const int videomode = static_cast<int>(GetVideoMode()) - 1;
 	int display_height = VideoModeOffsets[videomode].y * ((isinterlaced() && !m_regs->SMODE2.FFMD) ? 2 : 1);
-	int fb_height = std::min(GetFramebufferHeight(), display_height);
+	int fb_height = std::min(GetFramebufferHeight(), display_height) + DISPFB.DBY;
 	// TRACE(_T("[%d] GetOutput %d %05x (%d)\n"), (int)m_perfmon.GetFrame(), i, (int)TEX0.TBP0, (int)TEX0.PSM);
 
 	GSTexture* t = NULL;
@@ -797,6 +797,26 @@ void GSRendererHW::InvalidateLocalMem(const GIFRegBITBLTBUF& BITBLTBUF, const GS
 		return; // FIXME
 
 	m_tc->InvalidateLocalMem(m_mem.GetOffset(BITBLTBUF.SBP, BITBLTBUF.SBW, BITBLTBUF.SPSM), r);
+}
+
+void GSRendererHW::Move()
+{
+	int sx = m_env.TRXPOS.SSAX;
+	int sy = m_env.TRXPOS.SSAY;
+	int dx = m_env.TRXPOS.DSAX;
+	int dy = m_env.TRXPOS.DSAY;
+
+	const int w = m_env.TRXREG.RRW;
+	const int h = m_env.TRXREG.RRH;
+
+	if (m_tc->Move(m_env.BITBLTBUF.SBP, m_env.BITBLTBUF.SBW, m_env.BITBLTBUF.SPSM, sx, sy,
+			m_env.BITBLTBUF.DBP, m_env.BITBLTBUF.DBW, m_env.BITBLTBUF.DPSM, dx, dy, w, h))
+	{
+		// Handled entirely in TC, no need to update local memory.
+		return;
+	}
+
+	GSRenderer::Move();
 }
 
 u16 GSRendererHW::Interpolate_UV(float alpha, int t0, int t1)
