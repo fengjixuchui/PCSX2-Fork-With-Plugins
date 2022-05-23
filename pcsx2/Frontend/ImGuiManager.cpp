@@ -645,6 +645,9 @@ static void DrawPerformanceOverlay()
 #undef DRAW_LINE
 }
 
+#ifdef _WIN32
+#include <Windows.h>
+
 static void DrawPluginsOverlay()
 {
 #ifdef _WIN32
@@ -666,8 +669,9 @@ static void DrawPluginsOverlay()
 			float position_y = margin;
 
 			ImDrawList* dl = ImGui::GetBackgroundDrawList();
-			FastFormatAscii text;
+			std::string text;
 			ImVec2 text_size;
+			text.reserve(255);
 
 #define DRAW_LINE(font, text, color) \
 	do \
@@ -693,12 +697,11 @@ static void DrawPluginsOverlay()
 			{
 				for (size_t i = 0; i < GetOSDVectorSize(); i++)
 				{
-					auto x = GetOSDVectorData(i);
 					std::string_view s(GetOSDVectorData(i), 255);
 					if (!s.empty() && s[0] != 0)
 					{
-						text.Clear();
-						text.Write("%s", s.data());
+						text.clear();
+						fmt::format_to(std::back_inserter(text), "{}", s);
 						DRAW_LINE(s_fixed_font, text.c_str(), IM_COL32(255, 255, 255, 255));
 					}
 				}
@@ -709,11 +712,14 @@ static void DrawPluginsOverlay()
 	}
 #endif
 }
+#endif
 
 void ImGuiManager::RenderOSD()
 {
 	DrawPerformanceOverlay();
+#ifdef _WIN32
 	DrawPluginsOverlay();
+#endif
 
 	AcquirePendingOSDMessages();
 	DrawOSDMessages();
