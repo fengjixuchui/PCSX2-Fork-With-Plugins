@@ -102,7 +102,7 @@ jobs:
         with:
           path: './bin/**'
           type: 'zip'
-          filename: fork-${{ steps.artifact-metadata.outputs.name }}.zip
+          filename: fork-${{ steps.artifact-metadata.outputs.artifact-name }}.zip
           exclusions: '*.bsc *.exp *.ilk *.iobj *.ipdb *.pdb *.lib'
       - name: Get release info
         id: release_info
