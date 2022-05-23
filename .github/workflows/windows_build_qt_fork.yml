@@ -95,7 +95,7 @@ jobs:
           fileName: "PCSX2PluginInjector.zip"
       - name: Unpack Plugin Injector
         run: |
-          7z x PCSX2PluginInjector.zip -obin/
+          7z x PCSX2PluginInjector.zip -obin/ -y
           del PCSX2PluginInjector.zip
       - name: Pack binaries
         uses: ThirteenAG/zip-release@master
