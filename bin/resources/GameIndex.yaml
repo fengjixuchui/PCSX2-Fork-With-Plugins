@@ -185,12 +185,51 @@ PBPX-95204:
 PBPX-95205:
   name: "Playstation 2 - Demo Disc 2000"
   region: "PAL-M5"
+PBPX-95206:
+  name: "DVD Player Version 2.01"
+  region: "NTSC-J"
+PBPX-95207:
+  name: "DVD Player Version 2.10"
+  region: "NTSC-J"
+PBPX-95208:
+  name: "DVD Player Version 2.10"
+  region: "PAL-M8"
+PBPX-95209:
+  name: "DVD Player Version 2.10"
+  region: "PAL-A"
+PBPX-95210:
+  name: "DVD Player Version 2.10"
+  region: "NTSC-U"
 PBPX-95211:
   name: "HDD Utility Disc"
   region: "NTSC-U"
 PBPX-95216:
   name: "HDD Utility Disc [Beta]"
   region: "NTSC-U"
+PBPX-95218:
+  name: "DVD Player Version 2.12"
+  region: "NTSC-U"
+PBPX-95219:
+  name: "DVD Player Version 2.14"
+  region: "PAL-E"
+PBPX-95220:
+  name: "DVD Player Version 2.14"
+  region: "PAL-M7"
+PBPX-95221:
+  name: "DVD Player Version 2.12"
+  region: "NTSC-J"
+PBPX-95222:
+  name: "DVD Player Version 2.14"
+  region: "NTSC-J"
+PBPX-95223:
+  name: "DVD Player Version 2.14"
+  region: "NTSC-U"
+PBPX-95224:
+  name: "DVD Player Version 2.16"
+  region: "NTSC-J"
+PBPX-95228:
+  name: "DVD Player Version 3.00"
+  region: "NTSC-J"
 PBPX-95503:
   name: "Gran Turismo 3 - A-Spec [PS2 Bundle]"
   region: "NTSC-U"
@@ -306,6 +345,9 @@ PCPX-98017:
     - EETimingHack # Fixes SPR errors while going in-game.
   gsHWFixes:
     mipmap: 1
+PDPX-99109:
+  name: "DVD Player Version 3.04"
+  region: "NTSC-J"
 PKP2-00702:
   name: "Pandora - Kimi no Namae o Boku wa Shiru [Limited Edition]"
   region: "NTSC-J"
@@ -4729,6 +4771,27 @@ SCPM-85101:
   region: "NTSC-J"
 SCPM-85301:
   name: "Gran Turismo Concept - Copen Special Edition [Demo]"
+  region: "NTSC-J"
+SCPN-60101:
+  name: "PlayStation BB Navigator - Version 0.10 [Prerelease] [Disc 1]"
+  region: "NTSC-J"
+SCPN-60103:
+  name: "PlayStation BB Navigator - Version 0.10 [Prerelease] [Disc 2]"
+  region: "NTSC-J"
+SCPN-60111:
+  name: "PlayStation BB Navigator - Version 0.10 [Prerelease] [Disc 2]"
+  region: "NTSC-J"
+SCPN-60130:
+  name: "PlayStation BB Navigator - Version 0.20"
+  region: "NTSC-J"
+SCPN-60140:
+  name: "PlayStation BB Navigator - Version 0.30"
+  region: "NTSC-J"
+SCPN-60150:
+  name: "PlayStation BB Navigator - Version 0.31"
+  region: "NTSC-J"
+SCPN-60160:
+  name: "PlayStation BB Navigator - Version 0.32"
   region: "NTSC-J"
 SCPS-11001:
   name: "I.Q. Remix"
@@ -15932,7 +15995,7 @@ SLES-53561:
     wildArmsHack: 1 # Reduces depth ghosting.
     roundSprite: 2 # Reduces depth ghosting.
 SLES-53563:
-  name: "Spongebob SquarePants and Friends - Untie!"
+  name: "Spongebob SquarePants and Friends - Unite!"
   region: "PAL-M6"
 SLES-53564:
   name: "Darkwatch"
@@ -16719,6 +16782,8 @@ SLES-53899:
 SLES-53900:
   name: "Kaido Racer 2"
   region: "PAL-M3"
+  gsHWFixes:
+    alignSprite: 1 # Fixes black lines when upscaling.
 SLES-53901:
   name: "Torino 2006"
   region: "PAL-M5"
@@ -22189,6 +22254,9 @@ SLPM-60273:
 SLPM-60274:
   name: "Full House Kiss 2 [Trial]"
   region: "NTSC-J"
+SLPM-60277:
+  name: "Jissen Pachi-Slot Hisshouhou! Hokuto no Ken Special Edition [Trial]"
+  region: "NTSC-J"
 SLPM-60282:
   name: "Lucky Star - RAvish Romance [Trial]"
   region: "NTSC-J"
@@ -22452,7 +22520,7 @@ SLPM-62067:
   name: "Hunter X Hunter - Ryumyaku no Saidan"
   region: "NTSC-J"
 SLPM-62068:
-  name: "Egbrowser"
+  name: "EGBrowser"
   region: "NTSC-J"
 SLPM-62069:
   name: "All-Star Baseball 2002"
@@ -22616,6 +22684,9 @@ SLPM-62133:
 SLPM-62134:
   name: "Final Fantasy XI [Beta Edition]"
   region: "NTSC-J"
+SLPM-62136:
+  name: "NetFront for Delta"
+  region: "NTSC-J"
 SLPM-62137:
   name: "Psyvariar Complete Edition [Special Sound Box]"
   region: "NTSC-J"
@@ -22693,7 +22764,7 @@ SLPM-62175:
   name: "beatmania Da Da Da!! THE BEST Da"
   region: "NTSC-J"
 SLPM-62176:
-  name: "Egbrowser BB"
+  name: "EGBrowser BB"
   region: "NTSC-J"
 SLPM-62177:
   name: "Kuusen [Kadokawa The Best]"
@@ -27657,6 +27728,8 @@ SLPM-66021:
 SLPM-66022:
   name: "Kaido Touge no Densetsu"
   region: "NTSC-J"
+  gsHWFixes:
+    alignSprite: 1 # Fixes black lines when upscaling.
 SLPM-66023:
   name: "Fushigi Yuugi - ShigiYuugi Kurotake Kaiden Gaiden - Kagami no Fujo [Limited Edition]"
   region: "NTSC-J"
@@ -29227,10 +29300,10 @@ SLPM-66474:
   region: "NTSC-J"
   compat: 5
 SLPM-66475:
-  name: "Pachislot Hokuto no Ken [Limited Edition]"
+  name: "Jissen Pachi-Slot Hisshouhou! Hokuto no Ken Special Edition"
   region: "NTSC-J"
 SLPM-66476:
-  name: "Jissen Pachi-Slot Hisshouhou! Salaryman Kintarou"
+  name: "Jissen Pachinko Hisshouhou! CR Salaryman Kintarou"
   region: "NTSC-J"
 SLPM-66477:
   name: "Kamiwaza"
@@ -30975,6 +31048,9 @@ SLPM-66999:
 SLPM-67000:
   name: "Fushigi Yuugi - ShigiYuugi Kurotake Kaiden Gaiden - Kagami no Fujo [IF Collection]"
   region: "NTSC-J"
+SLPM-67001:
+  name: "Wonder Zone"
+  region: "NTSC-J"
 SLPM-67002:
   name: "Metal Gear Solid 2 - Substance"
   region: "NTSC-J"
@@ -31168,6 +31244,12 @@ SLPM-68516:
   region: "NTSC-J"
 SLPM-69001:
   name: "PictureParadise Club"
+  region: "NTSC-J"
+SLPM-69002:
+  name: "NetFront"
+  region: "NTSC-J"
+SLPM-69004:
+  name: "EGBrowser Light for I-O Data Device, Inc."
   region: "NTSC-J"
 SLPM-69006:
   name: "PictureParadise Club Vol. 2"
@@ -31624,6 +31706,9 @@ SLPS-20044:
   region: "NTSC-J"
   gameFixes:
     - XGKickHack # Fixes graphical issues.
+SLPS-20045:
+  name: "Jissen Pachi-Slot Hisshouhou! Juuou [DX Pack]"
+  region: "NTSC-J"
 SLPS-20047:
   name: "Toudai Shogi"
   region: "NTSC-J"
@@ -31811,6 +31896,9 @@ SLPS-20122:
 SLPS-20125:
   name: "Shanghai - The Four Elements [Super Value 2800]"
   region: "NTSC-J"
+SLPS-20127:
+  name: "Chou! Rakushii Internet Tomodachi Nowa [Type-OS]"
+  region: "NTSC-J"
 SLPS-20128:
   name: "Toshiyuki Morikawa Private Collection - Puppet Princess of Marl's Kingdom"
   region: "NTSC-J"
@@ -31820,6 +31908,9 @@ SLPS-20129:
   compat: 5
 SLPS-20130:
   name: "New Best Play Professional Baseball"
+  region: "NTSC-J"
+SLPS-20131:
+  name: "Jissen Pachi-Slot Hisshouhou! Juuou"
   region: "NTSC-J"
 SLPS-20132:
   name: "Chenuen no San Goku Shi (Chen Wen's Romance of the Three Kingdoms)"
@@ -31847,6 +31938,9 @@ SLPS-20143:
 SLPS-20144:
   name: "Seed, The"
   region: "NTSC-J"
+SLPS-20149:
+  name: "Chou! Rakushii Internet Tomodachi Nowa [Broadband]"
+  region: "NTSC-J"
 SLPS-20150:
   name: "Akira Psycho Ball"
   region: "NTSC-J"
@@ -31865,6 +31959,9 @@ SLPS-20165:
   region: "NTSC-J"
 SLPS-20167:
   name: "La Pucelle"
+  region: "NTSC-J"
+SLPS-20169:
+  name: "Chou! Rakushii Internet Tomodachi Nowa [Type-PG]"
   region: "NTSC-J"
 SLPS-20171:
   name: "Smash Court Tennis Pro"
@@ -31898,6 +31995,9 @@ SLPS-20190:
 SLPS-20191:
   name: "Knockout Kings 2002"
   region: "NTSC-J"
+SLPS-20193:
+  name: "Jissen Pachi-Slot Hisshouhou! Sammy's Collection"
+  region: "NTSC-J"
 SLPS-20194:
   name: "Underwater Unit"
   region: "NTSC-J"
@@ -31920,8 +32020,14 @@ SLPS-20208:
   name: "I am Small!"
   region: "NTSC-J"
   compat: 5
+SLPS-20209:
+  name: "Jissen Pachi-Slot Hisshouhou! Aladdin A [Limited Edition]"
+  region: "NTSC-J"
 SLPS-20214:
   name: "3-D Fighting School 2"
+  region: "NTSC-J"
+SLPS-20215:
+  name: "Jissen Pachi-Slot Hisshouhou! Aladdin A"
   region: "NTSC-J"
 SLPS-20216:
   name: "Air Ranger - Rescue Helicopter"
@@ -31963,6 +32069,12 @@ SLPS-20234:
   gsHWFixes:
     mipmap: 1
     cpuFramebufferConversion: 1 # Fixes right side of the screen from garbage textures.
+SLPS-20239:
+  name: "Jissen Pachi-Slot Hisshouhou! Moujuuou S [Limited Edition]"
+  region: "NTSC-J"
+SLPS-20240:
+  name: "Jissen Pachi-Slot Hisshouhou! Moujuuou S"
+  region: "NTSC-J"
 SLPS-20243:
   name: "New Price Go Go Golf"
   region: "NTSC-J"
@@ -31996,6 +32108,12 @@ SLPS-20263:
   region: "NTSC-J"
 SLPS-20265:
   name: "Fever 7"
+  region: "NTSC-J"
+SLPS-20267:
+  name: "Jissen Pachi-Slot Hisshouhou! Salaryman Kintarou [Limited Edition]"
+  region: "NTSC-J"
+SLPS-20268:
+  name: "Jissen Pachi-Slot Hisshouhou! Salaryman Kintarou"
   region: "NTSC-J"
 SLPS-20272:
   name: "Taiko no Tatsujin Doki"
@@ -32041,6 +32159,9 @@ SLPS-20289:
   region: "NTSC-J"
 SLPS-20291:
   name: "Fish Eyes 3"
+  region: "NTSC-J"
+SLPS-20292:
+  name: "Jissen Pachi-Slot Hisshouhou! Savanna Park DX"
   region: "NTSC-J"
 SLPS-20293:
   name: "Jissen Pachi-Slot Hisshouhou! Savanna Park"
@@ -32203,10 +32324,10 @@ SLPS-20371:
   name: "Mahjong Haou Shinken Battle"
   region: "NTSC-J"
 SLPS-20372:
-  name: "Jisen Pachisuri Hissou Hou! Hokuto no Ken [Limited Edition]"
+  name: "Jissen Pachi-Slot Hisshouhou! Hokuto no Ken [Limited Edition]"
   region: "NTSC-J"
 SLPS-20373:
-  name: "Jisen Pachisuri Hissou Hou! Hokuto no Ken"
+  name: "Jissen Pachi-Slot Hisshouhou! Hokuto no Ken"
   region: "NTSC-J"
 SLPS-20374:
   name: "Football Kingdom [Trial Edition]"
@@ -42766,6 +42887,8 @@ SLUS-21394:
   name: "Tokyo Xtreme Racer Drift 2"
   region: "NTSC-U"
   compat: 5
+  gsHWFixes:
+    alignSprite: 1 # Fixes black lines when upscaling.
 SLUS-21395:
   name: "Avatar - The Last Airbender"
   region: "NTSC-U"
