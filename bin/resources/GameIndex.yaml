@@ -14221,8 +14221,14 @@ SLES-52782:
   name: "Call of Duty - Finest Hour"
   region: "PAL-E"
 SLES-52783:
-  name: "Call of Duty - Le Jour de Glorie"
+  name: "Call of Duty - Le Jour de Gloire"
   region: "PAL-F"
+  patches:
+    30AE5279:
+      content: |-
+        // Avoids bad COP2 errors due to the instant nature of the PCSX2's COP2 handling.
+        patch=1,EE,001ab900,word,48488800
+        patch=1,EE,001ab904,word,4A252942
 SLES-52784:
   name: "Call of Duty - Finest Hour"
   region: "PAL-G"
@@ -23486,7 +23492,11 @@ SLPM-62437:
   name: "Suisui Sweet - Amai Ai no Mitsukekata"
   region: "NTSC-J"
 SLPM-62438:
-  name: "Growlanser Collection"
+  name: "Growlanser Collection - The Dual Darkness"
+  region: "NTSC-J"
+  compat: 4
+SLPM-62439:
+  name: "Growlanser Collection - The Sense of Justice"
   region: "NTSC-J"
   compat: 4
 SLPM-62440:
@@ -45089,6 +45099,12 @@ SLUS-21881:
   name: "Transformers - Revenge of the Fallen"
   region: "NTSC-U"
   compat: 5
+  patches:
+    137C792E:
+      content: |-
+        // Fix Pause menu, some hud parts, etc.
+        patch=1,EE,0016ee38,word,3464fff0
+        patch=1,EE,0016ee58,word,3464fffc
 SLUS-21882:
   name: "Ghostbusters"
   region: "NTSC-U"
