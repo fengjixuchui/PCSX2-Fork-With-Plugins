@@ -300,11 +300,12 @@ void VMManager::LoadSettings()
 {
 	std::unique_lock<std::mutex> lock = Host::GetSettingsLock();
 	SettingsInterface* si = Host::GetSettingsInterface();
+	SettingsInterface* binding_si = Host::GetSettingsInterfaceForBindings();
 	SettingsLoadWrapper slw(*si);
 	EmuConfig.LoadSave(slw);
-	PAD::LoadConfig(*si);
+	PAD::LoadConfig(*binding_si);
 	InputManager::ReloadSources(*si, lock);
-	InputManager::ReloadBindings(*si);
+	InputManager::ReloadBindings(*si, *binding_si);
 
 	// Remove any user-specified hacks in the config (we don't want stale/conflicting values when it's globally disabled).
 	EmuConfig.GS.MaskUserHacks();
@@ -425,7 +426,7 @@ bool VMManager::UpdateGameSettingsLayer()
 
 	std::string input_profile_name;
 	if (new_interface)
-		new_interface->GetStringValue("Pad", "InputProfileName", &input_profile_name);
+		new_interface->GetStringValue("EmuCore", "InputProfileName", &input_profile_name);
 
 	if (!s_game_settings_interface && !new_interface && s_input_profile_name == input_profile_name)
 		return false;
@@ -1726,6 +1727,38 @@ DEFINE_HOTKEY("LoadStateFromSlot", "Save States", "Load State From Selected Slot
 	if (!pressed)
 		VMManager::LoadStateFromSlot(s_current_save_slot);
 })
+
+#define DEFINE_HOTKEY_SAVESTATE_X(slotnum,slotnumstr) DEFINE_HOTKEY("SaveStateToSlot" #slotnum, \
+	"Save States", "Save State To Slot " #slotnumstr, [](bool pressed) { if (!pressed) VMManager::SaveStateToSlot(slotnum); })
+DEFINE_HOTKEY_SAVESTATE_X(1, 01)
+DEFINE_HOTKEY_SAVESTATE_X(2, 02)
+DEFINE_HOTKEY_SAVESTATE_X(3, 03)
+DEFINE_HOTKEY_SAVESTATE_X(4, 04)
+DEFINE_HOTKEY_SAVESTATE_X(5, 05)
+DEFINE_HOTKEY_SAVESTATE_X(6, 06)
+DEFINE_HOTKEY_SAVESTATE_X(7, 07)
+DEFINE_HOTKEY_SAVESTATE_X(8, 08)
+DEFINE_HOTKEY_SAVESTATE_X(9, 09)
+DEFINE_HOTKEY_SAVESTATE_X(10, 10)
+#define DEFINE_HOTKEY_LOADSTATE_X(slotnum, slotnumstr) DEFINE_HOTKEY("LoadStateFromSlot" #slotnum, \
+	"Save States", "Load State From Slot " #slotnumstr , [](bool pressed) { \
+		if (!pressed) \
+			VMManager::LoadStateFromSlot(slotnum); \
+	})
+DEFINE_HOTKEY_LOADSTATE_X(1, 01)
+DEFINE_HOTKEY_LOADSTATE_X(2, 02)
+DEFINE_HOTKEY_LOADSTATE_X(3, 03)
+DEFINE_HOTKEY_LOADSTATE_X(4, 04)
+DEFINE_HOTKEY_LOADSTATE_X(5, 05)
+DEFINE_HOTKEY_LOADSTATE_X(6, 06)
+DEFINE_HOTKEY_LOADSTATE_X(7, 07)
+DEFINE_HOTKEY_LOADSTATE_X(8, 08)
+DEFINE_HOTKEY_LOADSTATE_X(9, 09)
+DEFINE_HOTKEY_LOADSTATE_X(10, 10)
+
+#undef DEFINE_HOTKEY_SAVESTATE_X
+#undef DEFINE_HOTKEY_LOADSTATE_X
+
 END_HOTKEY_LIST()
 
 #ifdef _WIN32
