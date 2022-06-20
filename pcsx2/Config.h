@@ -503,6 +503,7 @@ struct Pcsx2Config
 		// style. Useful for debugging potential bugs in the MTGS pipeline.
 		bool SynchronousMTGS{false};
 		bool FrameLimitEnable{true};
+		bool FrameLimitUnthrottle{false};
 
 		VsyncMode VsyncEnable{VsyncMode::Off};
 

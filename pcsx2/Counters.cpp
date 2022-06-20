@@ -564,7 +564,7 @@ static __fi void frameLimitUpdateCore()
 static __fi void frameLimit()
 {
 	// Framelimiter off in settings? Framelimiter go brrr.
-	if (EmuConfig.GS.LimitScalar == 0.0 || s_use_vsync_for_timing)
+	if (EmuConfig.GS.LimitScalar == 0.0 || s_use_vsync_for_timing || EmuConfig.GS.FrameLimitUnthrottle)
 	{
 		frameLimitUpdateCore();
 		return;
