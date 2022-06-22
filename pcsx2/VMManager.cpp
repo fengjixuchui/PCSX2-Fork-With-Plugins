@@ -135,6 +135,7 @@ static s32 s_current_save_slot = 1;
 static u32 s_frame_advance_count = 0;
 static u32 s_mxcsr_saved;
 static std::optional<LimiterModeType> s_limiter_mode_prior_to_hold_interaction;
+extern std::optional<LimiterModeType> s_limiter_mode_prior_to_unthrottle;
 
 bool VMManager::PerformEarlyHardwareChecks(const char** error)
 {
@@ -1007,6 +1008,7 @@ void VMManager::Shutdown(bool save_resume_state)
 	s_active_widescreen_patches = 0;
 	s_active_no_interlacing_patches = 0;
 	s_limiter_mode_prior_to_hold_interaction.reset();
+	s_limiter_mode_prior_to_unthrottle.reset();
 
 	UpdateGameSettingsLayer();
 
@@ -1048,6 +1050,7 @@ void VMManager::Reset()
 	s_active_widescreen_patches = 0;
 	s_active_no_interlacing_patches = 0;
 	s_limiter_mode_prior_to_hold_interaction.reset();
+	s_limiter_mode_prior_to_unthrottle.reset();
 
 	SysClearExecutionCache();
 	memBindConditionalHandlers();

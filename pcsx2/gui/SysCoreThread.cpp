@@ -247,6 +247,11 @@ void SysCoreThread::_reset_stuff_as_needed()
 
 		m_resetVsyncTimers = false;
 	}
+    
+#ifndef PCSX2_CORE
+	extern std::optional<VsyncMode> s_vsync_mode_prior_to_unthrottle;
+	s_vsync_mode_prior_to_unthrottle.reset();
+#endif
 }
 
 void SysCoreThread::DoCpuReset()
@@ -405,4 +410,9 @@ void SysCoreThread::OnCleanupInThread()
 	_parent::OnCleanupInThread();
 
 	m_ExecMode = ExecMode_NoThreadYet;
+
+    #ifndef PCSX2_CORE
+	extern std::optional<VsyncMode> s_vsync_mode_prior_to_unthrottle;
+	s_vsync_mode_prior_to_unthrottle.reset();
+#endif
 }

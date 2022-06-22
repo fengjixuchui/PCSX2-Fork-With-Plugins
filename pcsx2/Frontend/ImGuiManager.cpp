@@ -730,7 +730,10 @@ void ImGuiManager::DrawPerformanceOverlay()
 			if (!is_normal_speed)
 			{
 				const bool is_slowmo = (EmuConfig.GS.LimitScalar < EmuConfig.Framerate.NominalScalar);
-				DRAW_LINE(s_standard_font, is_slowmo ? ICON_FA_FORWARD : ICON_FA_FAST_FORWARD, IM_COL32(255, 255, 255, 255));
+				if (EmuConfig.GS.FrameLimitUnthrottle)
+					DRAW_LINE(s_standard_font, ICON_FA_FAST_FORWARD, IM_COL32(255, 0, 0, 255));
+				else
+					DRAW_LINE(s_standard_font, is_slowmo ? ICON_FA_FORWARD : ICON_FA_FAST_FORWARD, IM_COL32(255, 255, 255, 255));
 			}
 		}
 	}
