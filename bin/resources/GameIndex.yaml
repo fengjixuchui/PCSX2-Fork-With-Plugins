@@ -1046,12 +1046,6 @@ SCAJ-20136:
 SCAJ-20137:
   name: "Musashiden II - Blademaster"
   region: "NTSC-Unk"
-  roundModes:
-    vuRoundMode: 0 # Fixes Red SPS while ingame.
-    eeRoundMode: 0 # Partially fixes wrong enemies eye rendering.
-  clampModes:
-    vuClampMode: 3 # Fixes White SPS while ingame.
-    eeClampMode: 3 # Fixes White SPS while ingame.
   gameFixes:
     - EETimingHack # Fixes garbled character animation.
 SCAJ-20138:
@@ -8372,6 +8366,7 @@ SLAJ-25053:
     vuClampMode: 0 # Fixes buggy lighting on certain objects.
   gsHWFixes:
     halfPixelOffset: 2 # Fixes depth lines.
+    autoFlush: 1 # Fixes blur.
 SLAJ-25055:
   name: "Def Jam - Fight for N.Y."
   region: "NTSC-Unk"
@@ -8622,6 +8617,7 @@ SLED-52597:
   region: "PAL-E"
   gsHWFixes:
     halfPixelOffset: 2 # Fixes depth lines.
+    autoFlush: 1 # Fixes blur.
 SLED-52875:
   name: "Sega Superstars [Demo]"
   region: "PAL-E"
@@ -14013,6 +14009,7 @@ SLES-52584:
     vuClampMode: 0 # Fixes buggy lighting on certain objects.
   gsHWFixes:
     halfPixelOffset: 2 # Fixes depth lines.
+    autoFlush: 1 # Fixes blur.
 SLES-52585:
   name: "Burnout 3 - Takedown"
   region: "PAL-F-G-I"
@@ -14020,6 +14017,7 @@ SLES-52585:
     vuClampMode: 0 # Fixes buggy lighting on certain objects.
   gsHWFixes:
     halfPixelOffset: 2 # Fixes depth lines.
+    autoFlush: 1 # Fixes blur.
 SLES-52587:
   name: "Army Men - Sarge's War"
   region: "PAL-M5"
@@ -16121,12 +16119,6 @@ SLES-53518:
 SLES-53521:
   name: "Musashi - Samurai Legend"
   region: "PAL-M4"
-  patches:
-    BC897AC9:
-      content: |-
-        author=Prafull, Kozarovv and Agrippa
-        // Fixes almost all problems apart from little translucent fog effect in some areas.
-        patch=1,EE,00147828,word,3c04000f
 SLES-53523:
   name: "Gun"
   region: "PAL-M4"
@@ -21937,6 +21929,7 @@ SLKA-25206:
   region: "NTSC-K"
   gsHWFixes:
     halfPixelOffset: 2 # Fixes depth lines.
+    autoFlush: 1 # Fixes blur.
 SLKA-25207:
   name: "Sakura Taisen V - Episode 0 - Samurai Girl of Wild"
   region: "NTSC-K"
@@ -22051,6 +22044,8 @@ SLKA-25251:
   region: "NTSC-K"
   gameFixes:
     - BlitInternalFPSHack # Fixes internal FPS detection.
+  gsHWFixes:
+    halfPixelOffset: 2 # Fixes blurriness.
 SLKA-25252:
   name: "Forgotten Realms - Demon Stone"
   region: "NTSC-K"
@@ -22905,6 +22900,7 @@ SLPM-60246:
     vuClampMode: 0 # Fixes buggy lighting on certain objects.
   gsHWFixes:
     halfPixelOffset: 2 # Fixes depth lines.
+    autoFlush: 1 # Fixes blur.
 SLPM-60251:
   name: "Devil May Cry 3 [Trial Version]"
   region: "NTSC-J"
@@ -23020,12 +23016,6 @@ SLPM-61090:
 SLPM-61117:
   name: "Musashiden II - Blademaster [Trial]"
   region: "NTSC-J"
-  roundModes:
-    vuRoundMode: 0 # Fixes Red SPS while ingame.
-    eeRoundMode: 0 # Partially fixes wrong enemies eye rendering.
-  clampModes:
-    vuClampMode: 3 # Fixes White SPS while ingame.
-    eeClampMode: 3 # Fixes White SPS while ingame.
   gameFixes:
     - EETimingHack # Fixes garbled character animation.
 SLPM-61120:
@@ -27468,6 +27458,7 @@ SLPM-65719:
     vuClampMode: 0 # Fixes buggy lighting on certain objects.
   gsHWFixes:
     halfPixelOffset: 2 # Fixes depth lines.
+    autoFlush: 1 # Fixes blur.
 SLPM-65720:
   name: "Shin Sangoku Musou 2 Mushoden [Koei the Best]"
   region: "NTSC-J"
@@ -27701,11 +27692,15 @@ SLPM-65789:
   region: "NTSC-J"
   gameFixes:
     - BlitInternalFPSHack # Fixes internal FPS detection.
+  gsHWFixes:
+    halfPixelOffset: 2 # Fixes blurriness.
 SLPM-65790:
   name: "Metal Gear Solid 3 - Snake Eater"
   region: "NTSC-J"
   gameFixes:
     - BlitInternalFPSHack # Fixes internal FPS detection.
+  gsHWFixes:
+    halfPixelOffset: 2 # Fixes blurriness.
 SLPM-65791:
   name: "S.L.A.I. - Steel Lancer Arena International"
   region: "NTSC-J"
@@ -28273,6 +28268,7 @@ SLPM-65958:
     vuClampMode: 0 # Fixes buggy lighting on certain objects.
   gsHWFixes:
     halfPixelOffset: 2 # Fixes depth lines.
+    autoFlush: 1 # Fixes blur.
 SLPM-65959:
   name: "Standard Daisenryaku - Ushinawareta Shoeri"
   region: "NTSC-J"
@@ -28428,13 +28424,6 @@ SLPM-66007:
 SLPM-66008:
   name: "Musashiden II - Blademaster"
   region: "NTSC-J"
-  patches:
-    F0E90890:
-      content: |-
-        author=Prafull, Kozarovv and Agrippa
-        comment=patched by Prafull and Kozarovv
-        // Fixes almost all problems apart from little translucent fog effect in some areas.
-        patch=1,EE,00147c38,word,3c04000f
 SLPM-66009:
   name: "World Soccer Winning Eleven 9 - Bonus Pack"
   region: "NTSC-J"
@@ -31248,6 +31237,8 @@ SLPM-66794:
   region: "NTSC-J"
   gameFixes:
     - BlitInternalFPSHack # Fixes internal FPS detection.
+  gsHWFixes:
+    halfPixelOffset: 2 # Fixes blurriness.
 SLPM-66796:
   name: "Metal Gear Solid - 20th Anniversary Collection"
   region: "NTSC-J"
@@ -31752,6 +31743,7 @@ SLPM-66962:
     vuClampMode: 0 # Fixes buggy lighting on certain objects.
   gsHWFixes:
     halfPixelOffset: 2 # Fixes depth lines.
+    autoFlush: 1 # Fixes blur.
 SLPM-66963:
   name: "Medal of Honor - Frontline [EA-SY! 1980]"
   region: "NTSC-J"
@@ -32076,6 +32068,8 @@ SLPM-68516:
   region: "NTSC-J"
   gameFixes:
     - BlitInternalFPSHack # Fixes internal FPS detection.
+  gsHWFixes:
+    halfPixelOffset: 2 # Fixes blurriness.
 SLPM-69001:
   name: "PictureParadise Club"
   region: "NTSC-J"
@@ -35497,9 +35491,13 @@ SLPS-25549:
 SLPS-25550:
   name: "Cowboy Bebop - Tsuitou no Yakyoku [Limited Edition]"
   region: "NTSC-J"
+  clampModes:
+    eeClampMode: 0 # Fixes HUD going black.
 SLPS-25551:
   name: "Cowboy Bebop - Tsuitou no Yakyoku"
   region: "NTSC-J"
+  clampModes:
+    eeClampMode: 0 # Fixes HUD going black.
   compat: 5
 SLPS-25552:
   name: "Inuyasha - Juuso no Kamen [Bandai the Best]"
@@ -41327,6 +41325,8 @@ SLUS-20915:
   compat: 5
   gameFixes:
     - BlitInternalFPSHack # Fixes internal FPS detection.
+  gsHWFixes:
+    halfPixelOffset: 2 # Fixes blurriness.
 SLUS-20916:
   name: "Dance Dance Revolution EXTREME"
   region: "NTSC-U"
@@ -41683,12 +41683,6 @@ SLUS-20983:
   name: "Musashi Samurai Legend"
   region: "NTSC-U"
   compat: 5
-  patches:
-    675CEB8F:
-      content: |-
-        author=Prafull and Kozarovv
-        // Fixes almost all problems apart from little translucent fog effect in some areas.
-        patch=1,EE,001473b0,word,3c04000f
 SLUS-20984:
   name: "Resident Evil Outbreak - File #2"
   region: "NTSC-U"
@@ -42056,6 +42050,7 @@ SLUS-21050:
     vuClampMode: 0 # Fixes buggy lighting on certain objects.
   gsHWFixes:
     halfPixelOffset: 2 # Fixes depth lines.
+    autoFlush: 1 # Fixes blur.
 SLUS-21051:
   name: "FIFA 2005"
   region: "NTSC-U"
@@ -46711,6 +46706,7 @@ SLUS-29113:
     vuClampMode: 0 # Fixes buggy lighting on certain objects.
   gsHWFixes:
     halfPixelOffset: 2 # Fixes depth lines.
+    autoFlush: 1 # Fixes blur.
 SLUS-29116:
   name: "WWE SmackDown! vs. RAW [Public Beta Vol.1.0]"
   region: "NTSC-U"
