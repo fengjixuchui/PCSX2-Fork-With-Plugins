@@ -23,7 +23,7 @@
 #include "Config.h"
 #include "GS.h"
 #include "HostDisplay.h"
-#include "CDVD/CDVDaccess.h"
+#include "CDVD/CDVDcommon.h"
 #include "MemoryCardFile.h"
 
 #ifndef PCSX2_CORE
@@ -330,7 +330,6 @@ Pcsx2Config::GSOptions::GSOptions()
 	PreloadFrameWithGSData = false;
 	WrapGSMem = false;
 	Mipmap = true;
-	AA1 = true;
 	PointListPalette = false;
 
 	ManualUserHacks = false;
@@ -552,7 +551,6 @@ void Pcsx2Config::GSOptions::ReloadIniSettings()
 	GSSettingBoolEx(PreloadFrameWithGSData, "preload_frame_with_gs_data");
 	GSSettingBoolEx(WrapGSMem, "wrap_gs_mem");
 	GSSettingBoolEx(Mipmap, "mipmap");
-	GSSettingBoolEx(AA1, "aa1");
 	GSSettingBoolEx(ManualUserHacks, "UserHacks");
 	GSSettingBoolEx(UserHacks_AlignSpriteX, "UserHacks_align_sprite_X");
 	GSSettingBoolEx(UserHacks_AutoFlush, "UserHacks_AutoFlush");
