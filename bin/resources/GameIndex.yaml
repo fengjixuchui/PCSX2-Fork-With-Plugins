@@ -1510,6 +1510,7 @@ SCAJ-30010:
     halfPixelOffset: 2 # Fixes depth lines and vertical lines and green fog bloom effect.
     roundSprite: 1 # Fixes vertical lines and minor ghosting.
     wrapGSMem: 1 # Fixes FMV when in progressive mode.
+    autoFlush: 1 # Fixes sun going through walls.
 SCAJ-30011:
   name: "God of War II"
   region: "NTSC-E"
@@ -3101,6 +3102,7 @@ SCES-51533:
     halfPixelOffset: 2 # Fixes depth lines and vertical lines and green fog bloom effect.
     roundSprite: 1 # Fixes vertical lines and minor ghosting.
     wrapGSMem: 1 # Fixes FMV when in progressive mode.
+    autoFlush: 1 # Fixes sun going through walls.
 SCES-51578:
   name: "Network Access Disc [v1.03 - v6.00]"
   region: "PAL-M7"
@@ -3547,6 +3549,7 @@ SCES-53133:
     halfPixelOffset: 2 # Fixes depth lines and vertical lines and green fog bloom effect.
     roundSprite: 1 # Fixes vertical lines and minor ghosting.
     wrapGSMem: 1 # Fixes FMV when in progressive mode.
+    autoFlush: 1 # Fixes sun going through walls.
 SCES-53178:
   name: "SingStar Pop"
   region: "PAL-E"
@@ -4952,7 +4955,7 @@ SCKA-20096:
   name: "Barnyard"
   region: "NTSC-K"
   gsHWFixes:
-    mipmap: 1
+    mipmap: 1 # Better characters and environment but has a texture cache issue that makes it worse.
 SCKA-20098:
   name: "Spongebob Squarepants - Creature from the Krusty Krab"
   region: "NTSC-K"
@@ -5014,6 +5017,7 @@ SCKA-30002:
     halfPixelOffset: 2 # Fixes depth lines and vertical lines and green fog bloom effect.
     roundSprite: 1 # Fixes vertical lines and minor ghosting.
     wrapGSMem: 1 # Fixes FMV when in progressive mode.
+    autoFlush: 1 # Fixes sun going through walls.
 SCKA-30006:
   name: "God of War 2"
   region: "NTSC-K"
@@ -7524,6 +7528,7 @@ SCUS-97399:
     halfPixelOffset: 2 # Fixes depth lines and vertical lines and green fog bloom effect.
     roundSprite: 1 # Fixes vertical lines and minor ghosting.
     wrapGSMem: 1 # Fixes FMV when in progressive mode.
+    autoFlush: 1 # Fixes sun going through walls.
 SCUS-97400:
   name: "EyeToy - Groove"
   region: "NTSC-U"
@@ -7805,6 +7810,7 @@ SCUS-97467:
     halfPixelOffset: 2 # Fixes depth lines and vertical lines and green fog bloom effect.
     roundSprite: 1 # Fixes vertical lines and minor ghosting.
     wrapGSMem: 1 # Fixes FMV when in progressive mode.
+    autoFlush: 1 # Fixes sun going through walls.
 SCUS-97468:
   name: "EyeToy - Play 2"
   region: "NTSC-U"
@@ -11715,7 +11721,9 @@ SLES-51354:
   region: "PAL-M5"
   compat: 5
   gsHWFixes:
-    mipmap: 1
+    autoFlush: 1 # Fixes glows.
+    mipmap: 1 # Better characters and environment but has a texture cache issue that makes it worse.
+    textureInsideRT: 1 # Fixes rainbow lighting for some areas.
 SLES-51355:
   name: "Big Mutha Truckers"
   region: "PAL-M5"
@@ -16006,6 +16014,7 @@ SLES-53415:
   compat: 5
   gameFixes:
     - SoftwareRendererFMVHack # Right side of the FMV is not rendering correctly.
+    - IbitHack # Fixes lights.
   gsHWFixes:
     roundSprite: 1 # Fixes lines in sprites.
     cpuSpriteRenderBW: 1 # Fixes textures.
@@ -16014,6 +16023,7 @@ SLES-53416:
   region: "PAL-M3"
   gameFixes:
     - SoftwareRendererFMVHack # Right side of the FMV is not rendering correctly.
+    - IbitHack # Fixes lights.
   gsHWFixes:
     roundSprite: 1 # Fixes lines in sprites.
     cpuSpriteRenderBW: 1 # Fixes textures.
@@ -16022,6 +16032,7 @@ SLES-53417:
   region: "PAL-G"
   gameFixes:
     - SoftwareRendererFMVHack # Right side of the FMV is not rendering correctly.
+    - IbitHack # Fixes lights.
   gsHWFixes:
     roundSprite: 1 # Fixes lines in sprites.
     cpuSpriteRenderBW: 1 # Fixes textures.
@@ -16470,8 +16481,12 @@ SLES-53561:
     wildArmsHack: 1 # Reduces depth ghosting.
     roundSprite: 2 # Reduces depth ghosting.
 SLES-53563:
-  name: "Spongebob SquarePants and Friends - Unite!"
+  name: "Nickelodeon SpongeBob SquarePants and Friends Unite!"
   region: "PAL-M6"
+  gsHWFixes:
+    autoFlush: 1 # Fixes glows.
+    mipmap: 1 # Better characters and environment but has a texture cache issue that makes it worse.
+    textureInsideRT: 1 # Fixes rainbow lighting for lamps, computer and other areas.
 SLES-53564:
   name: "Darkwatch"
   region: "PAL-M5"
@@ -16617,6 +16632,7 @@ SLES-53634:
   name: "Nicktoons Unite!"
   region: "PAL-A"
   gsHWFixes:
+    autoFlush: 1 # Fixes glows.
     mipmap: 1 # Better characters and environment but has a texture cache issue that makes it worse.
     textureInsideRT: 1 # Fixes rainbow lighting for lamps, computer and other areas.
 SLES-53635:
@@ -16858,6 +16874,7 @@ SLES-53722:
   region: "PAL-E"
   gameFixes:
     - SoftwareRendererFMVHack # Right side of the FMV is not rendering correctly.
+    - IbitHack # Fixes lights.
   gsHWFixes:
     roundSprite: 1 # Fixes lines in sprites.
     cpuSpriteRenderBW: 1 # Fixes textures.
@@ -18349,17 +18366,17 @@ SLES-54376:
   name: "Barnyard"
   region: "PAL-E"
   gsHWFixes:
-    mipmap: 1
+    mipmap: 1 # Better characters and environment but has a texture cache issue that makes it worse.
 SLES-54377:
   name: "Barnyard"
   region: "PAL-G"
   gsHWFixes:
-    mipmap: 1
+    mipmap: 1 # Better characters and environment but has a texture cache issue that makes it worse.
 SLES-54378:
   name: "Barnyard"
   region: "PAL-M4"
   gsHWFixes:
-    mipmap: 1
+    mipmap: 1 # Better characters and environment but has a texture cache issue that makes it worse.
 SLES-54379:
   name: "NFL Street 3"
   region: "PAL-E"
@@ -18685,13 +18702,13 @@ SLES-54510:
   name: "Disney's Meet the Robinsons"
   region: "PAL-M3"
 SLES-54511:
-  name: "UEFA Champions League"
+  name: "UEFA Champions League 2006-2007"
   region: "PAL-E"
 SLES-54512:
-  name: "UEFA Champions League"
+  name: "UEFA Champions League 2006-2007"
   region: "PAL-F-G"
 SLES-54513:
-  name: "UEFA Champions League"
+  name: "UEFA Champions League 2006-2007"
   region: "PAL-I-S"
 SLES-54516:
   name: "Thrillville"
@@ -18716,6 +18733,8 @@ SLES-54519:
 SLES-54521:
   name: "Nickelodeon SpongeBob and Friends - Battle for Volcano Island"
   region: "PAL-M5"
+  gsHWFixes:
+    mipmap: 1 # Better characters and environment but has a texture cache issue that makes it worse.
 SLES-54527:
   name: "Flushed Away"
   region: "PAL-M5"
@@ -19877,9 +19896,15 @@ SLES-54989:
 SLES-54990:
   name: "Nicktoons - Attack of the Toybots"
   region: "PAL-A"
+  gsHWFixes:
+    mipmap: 1 # Fixes garbage textures in the distance.
+    halfPixelOffset: 2 # Corrects most vertical lines.
 SLES-54991:
   name: "Nickelodeon SpongeBob and Friends - Attack of the Toybots"
   region: "PAL-M6"
+  gsHWFixes:
+    mipmap: 1 # Fixes garbage textures in the distance.
+    halfPixelOffset: 2 # Corrects most vertical lines.
 SLES-54992:
   name: "PDC World Championship Darts 2008"
   region: "PAL-M6"
@@ -20211,6 +20236,9 @@ SLES-55136:
 SLES-55138:
   name: "Nickelodeon El Tigre - The Adventures of Manny Rivera"
   region: "PAL-E"
+  gsHWFixes:
+    mipmap: 1 # Fixes garbage textures in the distance.
+    halfPixelOffset: 2 # Corrects most vertical lines.
 SLES-55143:
   name: "Chronicles of Narnia, The - Prince Caspian"
   region: "PAL-G-I"
@@ -24600,7 +24628,9 @@ SLPM-62512:
   name: "Keiei Simulation - Jurassic Park [Konami The Best]"
   region: "NTSC-J"
   gsHWFixes:
-    mipmap: 1
+    autoFlush: 1 # Fixes glows.
+    mipmap: 1 # Better characters and environment but has a texture cache issue that makes it worse.
+    textureInsideRT: 1 # Fixes rainbow lighting for some areas.
 SLPM-62513:
   name: "Harry Potter and the Chamber of Secrets [EA Best Hits]"
   region: "NTSC-J"
@@ -29279,6 +29309,7 @@ SLPM-66167:
     halfPixelOffset: 2 # Fixes depth lines and vertical lines and green fog bloom effect.
     roundSprite: 1 # Fixes vertical lines and minor ghosting.
     wrapGSMem: 1 # Fixes FMV when in progressive mode.
+    autoFlush: 1 # Fixes sun going through walls.
 SLPM-66168:
   name: "Ryu Ga Gotoku"
   region: "NTSC-J"
@@ -29858,6 +29889,7 @@ SLPM-66328:
   region: "NTSC-J"
   gameFixes:
     - SoftwareRendererFMVHack # Right side of the FMV is not rendering correctly.
+    - IbitHack # Fixes lights.
   gsHWFixes:
     roundSprite: 1 # Fixes lines in sprites.
     cpuSpriteRenderBW: 1 # Fixes textures.
@@ -32208,6 +32240,7 @@ SLPM-67010:
     halfPixelOffset: 2 # Fixes depth lines and vertical lines and green fog bloom effect.
     roundSprite: 1 # Fixes vertical lines and minor ghosting.
     wrapGSMem: 1 # Fixes FMV when in progressive mode.
+    autoFlush: 1 # Fixes sun going through walls.
 SLPM-67011:
   name: "God of War [CapKore]"
   region: "NTSC-J"
@@ -32216,6 +32249,7 @@ SLPM-67011:
     halfPixelOffset: 2 # Fixes depth lines and vertical lines and green fog bloom effect.
     roundSprite: 1 # Fixes vertical lines and minor ghosting.
     wrapGSMem: 1 # Fixes FMV when in progressive mode.
+    autoFlush: 1 # Fixes sun going through walls.
 SLPM-67012:
   name: "God of War [Best Price]"
   region: "NTSC-J"
@@ -32224,6 +32258,7 @@ SLPM-67012:
     halfPixelOffset: 2 # Fixes depth lines and vertical lines and green fog bloom effect.
     roundSprite: 1 # Fixes vertical lines and minor ghosting.
     wrapGSMem: 1 # Fixes FMV when in progressive mode.
+    autoFlush: 1 # Fixes sun going through walls.
 SLPM-67013:
   name: "God of War II - The End Begins"
   region: "NTSC-J"
@@ -39351,7 +39386,9 @@ SLUS-20380:
   name: "Jurassic Park - Operation Genesis"
   region: "NTSC-U"
   gsHWFixes:
-    mipmap: 1
+    autoFlush: 1 # Fixes glows.
+    mipmap: 1 # Better characters and environment but has a texture cache issue that makes it worse.
+    textureInsideRT: 1 # Fixes rainbow lighting for some areas.
 SLUS-20381:
   name: "MX SuperFly"
   region: "NTSC-U"
@@ -43347,6 +43384,7 @@ SLUS-21228:
   compat: 5
   gameFixes:
     - SoftwareRendererFMVHack # Right side of the FMV is not rendering correctly.
+    - IbitHack # Fixes lights.
   gsHWFixes:
     roundSprite: 1 # Fixes lines in sprites.
     cpuSpriteRenderBW: 1 # Fixes textures.
@@ -43656,7 +43694,7 @@ SLUS-21277:
   region: "NTSC-U"
   compat: 5
   gsHWFixes:
-    mipmap: 1
+    mipmap: 1 # Better characters and environment but has a texture cache issue that makes it worse.
 SLUS-21278:
   name: "SSX on Tour"
   region: "NTSC-U"
@@ -43683,6 +43721,7 @@ SLUS-21284:
   name: "Nicktoons Unite!"
   region: "NTSC-U"
   gsHWFixes:
+    autoFlush: 1 # Fixes glows.
     mipmap: 1 # Better characters and environment but has a texture cache issue that makes it worse.
     textureInsideRT: 1 # Fixes rainbow lighting for lamps, computer and other areas.
 SLUS-21285:
@@ -43862,6 +43901,7 @@ SLUS-21318:
   compat: 5
   gameFixes:
     - SoftwareRendererFMVHack # Right side of the FMV is not rendering correctly.
+    - IbitHack # Fixes lights.
   gsHWFixes:
     roundSprite: 1 # Fixes lines in sprites.
     cpuSpriteRenderBW: 1 # Fixes textures.
@@ -44689,6 +44729,8 @@ SLUS-21469:
   name: "Nicktoons - Battle for Volcano Island"
   region: "NTSC-U"
   compat: 5
+  gsHWFixes:
+    mipmap: 1 # Better characters and environment but has a texture cache issue that makes it worse.
 SLUS-21470:
   name: "Bratz - Forever Diamondz"
   region: "NTSC-U"
@@ -45023,6 +45065,8 @@ SLUS-21567:
 SLUS-21568:
   name: "Arena Football - Road to Glory"
   region: "NTSC-U"
+  clampModes:
+    vuClampMode: 3 # Fixes missing crowds.
 SLUS-21569:
   name: "Shin Megami Tensei - Persona 3"
   region: "NTSC-U"
@@ -45205,6 +45249,9 @@ SLUS-21604:
 SLUS-21605:
   name: "Nicktoons - Attack of the Toybots"
   region: "NTSC-U"
+  gsHWFixes:
+    mipmap: 1 # Fixes garbage textures in the distance.
+    halfPixelOffset: 2 # Corrects most vertical lines.
 SLUS-21606:
   name: "Metropolismania 2"
   region: "NTSC-U"
@@ -45782,6 +45829,9 @@ SLUS-21731:
 SLUS-21732:
   name: "El Tigre - The Adventures of Manny Rivera"
   region: "NTSC-U"
+  gsHWFixes:
+    mipmap: 1 # Fixes garbage textures in the distance.
+    halfPixelOffset: 2 # Corrects most vertical lines.
 SLUS-21733:
   name: "Sega Superstars Tennis"
   region: "NTSC-U"
