@@ -915,10 +915,11 @@ void ImGuiManager::RenderOSD()
 		DrawPerformanceOverlay();
 #else
 	DrawPerformanceOverlay();
+#endif
 
 	AcquirePendingOSDMessages();
 	DrawOSDMessages();
-
+    
 #ifdef _WIN32
 	DrawPluginsOverlay();
 #endif
