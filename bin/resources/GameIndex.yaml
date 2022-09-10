@@ -12930,6 +12930,7 @@ SLES-51917:
     textureInsideRT: 1 # Fixes the shape of shadows.
     autoFlush: 1 # Fixes water rendering.
     halfPixelOffset: 3 # Fixes bloom misalignment, needs this harsh offset for autoflush.
+    cpuFramebufferConversion: 1 # Fixes shield rendering.
 SLES-51918:
   name: "Prince of Persia - The Sands of Time"
   region: "PAL-M5"
@@ -37591,6 +37592,9 @@ SLPS-25918:
   region: "NTSC-J"
   gsHWFixes:
     roundSprite: 1 # Fixes character sprites.
+SLPS-25919:
+  name: "Sengoku Tenka Touitsu"
+  region: "NTSC-J"
 SLPS-25927:
   name: "Tomb Raider - Underworld"
   region: "NTSC-J"
@@ -37652,6 +37656,9 @@ SLPS-25961:
     eeRoundMode: 1 # Fixes camera issue.
   gameFixes:
     - FpuNegDivHack # Fixes target loss issue.
+SLPS-25978:
+  name: "Shin Master of Monsters Final EX"
+  region: "NTSC-J"
 SLPS-25983:
   name: "King of Fighters 2002, The - Unlimited Match"
   region: "NTSC-J"
@@ -41582,6 +41589,7 @@ SLUS-20763:
     textureInsideRT: 1 # Fixes the shape of shadows.
     autoFlush: 1 # Fixes water rendering.
     halfPixelOffset: 3 # Fixes bloom misalignment, needs this harsh offset for autoflush.
+    cpuFramebufferConversion: 1 # Fixes shield rendering.
 SLUS-20764:
   name: "Bombastic"
   region: "NTSC-U"
@@ -47617,6 +47625,7 @@ SLUS-29082:
     textureInsideRT: 1 # Fixes the shape of shadows.
     autoFlush: 1 # Fixes water rendering.
     halfPixelOffset: 3 # Fixes bloom misalignment, needs this harsh offset for autoflush.
+    cpuFramebufferConversion: 1 # Fixes shield rendering.
 SLUS-29083:
   name: "Maximo vs. The Army of Zin [Demo]"
   region: "NTSC-U"
