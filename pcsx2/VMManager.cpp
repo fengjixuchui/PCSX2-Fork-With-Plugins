@@ -1474,7 +1474,7 @@ void VMManager::Internal::GameStartingOnCPUThread()
 	{
 		static bool fullscreen = false;
 		LoadPlugins(ElfCRC, (uintptr_t)&eeMem->Main, sizeof(eeMem->Main), ElfTextRange.first, ElfTextRange.second,
-			Host::GetHostDisplay()->GetWindowInfo().window_handle, Host::GetHostDisplay()->GetWindowInfo().surface_width, Host::GetHostDisplay()->GetWindowInfo().surface_height, fullscreen, EmuConfig.GS.AspectRatio, EmuConfig.GS.FrameLimitUnthrottle);
+			g_host_display->GetWindowInfo().window_handle, g_host_display->GetWindowInfo().surface_width, g_host_display->GetWindowInfo().surface_height, fullscreen, EmuConfig.GS.AspectRatio, EmuConfig.GS.FrameLimitUnthrottle);
 	}
 #endif
 
