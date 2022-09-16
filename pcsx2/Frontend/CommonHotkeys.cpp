@@ -28,11 +28,13 @@
 
 static s32 s_current_save_slot = 1;
 static std::optional<LimiterModeType> s_limiter_mode_prior_to_hold_interaction;
+extern std::optional<LimiterModeType> s_limiter_mode_prior_to_unthrottle;
 
 void CommonHost::Internal::ResetVMHotkeyState()
 {
 	s_current_save_slot = 1;
 	s_limiter_mode_prior_to_hold_interaction.reset();
+	s_limiter_mode_prior_to_unthrottle.reset();
 }
 
 static void HotkeyAdjustTargetSpeed(double delta)

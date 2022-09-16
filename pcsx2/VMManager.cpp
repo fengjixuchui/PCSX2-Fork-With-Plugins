@@ -105,8 +105,6 @@ namespace VMManager
 	static void SetEmuThreadAffinities();
 } // namespace VMManager
 
-extern std::optional<LimiterModeType> s_limiter_mode_prior_to_unthrottle;
-
 static std::unique_ptr<SysMainMemory> s_vm_memory;
 static std::unique_ptr<SysCpuProviderPack> s_cpu_provider_pack;
 static std::unique_ptr<INISettingsInterface> s_game_settings_interface;
@@ -1036,8 +1034,6 @@ void VMManager::Shutdown(bool save_resume_state)
 	s_active_game_fixes = 0;
 	s_active_widescreen_patches = 0;
 	s_active_no_interlacing_patches = 0;
-	s_limiter_mode_prior_to_hold_interaction.reset();
-	s_limiter_mode_prior_to_unthrottle.reset();
 
 	UpdateGameSettingsLayer();
 
@@ -1085,8 +1081,6 @@ void VMManager::Reset()
 	s_active_game_fixes = 0;
 	s_active_widescreen_patches = 0;
 	s_active_no_interlacing_patches = 0;
-	s_limiter_mode_prior_to_hold_interaction.reset();
-	s_limiter_mode_prior_to_unthrottle.reset();
 
 	SysClearExecutionCache();
 	memBindConditionalHandlers();
@@ -1448,7 +1442,7 @@ void VMManager::Internal::GameStartingOnCPUThread()
 		auto hm = GetModuleHandleW(dll);
 		return (hm ? hm : LoadLibraryW(dll));
 	};
-	auto LoadPlugins = (void (*)(uint32_t&, uintptr_t, size_t, uintptr_t, size_t, void* const&, const u32&, const u32&, bool&, AspectRatioType&, bool&))GetProcAddress(GetPCSX2PluginInjector(), "LoadPlugins");
+	auto LoadPlugins = (void (*)(uint32_t&, uintptr_t, size_t, uintptr_t, size_t, void*, const u32&, const u32&, bool&, AspectRatioType&, bool&))GetProcAddress(GetPCSX2PluginInjector(), "LoadPlugins");
 	if (LoadPlugins)
 	{
 		static bool fullscreen = false;

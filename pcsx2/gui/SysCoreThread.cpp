@@ -289,7 +289,7 @@ void SysCoreThread::GameStartingInThread()
 		auto hm = GetModuleHandleW(dll);
 		return (hm ? hm : LoadLibraryW(dll));
 	};
-	auto LoadPlugins = (void (*)(uint32_t&, uintptr_t, size_t, uintptr_t, size_t, void*&, int&, int&, bool&, AspectRatioType&, bool&))GetProcAddress(GetPCSX2PluginInjector(), "LoadPlugins");
+	auto LoadPlugins = (void (*)(uint32_t&, uintptr_t, size_t, uintptr_t, size_t, void*, int&, int&, bool&, AspectRatioType&, bool&))GetProcAddress(GetPCSX2PluginInjector(), "LoadPlugins");
 	if (LoadPlugins)
 	{
 		LoadPlugins(ElfCRC, (uintptr_t)&eeMem->Main, sizeof(eeMem->Main), ElfTextRange.first, ElfTextRange.second, 
