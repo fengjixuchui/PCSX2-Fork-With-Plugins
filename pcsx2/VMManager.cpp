@@ -1446,12 +1446,12 @@ void VMManager::Internal::GameStartingOnCPUThread()
 		auto hm = GetModuleHandleW(dll);
 		return (hm ? hm : LoadLibraryW(dll));
 	};
-	auto LoadPlugins = (void (*)(uint32_t&, uintptr_t, size_t, uintptr_t, size_t, void*, const u32&, const u32&, bool&, AspectRatioType&, bool&))GetProcAddress(GetPCSX2PluginInjector(), "LoadPlugins");
+	auto LoadPlugins = (void (*)(uint32_t&, uintptr_t, size_t, uintptr_t, size_t, void* const*, const u32&, const u32&, bool&, AspectRatioType&, bool&))GetProcAddress(GetPCSX2PluginInjector(), "LoadPlugins");
 	if (LoadPlugins)
 	{
 		static bool fullscreen = false;
 		LoadPlugins(ElfCRC, (uintptr_t)&eeMem->Main, sizeof(eeMem->Main), ElfTextRange.first, ElfTextRange.second,
-			g_host_display->GetWindowInfo().window_handle, g_host_display->GetWindowInfo().surface_width, g_host_display->GetWindowInfo().surface_height, fullscreen, EmuConfig.GS.AspectRatio, EmuConfig.GS.FrameLimitUnthrottle);
+			&g_host_display->GetWindowInfo().window_handle, g_host_display->GetWindowInfo().surface_width, g_host_display->GetWindowInfo().surface_height, fullscreen, EmuConfig.GS.AspectRatio, EmuConfig.GS.FrameLimitUnthrottle);
 	}
 #endif
 
