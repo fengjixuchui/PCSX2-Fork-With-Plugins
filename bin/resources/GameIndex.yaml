@@ -2583,6 +2583,9 @@ SCED-54605:
 SCED-54642:
   name: "Official PlayStation 2 Magazine Demo 82" # German
   region: "PAL-M5"
+SCED-54682:
+  name: "UPS2 Speciale Platinum 2007"
+  region: "PAL-M5"
 SCED-54692:
   name: "Official PlayStation 2 Magazine Demo 83" # German
   region: "PAL-E-G"
@@ -21078,6 +21081,8 @@ SLES-55372:
   name: "Spiderman - Web of Shadows"
   region: "PAL-M5"
   compat: 5
+  clampModes:
+    eeClampMode: 3 # Connect hits, able to summon... etc...
 SLES-55373:
   name: "King of Fighters Collection, The - The Orochi Saga"
   region: "PAL-E"
