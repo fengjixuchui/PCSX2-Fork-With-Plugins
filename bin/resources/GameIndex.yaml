@@ -820,7 +820,7 @@ SCAJ-20086:
     autoFlush: 1 # Fixes shadows in cutscenes.
     halfPixelOffset: 2 # Fixes lighting misalignment and shadows.
     roundSprite: 2 # Fixes font artifacts.
-    texturePreloading: 0
+    texturePreloading: 0 # Fix slowdown due to large textures.
   memcardFilters:
     - "SLPS-29001"
     - "SLPS-29002"
@@ -835,7 +835,7 @@ SCAJ-20087:
     autoFlush: 1 # Fixes shadows in cutscenes.
     halfPixelOffset: 2 # Fixes lighting misalignment and shadows.
     roundSprite: 2 # Fixes font artifacts.
-    texturePreloading: 0
+    texturePreloading: 0 # Fix slowdown due to large textures.
   memcardFilters:
     - "SLPS-29001"
     - "SLPS-29002"
@@ -12996,6 +12996,8 @@ SLES-51897:
   compat: 5
   gameFixes:
     - FpuNegDivHack # Lens flare appears even when behind objects.
+  gsHWFixes:
+    autoFlush: 1 # Fixes missing lens flare.
 SLES-51903:
   name: "AFL Live 2004 - Aussie Rules Football"
   region: "PAL-E"
@@ -21783,6 +21785,7 @@ SLES-82034:
     autoFlush: 1 # Fixes shadows in cutscenes.
     halfPixelOffset: 2 # Fixes lighting misalignment and shadows.
     roundSprite: 2 # Fixes font artifacts.
+    texturePreloading: 0 # Fix slowdown due to large textures.
   memcardFilters:
     - "SLES-82034"
     - "SCES-82034"
@@ -21793,6 +21796,7 @@ SLES-82035:
     autoFlush: 1 # Fixes shadows in cutscenes.
     halfPixelOffset: 2 # Fixes lighting misalignment and shadows.
     roundSprite: 2 # Fixes font artifacts.
+    texturePreloading: 0 # Fix slowdown due to large textures.
   memcardFilters:
     - "SLES-82034"
     - "SCES-82034"
@@ -35948,6 +35952,7 @@ SLPS-25366:
     autoFlush: 1 # Fixes shadows in cutscenes.
     halfPixelOffset: 2 # Fixes lighting misalignment and shadows.
     roundSprite: 2 # Fixes font artifacts.
+    texturePreloading: 0 # Fix slowdown due to large textures.
   memcardFilters:
     - "SLPS-29001"
     - "SLPS-29002"
@@ -35962,6 +35967,7 @@ SLPS-25367:
     autoFlush: 1 # Fixes shadows in cutscenes.
     halfPixelOffset: 2 # Fixes lighting misalignment and shadows.
     roundSprite: 2 # Fixes font artifacts.
+    texturePreloading: 0 # Fix slowdown due to large textures.
   memcardFilters:
     - "SLPS-29001"
     - "SLPS-29002"
@@ -35976,6 +35982,7 @@ SLPS-25368:
     autoFlush: 1 # Fixes shadows in cutscenes.
     halfPixelOffset: 2 # Fixes lighting misalignment and shadows.
     roundSprite: 2 # Fixes font artifacts.
+    texturePreloading: 0 # Fix slowdown due to large textures.
   memcardFilters: # Allows import of Xenosaga I, Xenosaga I Reloaded, and Xenosaga Freaks data.
     - "SLPS-29001"
     - "SLPS-29002"
@@ -35990,6 +35997,7 @@ SLPS-25369:
     autoFlush: 1 # Fixes shadows in cutscenes.
     halfPixelOffset: 2 # Fixes lighting misalignment and shadows.
     roundSprite: 2 # Fixes font artifacts.
+    texturePreloading: 0 # Fix slowdown due to large textures.
   memcardFilters:
     - "SLPS-29001"
     - "SLPS-29002"
@@ -38240,6 +38248,7 @@ SLPS-73224:
     autoFlush: 1 # Fixes shadows in cutscenes.
     halfPixelOffset: 2 # Fixes lighting misalignment and shadows.
     roundSprite: 2 # Fixes font artifacts.
+    texturePreloading: 0 # Fix slowdown due to large textures.
   memcardFilters:
     - "SLPS-29001"
     - "SLPS-29002"
@@ -38254,6 +38263,7 @@ SLPS-73225:
     autoFlush: 1 # Fixes shadows in cutscenes.
     halfPixelOffset: 2 # Fixes lighting misalignment and shadows.
     roundSprite: 2 # Fixes font artifacts.
+    texturePreloading: 0 # Fix slowdown due to large textures.
   memcardFilters:
     - "SLPS-29001"
     - "SLPS-29002"
@@ -41238,6 +41248,8 @@ SLUS-20624:
   compat: 5
   gameFixes:
     - FpuNegDivHack # Lens flare appears even when behind objects.
+  gsHWFixes:
+    autoFlush: 1 # Fixes missing lens flare.
 SLUS-20625:
   name: "MotoGP 3"
   region: "NTSC-U"
@@ -42477,7 +42489,10 @@ SLUS-20892:
   region: "NTSC-U"
   compat: 5
   gsHWFixes:
-    autoFlush: 1
+    autoFlush: 1 # Fixes shadows in cutscenes.
+    halfPixelOffset: 2 # Fixes lighting misalignment and shadows.
+    roundSprite: 2 # Fixes font artifacts.
+    texturePreloading: 0 # Fix slowdown due to large textures.
   memcardFilters: # Allows import of Xenosaga I data.
     - "SLUS-20469"
     - "SLUS-20892"
@@ -43687,9 +43702,11 @@ SLUS-21133:
   region: "NTSC-U"
   compat: 5
   gsHWFixes:
-    autoFlush: 1
-    texturePreloading: 0
-  memcardFilters:
+    autoFlush: 1 # Fixes shadows in cutscenes.
+    halfPixelOffset: 2 # Fixes lighting misalignment and shadows.
+    roundSprite: 2 # Fixes font artifacts.
+    texturePreloading: 0 # Fix slowdown due to large textures.
+  memcardFilters: # Allows import of Xenosaga I data.
     - "SLUS-20469"
     - "SLUS-20892"
 SLUS-21134:

@@ -1099,7 +1099,9 @@ void GSState::GIFRegHandlerTEX0(const GIFReg* RESTRICT r)
 	// Max allowed MTBA size for 32bit swizzled textures (including 8H 4HL etc) is 512, 16bit and normal 8/4bit formats can be 1024
 	const u32 maxTex = (GSLocalMemory::m_psm[TEX0.PSM].bpp < 32) ? 10 : 9;
 
-	// Spec max is 10
+	// Spec max is 10, but bitfield allows for up to 15
+	// However STQ calculations expect the written size to be used for denormalization (Simple 2000 Series Vol 105 The Maid)
+	// This is clamped to 10 in the FixedTEX0 functions so texture sizes don't exceed 1024x1024, but STQ can calculate properly (with invalid_tex0)
 	//
 	// Yakuza (minimap)
 	// Sets TW/TH to 0
@@ -1110,8 +1112,8 @@ void GSState::GIFRegHandlerTEX0(const GIFReg* RESTRICT r)
 	// Sets TW/TH to 0
 	// there used to be a case to force this to 10
 	// but GetSizeFixedTEX0 sorts this now
-	TEX0.TW = std::clamp<u32>(TEX0.TW, 0, 10);
-	TEX0.TH = std::clamp<u32>(TEX0.TH, 0, 10);
+	TEX0.TW = std::clamp<u32>(TEX0.TW, 0, 15);
+	TEX0.TH = std::clamp<u32>(TEX0.TH, 0, 15);
 
 	// MTBA loads are triggered by writes to TEX0 (but not TEX2!)
 	// Textures MUST be a minimum width of 32 pixels
@@ -3592,68 +3594,78 @@ void GSState::CalcAlphaMinMax()
 	if (m_vt.m_alpha.valid)
 		return;
 
-	const GSDrawingContext* context = m_context;
+	int min = 0, max = 0;
 
-	GSVector4i a = m_vt.m_min.c.uph32(m_vt.m_max.c).zzww();
-
-	if (PRIM->TME && context->TEX0.TCC)
+	if (IsCoverageAlpha())
 	{
-		const GSDrawingEnvironment& env = m_env;
-
-		switch (GSLocalMemory::m_psm[context->TEX0.PSM].fmt)
+		min = 128;
+		max = 128;
+	}
+	else
+	{
+		const GSDrawingContext* context = m_context;
+		GSVector4i a = m_vt.m_min.c.uph32(m_vt.m_max.c).zzww();
+		if (PRIM->TME && context->TEX0.TCC)
 		{
-			case 0:
-				a.y = 0;
-				a.w = 0xff;
-				break;
-			case 1:
-				a.y = env.TEXA.AEM ? 0 : env.TEXA.TA0;
-				a.w = env.TEXA.TA0;
-				break;
-			case 2:
-				a.y = env.TEXA.AEM ? 0 : std::min(env.TEXA.TA0, env.TEXA.TA1);
-				a.w = std::max(env.TEXA.TA0, env.TEXA.TA1);
-				break;
-			case 3:
-				m_mem.m_clut.GetAlphaMinMax32(a.y, a.w);
-				break;
-			default:
-				__assume(0);
-		}
+			const GSDrawingEnvironment& env = m_env;
 
-		switch (context->TEX0.TFX)
-		{
-			case TFX_MODULATE:
-				a.x = (a.x * a.y) >> 7;
-				a.z = (a.z * a.w) >> 7;
-				if (a.x > 0xff)
-					a.x = 0xff;
-				if (a.z > 0xff)
-					a.z = 0xff;
-				break;
-			case TFX_DECAL:
-				a.x = a.y;
-				a.z = a.w;
-				break;
-			case TFX_HIGHLIGHT:
-				a.x = a.x + a.y;
-				a.z = a.z + a.w;
-				if (a.x > 0xff)
-					a.x = 0xff;
-				if (a.z > 0xff)
-					a.z = 0xff;
-				break;
-			case TFX_HIGHLIGHT2:
-				a.x = a.y;
-				a.z = a.w;
-				break;
-			default:
-				__assume(0);
+			switch (GSLocalMemory::m_psm[context->TEX0.PSM].fmt)
+			{
+				case 0:
+					a.y = 0;
+					a.w = 0xff;
+					break;
+				case 1:
+					a.y = env.TEXA.AEM ? 0 : env.TEXA.TA0;
+					a.w = env.TEXA.TA0;
+					break;
+				case 2:
+					a.y = env.TEXA.AEM ? 0 : std::min(env.TEXA.TA0, env.TEXA.TA1);
+					a.w = std::max(env.TEXA.TA0, env.TEXA.TA1);
+					break;
+				case 3:
+					m_mem.m_clut.GetAlphaMinMax32(a.y, a.w);
+					break;
+				default:
+					__assume(0);
+			}
+
+			switch (context->TEX0.TFX)
+			{
+				case TFX_MODULATE:
+					a.x = (a.x * a.y) >> 7;
+					a.z = (a.z * a.w) >> 7;
+					if (a.x > 0xff)
+						a.x = 0xff;
+					if (a.z > 0xff)
+						a.z = 0xff;
+					break;
+				case TFX_DECAL:
+					a.x = a.y;
+					a.z = a.w;
+					break;
+				case TFX_HIGHLIGHT:
+					a.x = a.x + a.y;
+					a.z = a.z + a.w;
+					if (a.x > 0xff)
+						a.x = 0xff;
+					if (a.z > 0xff)
+						a.z = 0xff;
+					break;
+				case TFX_HIGHLIGHT2:
+					a.x = a.y;
+					a.z = a.w;
+					break;
+				default:
+					__assume(0);
+			}
 		}
+		min = a.x;
+		max = a.z;
 	}
 
-	m_vt.m_alpha.min = a.x;
-	m_vt.m_alpha.max = a.z;
+	m_vt.m_alpha.min = min;
+	m_vt.m_alpha.max = max;
 	m_vt.m_alpha.valid = true;
 }
 
