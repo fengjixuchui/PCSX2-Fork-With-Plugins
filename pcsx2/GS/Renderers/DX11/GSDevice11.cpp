@@ -22,6 +22,7 @@
 #include "GS/GSUtil.h"
 #include "Host.h"
 #include "HostDisplay.h"
+#include "ShaderCacheVersion.h"
 #include "common/StringUtil.h"
 #include <fstream>
 #include <sstream>
@@ -79,26 +80,26 @@ bool GSDevice11::Create()
 
 	D3D_FEATURE_LEVEL level;
 
-	if (g_host_display->GetRenderAPI() != HostDisplay::RenderAPI::D3D11)
+	if (g_host_display->GetRenderAPI() != RenderAPI::D3D11)
 	{
-		fprintf(stderr, "Render API is incompatible with D3D11\n");
+		Console.Error("Render API is incompatible with D3D11");
 		return false;
 	}
 
-	m_dev = static_cast<ID3D11Device*>(g_host_display->GetRenderDevice());
-	m_ctx = static_cast<ID3D11DeviceContext*>(g_host_display->GetRenderContext());
+	m_dev = static_cast<ID3D11Device*>(g_host_display->GetDevice());
+	m_ctx = static_cast<ID3D11DeviceContext*>(g_host_display->GetContext());
 	level = m_dev->GetFeatureLevel();
 
 	if (!GSConfig.DisableShaderCache)
 	{
-		if (!m_shader_cache.Open(EmuFolders::Cache, m_dev->GetFeatureLevel(), SHADER_VERSION, GSConfig.UseDebugDevice))
+		if (!m_shader_cache.Open(EmuFolders::Cache, m_dev->GetFeatureLevel(), SHADER_CACHE_VERSION, GSConfig.UseDebugDevice))
 		{
 			Console.Warning("Shader cache failed to open.");
 		}
 	}
 	else
 	{
-		m_shader_cache.Open({}, m_dev->GetFeatureLevel(), SHADER_VERSION, GSConfig.UseDebugDevice);
+		m_shader_cache.Open({}, m_dev->GetFeatureLevel(), SHADER_CACHE_VERSION, GSConfig.UseDebugDevice);
 		Console.WriteLn("Not using shader cache.");
 	}
 
@@ -142,7 +143,7 @@ bool GSDevice11::Create()
 	}
 
 	ShaderMacro sm_convert(m_shader_cache.GetFeatureLevel());
-	sm_convert.AddMacro("PS_SCALE_FACTOR", GSConfig.UpscaleMultiplier);
+	sm_convert.AddMacro("PS_SCALE_FACTOR", StringUtil::ToChars(GSConfig.UpscaleMultiplier));
 
 	D3D_SHADER_MACRO* sm_convert_ptr = sm_convert.GetPtr();
 
@@ -1311,7 +1312,12 @@ GSDevice11::ShaderMacro::ShaderMacro(D3D_FEATURE_LEVEL fl)
 
 void GSDevice11::ShaderMacro::AddMacro(const char* n, int d)
 {
-	mlist.emplace_back(n, std::to_string(d));
+	AddMacro(n, std::to_string(d));
+}
+
+void GSDevice11::ShaderMacro::AddMacro(const char* n, std::string d)
+{
+	mlist.emplace_back(n, std::move(d));
 }
 
 D3D_SHADER_MACRO* GSDevice11::ShaderMacro::GetPtr(void)

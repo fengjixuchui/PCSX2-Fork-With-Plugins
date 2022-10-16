@@ -241,6 +241,7 @@ set(pcsx2Headers
 	R5900.h
 	R5900OpcodeTables.h
 	SaveState.h
+	ShaderCacheVersion.h
 	Sifcmd.h
 	Sif.h
 	SingleRegisterTypes.h
@@ -998,11 +999,13 @@ set(pcsx2DebugToolsHeaders
 # Frontend sources
 set(pcsx2FrontendSources
 	Frontend/ImGuiManager.cpp
+	Frontend/ImGuiOverlays.cpp
 )
 
 # Frontend headers
 set(pcsx2FrontendHeaders
 	Frontend/ImGuiManager.h
+	Frontend/ImGuiOverlays.h
 )
 
 if(USE_OPENGL)

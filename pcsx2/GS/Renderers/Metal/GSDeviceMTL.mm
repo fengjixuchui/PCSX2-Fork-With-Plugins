@@ -581,14 +581,14 @@ bool GSDeviceMTL::Create()
 	if (!GSDevice::Create())
 		return false;
 
-	if (g_host_display->GetRenderAPI() != HostDisplay::RenderAPI::Metal)
+	if (g_host_display->GetRenderAPI() != RenderAPI::Metal)
 		return false;
 
-	if (!g_host_display->HasRenderDevice() || !g_host_display->HasRenderSurface())
+	if (!g_host_display->HasDevice() || !g_host_display->HasSurface())
 		return false;
-	m_dev = *static_cast<const GSMTLDevice*>(g_host_display->GetRenderDevice());
-	m_queue = MRCRetain((__bridge id<MTLCommandQueue>)g_host_display->GetRenderContext());
-	MTLPixelFormat layer_px_fmt = [(__bridge CAMetalLayer*)g_host_display->GetRenderSurface() pixelFormat];
+	m_dev = *static_cast<const GSMTLDevice*>(g_host_display->GetDevice());
+	m_queue = MRCRetain((__bridge id<MTLCommandQueue>)g_host_display->GetContext());
+	MTLPixelFormat layer_px_fmt = [(__bridge CAMetalLayer*)g_host_display->GetSurface() pixelFormat];
 
 	m_features.broken_point_sampler = [[m_dev.dev name] containsString:@"AMD"];
 	m_features.geometry_shader = false;
@@ -611,9 +611,8 @@ bool GSDeviceMTL::Create()
 		m_draw_sync_fence = MRCTransfer([m_dev.dev newFence]);
 
 		m_fn_constants = MRCTransfer([MTLFunctionConstantValues new]);
-		u8 upscale = std::max(1, theApp.GetConfigI("upscale_multiplier"));
-		vector_uchar2 upscale2 = vector2(upscale, upscale);
-		[m_fn_constants setConstantValue:&upscale2 type:MTLDataTypeUChar2 atIndex:GSMTLConstantIndex_SCALING_FACTOR];
+		vector_float2 upscale2 = vector2(GSConfig.UpscaleMultiplier, GSConfig.UpscaleMultiplier);
+		[m_fn_constants setConstantValue:&upscale2 type:MTLDataTypeFloat2 atIndex:GSMTLConstantIndex_SCALING_FACTOR];
 		setFnConstantB(m_fn_constants, m_dev.features.framebuffer_fetch, GSMTLConstantIndex_FRAMEBUFFER_FETCH);
 
 		m_hw_vertex = MRCTransfer([MTLVertexDescriptor new]);

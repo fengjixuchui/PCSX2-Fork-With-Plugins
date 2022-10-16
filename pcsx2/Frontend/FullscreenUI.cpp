@@ -202,7 +202,6 @@ namespace FullscreenUI
 	//////////////////////////////////////////////////////////////////////////
 	// Main
 	//////////////////////////////////////////////////////////////////////////
-	static void UpdateForcedVsync(bool should_force);
 	static void UpdateGameDetails(std::string path, std::string serial, std::string title, u32 crc);
 	static void ToggleTheme();
 	static void PauseForMenuOpen();
@@ -567,10 +566,6 @@ bool FullscreenUI::Initialize()
 		SwitchToLanding();
 	}
 
-	// force vsync on so we don't run at thousands of fps
-	// Initialize is called on the GS thread, so we can access the display directly.
-	UpdateForcedVsync(VMManager::GetState() != VMState::Running);
-
 	return true;
 }
 
@@ -583,15 +578,6 @@ bool FullscreenUI::HasActiveWindow()
 {
 	return s_current_main_window != MainWindowType::None || s_save_state_selector_open || ImGuiFullscreen::IsChoiceDialogOpen() ||
 		   ImGuiFullscreen::IsFileSelectorOpen();
-}
-
-void FullscreenUI::UpdateForcedVsync(bool should_force)
-{
-	// force vsync on so we don't run at thousands of fps
-	const VsyncMode mode = EmuConfig.GetEffectiveVsyncMode();
-
-	// toss it through regardless of the mode, because options can change it
-	g_host_display->SetVSync((should_force && mode == VsyncMode::Off) ? VsyncMode::On : mode);
 }
 
 void FullscreenUI::CheckForConfigChanges(const Pcsx2Config& old_config)
@@ -635,12 +621,8 @@ void FullscreenUI::OnVMPaused()
 	if (!IsInitialized())
 		return;
 
-	GetMTGS().RunOnGSThread([]() {
-		if (!IsInitialized())
-			return;
-
-		UpdateForcedVsync(true);
-	});
+	// Force vsync on.
+	GetMTGS().UpdateVSyncMode();
 }
 
 void FullscreenUI::OnVMResumed()
@@ -648,12 +630,8 @@ void FullscreenUI::OnVMResumed()
 	if (!IsInitialized())
 		return;
 
-	GetMTGS().RunOnGSThread([]() {
-		if (!IsInitialized())
-			return;
-
-		UpdateForcedVsync(false);
-	});
+	// Restore game vsync.
+	GetMTGS().UpdateVSyncMode();
 }
 
 void FullscreenUI::OnVMDestroyed()
@@ -667,7 +645,7 @@ void FullscreenUI::OnVMDestroyed()
 
 		s_pause_menu_was_open = false;
 		SwitchToLanding();
-		UpdateForcedVsync(true);
+		GetMTGS().UpdateVSyncMode();
 	});
 }
 
@@ -2245,6 +2223,10 @@ void FullscreenUI::DrawInterfaceSettingsPage()
 		false);
 	DrawToggleSetting(bsi, ICON_FA_PLAY " Show Status Indicators",
 		"Shows indicators when fast forwarding, pausing, and other abnormal states are active.", "EmuCore/GS", "OsdShowIndicators", true);
+	DrawToggleSetting(bsi, ICON_FA_SLIDERS_H " Show Settings",
+		"Shows the current configuration in the bottom-right corner of the display.", "EmuCore/GS", "OsdShowSettings", false);
+	DrawToggleSetting(bsi, ICON_FA_GAMEPAD " Show Inputs",
+		"Shows the current controller state of the system in the bottom-left corner of the display.", "EmuCore/GS", "OsdShowInputs", false);
 
 	MenuHeading("Operations");
 	if (MenuButton(ICON_FA_FOLDER_MINUS " Reset Settings", "Resets configuration to defaults (excluding controller settings).",
@@ -2552,15 +2534,39 @@ void FullscreenUI::DrawGraphicsSettingsPage()
 	static constexpr const char* s_deinterlacing_options[] = {"None", "Weave (Top Field First, Sawtooth)",
 		"Weave (Bottom Field First, Sawtooth)", "Bob (Top Field First)", "Bob (Bottom Field First)", "Blend (Top Field First, Half FPS)",
 		"Blend (Bottom Field First, Half FPS)", "Automatic (Default)"};
-	static constexpr const char* s_resolution_options[] = {
+	static const char* s_resolution_options[] = {
 		"Native (PS2)",
+		"1.25x Native",
+		"1.5x Native",
+		"1.75x Native",
 		"2x Native (~720p)",
+		"2.25x Native",
+		"2.5x Native",
+		"2.75x Native",
 		"3x Native (~1080p)",
+		"3.5x Native",
 		"4x Native (~1440p/2K)",
 		"5x Native (~1620p)",
 		"6x Native (~2160p/4K)",
 		"7x Native (~2520p)",
 		"8x Native (~2880p)",
+	};
+	static const char* s_resolution_values[] = {
+		"1",
+		"1.25",
+		"1.5",
+		"1.75",
+		"2",
+		"2.25",
+		"2.5",
+		"2.75",
+		"3",
+		"3.5",
+		"4",
+		"5",
+		"6",
+		"7",
+		"8",
 	};
 	static constexpr const char* s_mipmapping_options[] = {"Automatic (Default)", "Off", "Basic (Generated Mipmaps)", "Full (PS2 Mipmaps)"};
 	static constexpr const char* s_bilinear_options[] = {
@@ -2575,6 +2581,8 @@ void FullscreenUI::DrawGraphicsSettingsPage()
 	static constexpr const char* s_anisotropic_filtering_values[] = {"0", "2", "4", "8", "16"};
 	static constexpr const char* s_preloading_options[] = {"None", "Partial", "Full (Hash Cache)"};
 	static constexpr const char* s_generic_options[] = {"Automatic (Default)", "Force Disabled", "Force Enabled"};
+	static constexpr const char* s_hw_download[] = {"Accurate (Recommended)", "Disable Readbacks (Synchronize GS Thread)",
+		"Unsynchronized (Non-Deterministic)", "Disabled (Ignore Transfers)"};
 
 	SettingsInterface* bsi = GetEditingSettingsInterface();
 
@@ -2628,8 +2636,8 @@ void FullscreenUI::DrawGraphicsSettingsPage()
 	MenuHeading("Rendering");
 	if (is_hardware)
 	{
-		DrawIntListSetting(bsi, "Internal Resolution", "Multiplies the render resolution by the specified factor (upscaling).",
-			"EmuCore/GS", "upscale_multiplier", 1, s_resolution_options, std::size(s_resolution_options), 1);
+		DrawStringListSetting(bsi, "Internal Resolution", "Multiplies the render resolution by the specified factor (upscaling).",
+			"EmuCore/GS", "upscale_multiplier", "1.000000", s_resolution_options, s_resolution_values, std::size(s_resolution_options));
 		DrawIntListSetting(bsi, "Mipmapping", "Determines how mipmaps are used when rendering textures.", "EmuCore/GS", "mipmap_hw",
 			static_cast<int>(HWMipmapLevel::Automatic), s_mipmapping_options, std::size(s_mipmapping_options), -1);
 		DrawIntListSetting(bsi, "Bilinear Filtering", "Selects where bilinear filtering is utilized when rendering textures.", "EmuCore/GS",
@@ -2650,6 +2658,8 @@ void FullscreenUI::DrawGraphicsSettingsPage()
 			"Uploads full textures to the GPU on use, rather than only the utilized regions. Can improve performance in some games.",
 			"EmuCore/GS", "texture_preloading", static_cast<int>(TexturePreloadingLevel::Off), s_preloading_options,
 			std::size(s_preloading_options));
+		DrawIntListSetting(bsi, "Hardware Download Mode", "Changes synchronization behavior for GS downloads.", "EmuCore/GS", "HWDownloadMode",
+			static_cast<int>(GSHardwareDownloadMode::Enabled), s_hw_download, std::size(s_hw_download));
 		DrawToggleSetting(bsi, "GPU Palette Conversion",
 			"Applies palettes to textures on the GPU instead of the CPU. Can result in speed improvements in some games.", "EmuCore/GS",
 			"paltex", false);
@@ -2776,9 +2786,6 @@ void FullscreenUI::DrawGraphicsSettingsPage()
 	DrawToggleSetting(bsi, "Skip Presenting Duplicate Frames",
 		"Skips displaying frames that don't change in 25/30fps games. Can improve speed but increase input lag/make frame pacing worse.",
 		"EmuCore/GS", "SkipDuplicateFrames", false);
-	DrawToggleSetting(bsi, "Disable Hardware Readbacks",
-		"Skips thread synchronization for GS downloads. Can improve speed, but break graphical effects.", "EmuCore/GS",
-		"HWDisableReadbacks", false);
 	DrawIntListSetting(bsi, "Override Texture Barriers", "Forces texture barrier functionality to the specified value.", "EmuCore/GS",
 		"OverrideTextureBarriers", -1, s_generic_options, std::size(s_generic_options), -1);
 	DrawIntListSetting(bsi, "Override Geometry Shaders", "Forces geometry shader functionality to the specified value.", "EmuCore/GS",
