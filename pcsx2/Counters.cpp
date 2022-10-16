@@ -570,12 +570,12 @@ static __fi void frameLimit()
 #ifndef PCSX2_CORE
 	if (EmuConfig.GS.FrameLimitUnthrottle && !s_vsync_mode_prior_to_unthrottle.has_value())
 	{
-		s_vsync_mode_prior_to_unthrottle = EmuConfig.GetEffectiveVsyncMode();
-		GetMTGS().SetVSync(VsyncMode::Off);
+		s_vsync_mode_prior_to_unthrottle = Host::GetEffectiveVSyncMode();
+		GetMTGS().SetVSyncMode(VsyncMode::Off);
 	}
 	else if (!EmuConfig.GS.FrameLimitUnthrottle && s_vsync_mode_prior_to_unthrottle.has_value())
 	{
-		GetMTGS().SetVSync(s_vsync_mode_prior_to_unthrottle.value());
+		GetMTGS().SetVSyncMode(s_vsync_mode_prior_to_unthrottle.value());
 		s_vsync_mode_prior_to_unthrottle.reset();
 	}
 #else
