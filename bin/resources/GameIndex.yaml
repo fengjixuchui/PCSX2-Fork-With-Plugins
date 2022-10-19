@@ -11038,6 +11038,9 @@ SLES-50920:
   name: "King's Field IV"
   region: "PAL-M5"
   compat: 5
+  gsHWFixes:
+    preloadFrameData: 1 # Fixes invisible lava, there is another issue that needs skipdraw 1 for blurry font but it removes much brightness.
+    halfPixelOffset: 2 # Fixes font rendering.
   patches:
     401F4726:
       content: |-
@@ -23636,6 +23639,9 @@ SLPM-55292:
     eeClampMode: 2 # Fixes Game freezes during "Reuniting The Families" mission.
   gsHWFixes:
     autoFlush: 1
+SLPM-55294:
+  name: "World Soccer Winning Eleven 2012"
+  region: "NTSC-J"
 SLPM-55298:
   name: "Final Fantasy XI - Adoulin no Makyou"
   region: "NTSC-J"
@@ -30052,10 +30058,17 @@ SLPM-66184:
   gameFixes:
     - VIF1StallHack # Fixes black screen on boot.
 SLPM-66185:
-  name: "Game ni Nattayo! Dokura-chan [Limited Edition]"
+  name: "Game ni Nattayo! Dokuro-chan [Limited Edition]"
   region: "NTSC-J"
+  patches:
+    169099FC:
+      content: |-
+        author=PSI, kozarovv
+        // Game does weird stack manipulation, causing data sent to the IOP to be corrupted unless EE data cache is enabled.
+        // This patch skips over the stack code, allowing the game to boot.
+        patch=1,EE,00156608,word,10000003
 SLPM-66186:
-  name: "Game ni Nattayo! Dokura-chan"
+  name: "Game ni Nattayo! Dokuro-chan"
   region: "NTSC-J"
   patches:
     169099FC:
@@ -31020,6 +31033,13 @@ SLPM-66455:
 SLPM-66456:
   name: "Asobi ni Iku yo! Chikyuu Pinch no Kon'yaku Sengen [Genteiban]"
   region: "NTSC-J"
+  patches:
+    87FFC318:
+      content: |-
+        author=PSI, Jelta
+        // Game does weird stack manipulation, causing data sent to the IOP to be corrupted unless EE data cache is enabled.
+        // This patch skips over the stack code, allowing the game to boot.
+        patch=1,EE,001579D8,word,10000003
 SLPM-66457:
   name: "Asobi ni Iku yo! Chikyuu Pinch no Kon'yaku Sengen"
   region: "NTSC-J"
@@ -35046,6 +35066,9 @@ SLPS-25055:
 SLPS-25057:
   name: "King's Field IV"
   region: "NTSC-J"
+  gsHWFixes:
+    preloadFrameData: 1 # Fixes invisible lava, there is another issue that needs skipdraw 1 for blurry font but it removes much brightness.
+    halfPixelOffset: 2 # Fixes font rendering.
   patches:
     04C3765E:
       content: |-
@@ -39952,6 +39975,7 @@ SLUS-20318:
   compat: 5
   gsHWFixes:
     preloadFrameData: 1 # Fixes invisible lava, there is another issue that needs skipdraw 1 for blurry font but it removes much brightness.
+    halfPixelOffset: 2 # Fixes font rendering.
   patches:
     36E02E91:
       content: |-
@@ -40099,6 +40123,7 @@ SLUS-20353:
   region: "NTSC-U"
   gsHWFixes:
     preloadFrameData: 1 # Fixes invisible lava, there is another issue that needs skipdraw 1 for blurry font but it removes much brightness.
+    halfPixelOffset: 2 # Fixes font rendering.
 SLUS-20354:
   name: "Red Card Soccer 2003"
   region: "NTSC-U"
@@ -43283,7 +43308,7 @@ SLUS-21020:
   region: "NTSC-U"
   compat: 5
 SLUS-21021:
-  name: "Cabela's Deer Hunt - 2005 Season"
+  name: "Cabela's Big Game Hunter 2005 Adventures"
   region: "NTSC-U"
 SLUS-21022:
   name: "Prince of Persia - Warrior Within"
