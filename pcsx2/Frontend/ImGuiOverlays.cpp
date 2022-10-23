@@ -100,8 +100,10 @@ void ImGuiManager::DrawPerformanceOverlay()
 
 #ifdef PCSX2_CORE
 	const bool paused = (VMManager::GetState() == VMState::Paused);
+	const bool fsui_active = FullscreenUI::HasActiveWindow();
 #else
-	constexpr bool paused = false;
+	const bool paused = false;
+	const bool fsui_active = false;
 #endif
 
 	if (!paused)
@@ -224,7 +226,7 @@ void ImGuiManager::DrawPerformanceOverlay()
 			}
 		}
 	}
-	else
+	else if (!fsui_active)
 	{
 		if (GSConfig.OsdShowIndicators)
 		{
