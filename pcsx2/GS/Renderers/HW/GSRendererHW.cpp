@@ -93,8 +93,8 @@ GSVector2i GSRendererHW::GetOutputSize(int real_h)
 	// Include negative display offsets in the height here.
 	crtc_size.y = std::max(crtc_size.y, real_h);
 
-	return GSVector2i(static_cast<float>(crtc_size.x) * GSConfig.UpscaleMultiplier,
-		static_cast<float>(crtc_size.y) * GSConfig.UpscaleMultiplier);
+	return GSVector2i(static_cast<float>(crtc_size.x),
+		static_cast<float>(crtc_size.y));
 }
 
 void GSRendererHW::SetTCOffset()
@@ -244,7 +244,7 @@ GSTexture* GSRendererHW::GetOutput(int i, int& y_offset)
 	const int fb_width = std::min<int>(std::min<int>(GetFramebufferWidth(), DISPFB.FBW * 64) + (int)DISPFB.DBX, 2048);
 	const int display_height = offsets.y * ((isinterlaced() && !m_regs->SMODE2.FFMD) ? 2 : 1);
 	const int display_offset = GetResolutionOffset(i).y;
-	int fb_height = std::min<int>(std::min<int>(GetFramebufferHeight(), display_height) + (int)DISPFB.DBY, 2048);
+	int fb_height = (std::min<int>(GetFramebufferHeight(), display_height) + (int)DISPFB.DBY) % 2048;
 	// If there is a negative vertical offset on the picture, we need to read more.
 	if (display_offset < 0)
 	{
@@ -254,7 +254,7 @@ GSTexture* GSRendererHW::GetOutput(int i, int& y_offset)
 
 	GSTexture* t = nullptr;
 
-	if (GSTextureCache::Target* rt = m_tc->LookupDisplayTarget(TEX0, GetOutputSize(fb_height), fb_width, fb_height))
+	if (GSTextureCache::Target* rt = m_tc->LookupDisplayTarget(TEX0, GetOutputSize(fb_height) * GSConfig.UpscaleMultiplier, fb_width, fb_height))
 	{
 		t = rt->m_texture;
 
@@ -293,9 +293,9 @@ GSTexture* GSRendererHW::GetFeedbackOutput()
 	GSVector2i size = GetOutputSize(fb_height);
 
 	if (m_regs->DISP[m_regs->EXTBUF.FBIN & 1].DISPFB.DBX)
-		size.x += m_regs->DISP[m_regs->EXTBUF.FBIN & 1].DISPFB.DBX * static_cast<int>(GSConfig.UpscaleMultiplier);
+		size.x += m_regs->DISP[m_regs->EXTBUF.FBIN & 1].DISPFB.DBX;
 
-	GSTextureCache::Target* rt = m_tc->LookupDisplayTarget(TEX0, GetOutputSize(fb_height), fb_height, size.x);
+	GSTextureCache::Target* rt = m_tc->LookupDisplayTarget(TEX0, GetOutputSize(fb_height) * GSConfig.UpscaleMultiplier, size.x, fb_height);
 
 	GSTexture* t = rt->m_texture;
 
