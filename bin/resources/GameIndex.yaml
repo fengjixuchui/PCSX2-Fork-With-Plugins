@@ -16193,6 +16193,8 @@ SLES-53193:
 SLES-53194:
   name: "LEGO Star Wars"
   region: "PAL-M7"
+  clampModes:
+    vuClampMode: 3 # Fixes bad coordinate spam.
 SLES-53195:
   name: "Punisher, The"
   region: "PAL-E"
@@ -18493,6 +18495,8 @@ SLES-54147:
 SLES-54150:
   name: "Bionicle Heroes"
   region: "PAL-M6"
+  gsHWFixes:
+    cpuCLUTRender: 1 # Fixes ghosting on objects and people.
 SLES-54151:
   name: "Let's Make a Soccer Team!"
   region: "PAL-M5"
@@ -18726,6 +18730,8 @@ SLES-54218:
 SLES-54221:
   name: "LEGO Star Wars II - The Original Trilogy"
   region: "PAL-M6"
+  gsHWFixes:
+    cpuCLUTRender: 1 # Fixes ghosting on objects and people.
   memcardFilters: # Allows import of characters from Lego Star Wars 1.
     - "SLES-54221"
     - "SLES-53194"
@@ -30954,7 +30960,7 @@ SLPM-66302:
   name: "Clannad"
   region: "NTSC-J"
   gsHWFixes:
-    pointListPalette: 1
+    cpuCLUTRender: 1 # Fixes colours.
 SLPM-66307:
   name: "Sengoku Musou 2"
   region: "NTSC-J"
@@ -31955,6 +31961,8 @@ SLPM-66571:
 SLPM-66572:
   name: "LEGO Star Wars II - The Original Trilogy"
   region: "NTSC-J"
+  gsHWFixes:
+    cpuCLUTRender: 1 # Fixes ghosting on objects and people.
   memcardFilters:
     - "SLPM-66572"
     - "SLPS-20423"
@@ -32100,7 +32108,7 @@ SLPM-66611:
   name: "Tomoyo After - It's Wonderful Life [CS Edition]"
   region: "NTSC-J"
   gsHWFixes:
-    pointListPalette: 1
+    cpuCLUTRender: 1 # Fixes Colours.
 SLPM-66612:
   name: "School Love [Limited Edition]"
   region: "NTSC-J"
@@ -32216,6 +32224,8 @@ SLPM-66644:
 SLPM-66645:
   name: "Bionicle Heroes"
   region: "NTSC-J"
+  gsHWFixes:
+    cpuCLUTRender: 1 # Fixes ghosting on objects and people.
 SLPM-66646:
   name: "Shining Force EXA"
   region: "NTSC-J"
@@ -35077,6 +35087,8 @@ SLPS-20422:
 SLPS-20423:
   name: "LEGO Star Wars - The Video Game"
   region: "NTSC-J"
+  clampModes:
+    vuClampMode: 3 # Fixes bad coordinate spam.
 SLPS-20424:
   name: "Taiko no Tatsujin - Tobikkiri! Anime Special [with Tatacon]"
   region: "NTSC-J"
@@ -44241,6 +44253,8 @@ SLUS-21083:
   name: "LEGO Star Wars - The Video Game"
   region: "NTSC-U"
   compat: 5
+  clampModes:
+    vuClampMode: 3 # Fixes bad coordinate spam.
 SLUS-21084:
   name: "Winnie the Pooh's Rumbly Tumbly Adventure"
   region: "NTSC-U"
@@ -46007,6 +46021,8 @@ SLUS-21408:
 SLUS-21409:
   name: "LEGO Star Wars II - The Original Trilogy"
   region: "NTSC-U"
+  gsHWFixes:
+    cpuCLUTRender: 1 # Fixes ghosting on objects and people.
   memcardFilters:
     - "SLUS-21409"
     - "SLUS-21083"
@@ -46136,6 +46152,8 @@ SLUS-21428:
   name: "Bionicle Heroes"
   region: "NTSC-U"
   compat: 5
+  gsHWFixes:
+    cpuCLUTRender: 1 # Fixes ghosting on objects and people.
 SLUS-21430:
   name: "IGPX - Immortal Grand Prix"
   region: "NTSC-U"
