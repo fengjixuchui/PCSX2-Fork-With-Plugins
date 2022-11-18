@@ -22265,12 +22265,16 @@ SLES-82030:
   gsHWFixes:
     halfPixelOffset: 2 # Fixes blurrines, preload frame for FMV breaks visuals with this setting.
     disablePartialInvalidation: 1 # Fixes shadows when upscaling.
+    roundSprite: 2 # Fixes the position of monster sprites and reduces garbage in the UI.
+    autoFlush: 1 # Makes the shadow monsters appear.
 SLES-82031:
   name: "Shadow Hearts - Covenant [Disc 2 of 2]"
   region: "PAL-M3"
   gsHWFixes:
     halfPixelOffset: 2 # Fixes blurrines, preload frame for FMV breaks visuals with this setting.
     disablePartialInvalidation: 1 # Fixes shadows when upscaling.
+    roundSprite: 2 # Fixes the position of monster sprites and reduces garbage in the UI.
+    autoFlush: 1 # Makes the shadow monsters appear.
   memcardFilters:
     - "SLES-82030"
 SLES-82032:
@@ -27211,6 +27215,8 @@ SLPM-65174:
 SLPM-65176:
   name: "King of Colosseum - Red"
   region: "NTSC-J"
+  gameFixes:
+    - InstantDMAHack # Fixes hang on opening.
 SLPM-65177:
   name: "Energy Airforce"
   region: "NTSC-J"
@@ -27296,7 +27302,7 @@ SLPM-65206:
   name: "King of Colosseum - Green"
   region: "NTSC-J"
   gameFixes:
-    - EETimingHack # Fixes hang on opening.
+    - InstantDMAHack # Fixes hang on opening.
 SLPM-65207:
   name: "Chou Battle Houshin"
   region: "NTSC-J"
@@ -36618,12 +36624,16 @@ SLPS-25317:
   gsHWFixes:
     halfPixelOffset: 2 # Fixes blurrines, preload frame for FMV breaks visuals with this setting.
     disablePartialInvalidation: 1 # Fixes shadows when upscaling.
+    roundSprite: 2 # Fixes the position of monster sprites and reduces garbage in the UI.
+    autoFlush: 1 # Makes the shadow monsters appear.
 SLPS-25318:
   name: "Shadow Hearts 2 [Deluxe Pack] [Disc 2 of 2]"
   region: "NTSC-J"
   gsHWFixes:
     halfPixelOffset: 2 # Fixes blurrines, preload frame for FMV breaks visuals with this setting.
     disablePartialInvalidation: 1 # Fixes shadows when upscaling.
+    roundSprite: 2 # Fixes the position of monster sprites and reduces garbage in the UI.
+    autoFlush: 1 # Makes the shadow monsters appear.
   memcardFilters:
     - "SLPS-25317"
 SLPS-25319:
@@ -36671,12 +36681,16 @@ SLPS-25334:
   gsHWFixes:
     halfPixelOffset: 2 # Fixes blurrines, preload frame for FMV breaks visuals with this setting.
     disablePartialInvalidation: 1 # Fixes shadows when upscaling.
+    roundSprite: 2 # Fixes the position of monster sprites and reduces garbage in the UI.
+    autoFlush: 1 # Makes the shadow monsters appear.
 SLPS-25335:
-  name: "Shadow Hearts 2 [Disc 1 of 2]"
+  name: "Shadow Hearts 2 [Disc 2 of 2]"
   region: "NTSC-J"
   gsHWFixes:
     halfPixelOffset: 2 # Fixes blurrines, preload frame for FMV breaks visuals with this setting.
     disablePartialInvalidation: 1 # Fixes shadows when upscaling.
+    roundSprite: 2 # Fixes the position of monster sprites and reduces garbage in the UI.
+    autoFlush: 1 # Makes the shadow monsters appear.
   memcardFilters:
     - "SLPS-25334"
 SLPS-25336:
@@ -39061,12 +39075,16 @@ SLPS-73214:
   gsHWFixes:
     halfPixelOffset: 2 # Fixes blurrines, preload frame for FMV breaks visuals with this setting.
     disablePartialInvalidation: 1 # Fixes shadows when upscaling.
+    roundSprite: 2 # Fixes the position of monster sprites and reduces garbage in the UI.
+    autoFlush: 1 # Makes the shadow monsters appear.
 SLPS-73215:
   name: "Shadow Hearts 2 [Director's Cut] [PlayStation 2 The Best] [Disc 2 of 2]"
   region: "NTSC-J"
   gsHWFixes:
     halfPixelOffset: 2 # Fixes blurrines, preload frame for FMV breaks visuals with this setting.
     disablePartialInvalidation: 1 # Fixes shadows when upscaling.
+    roundSprite: 2 # Fixes the position of monster sprites and reduces garbage in the UI.
+    autoFlush: 1 # Makes the shadow monsters appear.
   memcardFilters:
     - "SLPS-73214"
 SLPS-73216:
@@ -44248,6 +44266,8 @@ SLUS-21041:
   gsHWFixes:
     halfPixelOffset: 2 # Fixes blurrines, preload frame for FMV breaks visuals with this setting.
     disablePartialInvalidation: 1 # Fixes shadows when upscaling.
+    roundSprite: 2 # Fixes the position of monster sprites and reduces garbage in the UI.
+    autoFlush: 1 # Makes the shadow monsters appear.
 SLUS-21042:
   name: "Darkwatch"
   region: "NTSC-U"
@@ -44263,6 +44283,8 @@ SLUS-21044:
   gsHWFixes:
     halfPixelOffset: 2 # Fixes blurrines, preload frame for FMV breaks visuals with this setting.
     disablePartialInvalidation: 1 # Fixes shadows when upscaling.
+    roundSprite: 2 # Fixes the position of monster sprites and reduces garbage in the UI.
+    autoFlush: 1 # Makes the shadow monsters appear.
   memcardFilters:
     - "SLUS-21041"
 SLUS-21045:
