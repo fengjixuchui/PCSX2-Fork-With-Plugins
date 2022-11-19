@@ -141,16 +141,17 @@ set(pcsx2Sources
 	IopHw.cpp
 	IopIrq.cpp
 	IopMem.cpp
-	IopSio2.cpp
 	PINE.cpp
 	Mdec.cpp
 	Memory.cpp
 	MemoryCardFile.cpp
 	MemoryCardFolder.cpp
+	MemoryCardProtocol.cpp
 	MMI.cpp
 	MTGS.cpp
 	MTVU.cpp
 	MultipartFileReader.cpp
+	MultitapProtocol.cpp
 	Patch.cpp
 	Patch_Memory.cpp
 	Pcsx2Config.cpp
@@ -217,14 +218,15 @@ set(pcsx2Headers
 	IopGte.h
 	IopHw.h
 	IopMem.h
-	IopSio2.h
 	PINE.h
 	Mdec.h
 	MTVU.h
 	Memory.h
 	MemoryCardFile.h
 	MemoryCardFolder.h
+	MemoryCardProtocol.h
 	MemoryTypes.h
+	MultitapProtocol.h
 	Patch.h
 	PCSX2Base.h
 	PerformanceMetrics.h
@@ -239,7 +241,6 @@ set(pcsx2Headers
 	Sif.h
 	SingleRegisterTypes.h
 	Sio.h
-	sio_internal.h
 	SPR.h
 	SysForwardDefs.h
 	System.h
@@ -1658,6 +1659,7 @@ target_link_libraries(PCSX2_FLAGS INTERFACE
 	chdr-static
 	libzip::zip
 	cpuinfo
+	zydis
 	ZLIB::ZLIB
 	PkgConfig::SOUNDTOUCH
 	PNG::PNG
@@ -1696,12 +1698,9 @@ if(WIN32)
 		strmiids.lib
 		opengl32.lib
 		comsuppw.lib
+		OneCore.lib
 	)
-	if(PCSX2_CORE)
-		target_link_libraries(PCSX2_FLAGS INTERFACE
-			OneCore.lib
-		)
-	else()
+	if(NOT PCSX2_CORE)
 		target_link_libraries(PCSX2_FLAGS INTERFACE
 			pthreads4w
 		)

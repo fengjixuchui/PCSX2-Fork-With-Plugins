@@ -52,6 +52,7 @@
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir)3rdparty\rapidyaml\rapidyaml\ext\c4core\src\c4\ext\fast_float\include</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir)3rdparty\rcheevos\rcheevos\include;$(SolutionDir)3rdparty\rainterface</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir)3rdparty\discord-rpc\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir)3rdparty\zydis\include;$(SolutionDir)3rdparty\zydis\dependencies\zycore\include</AdditionalIncludeDirectories>
       <ExceptionHandling>Async</ExceptionHandling>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
@@ -65,6 +66,7 @@
       <PreprocessorDefinitions Condition="'$(CI)'=='true'">PCSX2_CI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="!$(Configuration.Contains(AVX2))">_M_SSE=0x401;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="$(Configuration.Contains(AVX2))">_M_SSE=0x501;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Platform)'=='x64'">ZYCORE_STATIC_DEFINE;ZYDIS_STATIC_DEFINE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <EnableEnhancedInstructionSet Condition="!$(Configuration.Contains(AVX2))">NotSet</EnableEnhancedInstructionSet>
       <EnableEnhancedInstructionSet Condition="$(Configuration.Contains(AVX2))">AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <MinimalRebuild>false</MinimalRebuild>
@@ -226,6 +228,8 @@
     <ClCompile Include="HostDisplay.cpp" />
     <ClCompile Include="Frontend\HostSettings.cpp" />
     <ClCompile Include="IopGte.cpp" />
+    <ClCompile Include="MemoryCardProtocol.cpp" />
+    <ClCompile Include="MultitapProtocol.cpp" />
     <ClCompile Include="PAD\Host\KeyStatus.cpp" />
     <ClCompile Include="PAD\Host\PAD.cpp" />
     <ClCompile Include="PAD\Host\StateManagement.cpp" />
@@ -406,7 +410,6 @@
     <ClCompile Include="IopDma.cpp" />
     <ClCompile Include="IopIrq.cpp" />
     <ClCompile Include="IopMem.cpp" />
-    <ClCompile Include="IopSio2.cpp" />
     <ClCompile Include="R3000A.cpp" />
     <ClCompile Include="R3000AInterpreter.cpp" />
     <ClCompile Include="R3000AOpcodeTables.cpp" />
@@ -551,6 +554,8 @@
     <ClInclude Include="HostDisplay.h" />
     <ClInclude Include="HostSettings.h" />
     <ClInclude Include="IopGte.h" />
+    <ClInclude Include="MemoryCardProtocol.h" />
+    <ClInclude Include="MultitapProtocol.h" />
     <ClInclude Include="PAD\Gamepad.h" />
     <ClInclude Include="PAD\Host\Global.h" />
     <ClInclude Include="PAD\Host\KeyStatus.h" />
@@ -567,6 +572,7 @@
     <ClInclude Include="Recording\PadData.h" />
     <ClInclude Include="Recording\Utilities\InputRecordingLogger.h" />
     <ClInclude Include="ShaderCacheVersion.h" />
+    <ClInclude Include="SioTypes.h" />
     <ClInclude Include="SPU2\Config.h" />
     <ClInclude Include="SPU2\Global.h" />
     <ClInclude Include="SPU2\Host\Config.h" />
@@ -651,7 +657,6 @@
     <ClInclude Include="Patch.h" />
     <ClInclude Include="PCSX2Base.h" />
     <ClInclude Include="PrecompiledHeader.h" />
-    <ClInclude Include="sio_internal.h" />
     <ClInclude Include="ps2\pgif.h" />
     <ClInclude Include="USB\USB.h" />
     <ClInclude Include="Utilities\AsciiFile.h" />
@@ -716,7 +721,6 @@
     <ClInclude Include="IopCounters.h" />
     <ClInclude Include="IopDma.h" />
     <ClInclude Include="IopMem.h" />
-    <ClInclude Include="IopSio2.h" />
     <ClInclude Include="R3000A.h" />
     <ClInclude Include="Sio.h" />
     <ClInclude Include="x86\iR3000A.h" />
