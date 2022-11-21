@@ -606,7 +606,7 @@ void Host::CheckForSettingsChanges(const Pcsx2Config& old_config)
 
 bool EmuThread::shouldRenderToMain() const
 {
-	return !Host::GetBaseBoolSettingValue("UI", "RenderToSeparateWindow", false) && !QtHost::InNoGUIMode();
+	return !Host::GetBoolSettingValue("UI", "RenderToSeparateWindow", false) && !QtHost::InNoGUIMode();
 }
 
 void EmuThread::toggleSoftwareRendering()
@@ -699,6 +699,28 @@ void EmuThread::reloadInputBindings()
 	SettingsInterface* si = Host::GetSettingsInterface();
 	SettingsInterface* bindings_si = Host::GetSettingsInterfaceForBindings();
 	InputManager::ReloadBindings(*si, *bindings_si);
+}
+
+void EmuThread::reloadInputDevices()
+{
+	if (!isOnEmuThread())
+	{
+		QMetaObject::invokeMethod(this, &EmuThread::reloadInputDevices, Qt::QueuedConnection);
+		return;
+	}
+
+	InputManager::ReloadDevices();
+}
+
+void EmuThread::closeInputSources()
+{
+	if (!isOnEmuThread())
+	{
+		QMetaObject::invokeMethod(this, &EmuThread::reloadInputDevices, Qt::BlockingQueuedConnection);
+		return;
+	}
+
+	InputManager::CloseSources();
 }
 
 void EmuThread::requestDisplaySize(float scale)
@@ -911,7 +933,9 @@ void Host::ReleaseHostDisplay()
 VsyncMode Host::GetEffectiveVSyncMode()
 {
 	// Force vsync on when running big picture UI, and paused or no VM.
-	if (g_emu_thread->isRunningFullscreenUI())
+	// We check the "running FSUI" flag here, because that way we set the initial vsync
+	// state when initalizing to on, avoiding an unnecessary switch.
+	if (FullscreenUI::HasActiveWindow() || (!FullscreenUI::IsInitialized() && g_emu_thread->isRunningFullscreenUI()))
 	{
 		const VMState state = VMManager::GetState();
 		if (state == VMState::Shutdown || state == VMState::Paused)
@@ -1482,6 +1506,13 @@ void Host::EndTextInput()
 		QMetaObject::invokeMethod(method, "hide", Qt::QueuedConnection);
 }
 
+std::optional<WindowInfo> Host::GetTopLevelWindowInfo()
+{
+	std::optional<WindowInfo> ret;
+	QMetaObject::invokeMethod(g_main_window, &MainWindow::getWindowInfo, Qt::BlockingQueuedConnection, &ret);
+	return ret;
+}
+
 void Host::OnInputDeviceConnected(const std::string_view& identifier, const std::string_view& device_name)
 {
 	emit g_emu_thread->onInputDeviceConnected(
@@ -1564,6 +1595,7 @@ void QtHost::PrintCommandLineHelp(const std::string_view& progname)
 	std::fprintf(stderr, "  -nogui: Hides main window while running (implies batch mode).\n");
 	std::fprintf(stderr, "  -elf <file>: Overrides the boot ELF with the specified filename.\n");
 	std::fprintf(stderr, "  -disc <path>: Uses the specified host DVD drive as a source.\n");
+	std::fprintf(stderr, "  -logfile <path>: Writes the application log to path instead of emulog.txt.\n");
 	std::fprintf(stderr, "  -bios: Starts the BIOS (System Menu/OSDSYS).\n");
 	std::fprintf(stderr, "  -fastboot: Force fast boot for provided filename.\n");
 	std::fprintf(stderr, "  -slowboot: Force slow boot for provided filename.\n");
@@ -1656,6 +1688,11 @@ bool QtHost::ParseCommandLineOptions(const QStringList& args, std::shared_ptr<VM
 			{
 				AutoBoot(autoboot)->source_type = CDVD_SourceType::Disc;
 				AutoBoot(autoboot)->filename = (++it)->toStdString();
+				continue;
+			}
+			else if (CHECK_ARG_PARAM(QStringLiteral("-logfile")))
+			{
+				CommonHost::SetFileLogPath((++it)->toStdString());
 				continue;
 			}
 			else if (CHECK_ARG(QStringLiteral("-bios")))
@@ -1754,6 +1791,14 @@ static bool PerformEarlyHardwareChecks()
 static void RegisterTypes()
 {
 	qRegisterMetaType<std::optional<bool>>();
+	qRegisterMetaType<std::optional<WindowInfo>>("std::optional<WindowInfo>()");
+	// Bit of fun with metatype names
+	// On Windows, the real type name here is "std::function<void __cdecl(void)>"
+	// Normally, the fact that we `Q_DECLARE_METATYPE(std::function<void()>);` in QtHost.h would make it also register under "std::function<void()>"
+	// The metatype is a pointer to `QMetaTypeInterfaceWrapper<std::function<void()>>::metaType`, which contains a pointer to the function that would register the alternate name
+	// But to anyone who can't see QtHost.h, that pointer should be null, opening us up to ODR violations
+	// Turns out some of our automoc files also instantiate that metaType (with the null pointer), so if we try to rely on it, everything will break if we get unlucky with link order
+	// Instead, manually register under the desired name:
 	qRegisterMetaType<std::function<void()>>("std::function<void()>");
 	qRegisterMetaType<std::shared_ptr<VMBootParameters>>();
 	qRegisterMetaType<GSRendererType>();
@@ -1788,7 +1833,7 @@ int main(int argc, char* argv[])
 
 	// Set theme before creating any windows.
 	MainWindow::updateApplicationTheme();
-	MainWindow* main_window = new MainWindow(QApplication::style()->objectName());
+	MainWindow* main_window = new MainWindow();
 
 	// Start up the CPU thread.
 	QtHost::HookSignals();

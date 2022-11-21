@@ -678,7 +678,7 @@ void VMManager::UpdateRunningGame(bool resetting, bool game_starting)
 		// If we don't reset the timer here, when using folder memcards the reindex will cause an eject,
 		// which a bunch of games don't like since they access the memory card on boot.
 		if (game_starting || resetting)
-			ClearMcdEjectTimeoutNow();
+			AutoEject::ClearAll();
 	}
 
 	UpdateGameSettingsLayer();
@@ -687,11 +687,17 @@ void VMManager::UpdateRunningGame(bool resetting, bool game_starting)
 	// Clear the memory card eject notification again when booting for the first time, or starting.
 	// Otherwise, games think the card was removed on boot.
 	if (game_starting || resetting)
-		ClearMcdEjectTimeoutNow();
+		AutoEject::ClearAll();
 
 	// Check this here, for two cases: dynarec on, and when enable cheats is set per-game.
 	if (s_patches_crc != s_game_crc)
 		ReloadPatches(game_starting, false);
+
+#ifdef ENABLE_ACHIEVEMENTS
+	// Per-game ini enabling of hardcore mode. We need to re-enforce the settings if so.
+	if (game_starting && Achievements::ResetChallengeMode())
+		ApplySettings();
+#endif
 
 	GetMTGS().SendGameCRC(new_crc);
 
@@ -902,7 +908,7 @@ bool VMManager::Initialize(VMBootParameters boot_params)
 	};
 
 	Console.WriteLn("Opening SPU2...");
-	if (SPU2init() != 0 || SPU2open() != 0)
+	if (SPU2init(false) != 0 || SPU2open() != 0)
 	{
 		Host::ReportErrorAsync("Startup Error", "Failed to initialize SPU2.");
 		SPU2shutdown();
@@ -1095,17 +1101,8 @@ void VMManager::Shutdown(bool save_resume_state)
 void VMManager::Reset()
 {
 #ifdef ENABLE_ACHIEVEMENTS
-	const bool previous_challenge_mode = Achievements::ChallengeModeActive();
 	if (!Achievements::OnReset())
 		return;
-
-	if (Achievements::ChallengeModeActive() && !previous_challenge_mode)
-	{
-		// Hardcore mode enabled, so reload settings. This only covers the BIOS
-		// portion of the boot, once the game loads we'll reset anyway, but better
-		// to change things like the speed now rather than later.
-		ApplySettings();
-	}
 #endif
 
 	const bool game_was_started = g_GameStarted;
@@ -1478,6 +1475,7 @@ void VMManager::Execute()
 		// We need to switch the cpus out, and reset the new ones if so.
 		s_cpu_provider_pack->ApplyConfig();
 		SysClearExecutionCache();
+		vtlb_ResetFastmem();
 	}
 
 	// Execute until we're asked to stop.
@@ -1571,6 +1569,9 @@ void VMManager::CheckForCPUConfigChanges(const Pcsx2Config& old_config)
 	SysClearExecutionCache();
 	memBindConditionalHandlers();
 
+	if (EmuConfig.Cpu.Recompiler.EnableFastmem != old_config.Cpu.Recompiler.EnableFastmem)
+		vtlb_ResetFastmem();
+
 	// did we toggle recompilers?
 	if (EmuConfig.Cpu.CpusChanged(old_config.Cpu))
 	{
@@ -1654,7 +1655,7 @@ void VMManager::CheckForSPU2ConfigChanges(const Pcsx2Config& old_config)
 
 	SPU2close();
 	SPU2shutdown();
-	if (SPU2init() != 0 || SPU2open() != 0)
+	if (SPU2init(true) != 0 || SPU2open() != 0)
 	{
 		Console.Error("(CheckForSPU2ConfigChanges) Failed to reopen SPU2, we'll probably crash :(");
 		return;
@@ -1709,8 +1710,8 @@ void VMManager::CheckForMemoryCardConfigChanges(const Pcsx2Config& old_config)
 			if (EmuConfig.Mcd[index].Enabled != old_config.Mcd[index].Enabled ||
 				EmuConfig.Mcd[index].Filename != old_config.Mcd[index].Filename)
 			{
-				Console.WriteLn("Replugging memory card %u (port %u slot %u) due to source change", index, port, slot);
-				SetForceMcdEjectTimeoutNow(port, slot);
+				Console.WriteLn("Ejecting memory card %u (port %u slot %u) due to source change", index, port, slot);
+				AutoEject::Set(port, slot);
 			}
 		}
 	}

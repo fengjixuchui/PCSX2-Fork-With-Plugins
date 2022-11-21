@@ -834,7 +834,8 @@ void GSUpdateConfig(const Pcsx2Config::GSOptions& new_config)
 		GSConfig.UserHacks_DisableDepthSupport != old_config.UserHacks_DisableDepthSupport ||
 		GSConfig.UserHacks_DisablePartialInvalidation != old_config.UserHacks_DisablePartialInvalidation ||
 		GSConfig.UserHacks_TextureInsideRt != old_config.UserHacks_TextureInsideRt ||
-		GSConfig.UserHacks_CPUSpriteRenderBW != old_config.UserHacks_CPUSpriteRenderBW)
+		GSConfig.UserHacks_CPUSpriteRenderBW != old_config.UserHacks_CPUSpriteRenderBW ||
+		GSConfig.UserHacks_CPUCLUTRender != old_config.UserHacks_CPUCLUTRender)
 	{
 		g_gs_renderer->PurgeTextureCache();
 		g_gs_renderer->PurgePool();
@@ -1309,14 +1310,16 @@ void GSApp::Init()
 	// The null renderer goes last, it has use for benchmarking purposes in a release build
 	m_gs_renderers.push_back(GSSetting(static_cast<u32>(GSRendererType::Null), "Null", ""));
 
-	m_gs_deinterlace.push_back(GSSetting(0, "None", ""));
-	m_gs_deinterlace.push_back(GSSetting(1, "Weave tff", "saw-tooth"));
-	m_gs_deinterlace.push_back(GSSetting(2, "Weave bff", "saw-tooth"));
-	m_gs_deinterlace.push_back(GSSetting(3, "Bob tff", "use blend if shaking"));
-	m_gs_deinterlace.push_back(GSSetting(4, "Bob bff", "use blend if shaking"));
-	m_gs_deinterlace.push_back(GSSetting(5, "Blend tff", "slight blur, 1/2 fps"));
-	m_gs_deinterlace.push_back(GSSetting(6, "Blend bff", "slight blur, 1/2 fps"));
-	m_gs_deinterlace.push_back(GSSetting(7, "Automatic", "Default"));
+	m_gs_deinterlace.push_back(GSSetting(static_cast<u32>(GSInterlaceMode::Automatic), "Automatic", "Default"));
+	m_gs_deinterlace.push_back(GSSetting(static_cast<u32>(GSInterlaceMode::Off), "None", ""));
+	m_gs_deinterlace.push_back(GSSetting(static_cast<u32>(GSInterlaceMode::WeaveTFF), "Weave tff", "saw-tooth"));
+	m_gs_deinterlace.push_back(GSSetting(static_cast<u32>(GSInterlaceMode::WeaveBFF), "Weave bff", "saw-tooth"));
+	m_gs_deinterlace.push_back(GSSetting(static_cast<u32>(GSInterlaceMode::BobTFF), "Bob tff", "use adaptive or blend if shaking"));
+	m_gs_deinterlace.push_back(GSSetting(static_cast<u32>(GSInterlaceMode::BobBFF), "Bob bff", "use adaptive or blend if shaking"));
+	m_gs_deinterlace.push_back(GSSetting(static_cast<u32>(GSInterlaceMode::BlendTFF), "Blend tff", "slight blur, 1/2 fps"));
+	m_gs_deinterlace.push_back(GSSetting(static_cast<u32>(GSInterlaceMode::BlendBFF), "Blend bff", "slight blur, 1/2 fps"));
+	m_gs_deinterlace.push_back(GSSetting(static_cast<u32>(GSInterlaceMode::AdaptiveTFF), "Adaptive tff", "minor artifacts"));
+	m_gs_deinterlace.push_back(GSSetting(static_cast<u32>(GSInterlaceMode::AdaptiveBFF), "Adaptive bff", "minor artifacts"));
 
 	m_gs_upscale_multiplier.push_back(GSSetting(1, "Native", "PS2"));
 	m_gs_upscale_multiplier.push_back(GSSetting(2, "2x Native", "~720p"));
@@ -1396,6 +1399,11 @@ void GSApp::Init()
 	m_gs_tv_shaders.push_back(GSSetting(4, "Wave filter", ""));
 	m_gs_tv_shaders.push_back(GSSetting(5, "Lottes CRT filter", ""));
 
+	m_gs_hw_download_mode.push_back(GSSetting(static_cast<u32>(GSHardwareDownloadMode::Enabled), "Accurate", "Recommended"));
+	m_gs_hw_download_mode.push_back(GSSetting(static_cast<u32>(GSHardwareDownloadMode::NoReadbacks), "Disable Readbacks", "Synchronize GS Thread"));
+	m_gs_hw_download_mode.push_back(GSSetting(static_cast<u32>(GSHardwareDownloadMode::Unsynchronized), "Unsynchronized", "Non-Deterministic"));
+	m_gs_hw_download_mode.push_back(GSSetting(static_cast<u32>(GSHardwareDownloadMode::Disabled), "Disabled", "Ignore Transfers"));
+
 	m_gs_dump_compression.push_back(GSSetting(static_cast<u32>(GSDumpCompressionMethod::Uncompressed), "Uncompressed", ""));
 	m_gs_dump_compression.push_back(GSSetting(static_cast<u32>(GSDumpCompressionMethod::LZMA), "LZMA (xz)", ""));
 	m_gs_dump_compression.push_back(GSSetting(static_cast<u32>(GSDumpCompressionMethod::Zstandard), "Zstandard (zst)", ""));
@@ -1412,7 +1420,7 @@ void GSApp::Init()
 #else
 	m_default_configuration["linux_replay"]                               = "1";
 #endif
-	m_default_configuration["accurate_blending_unit"]                     = "1";
+	m_default_configuration["accurate_blending_unit"]                     = std::to_string(static_cast<u8>(AccBlendLevel::Basic));
 	m_default_configuration["AspectRatio"]                                = "1";
 	m_default_configuration["autoflush_sw"]                               = "1";
 	m_default_configuration["capture_enabled"]                            = "0";
@@ -1438,14 +1446,16 @@ void GSApp::Init()
 	m_default_configuration["filter"]                                     = std::to_string(static_cast<s8>(BiFiltering::PS2));
 	m_default_configuration["FullscreenMode"]                             = "";
 	m_default_configuration["fxaa"]                                       = "0";
-	m_default_configuration["GSDumpCompression"]                          = "0";
-	m_default_configuration["HWDisableReadbacks"]                         = "0";
+	m_default_configuration["HWDownloadMode"]                             = std::to_string(static_cast<u8>(GSHardwareDownloadMode::Enabled));
+	m_default_configuration["GSDumpCompression"]                          = std::to_string(static_cast<u8>(GSDumpCompressionMethod::LZMA));
+	m_default_configuration["HWSpinGPUForReadbacks"]                      = "0";
+	m_default_configuration["HWSpinCPUForReadbacks"]                      = "0";
 	m_default_configuration["pcrtc_antiblur"]                             = "1";
 	m_default_configuration["disable_interlace_offset"]                   = "0";
 	m_default_configuration["pcrtc_offsets"]                              = "0";
 	m_default_configuration["pcrtc_overscan"]                             = "0";
 	m_default_configuration["IntegerScaling"]                             = "0";
-	m_default_configuration["deinterlace"]                                = "7";
+	m_default_configuration["deinterlace_mode"]                           = std::to_string(static_cast<s8>(GSInterlaceMode::Automatic));
 	m_default_configuration["linear_present"]                             = "1";
 	m_default_configuration["LoadTextureReplacements"]                    = "0";
 	m_default_configuration["LoadTextureReplacementsAsync"]               = "1";
@@ -1460,6 +1470,8 @@ void GSApp::Init()
 	m_default_configuration["OsdShowResolution"]                          = "0";
 	m_default_configuration["OsdShowGSStats"]                             = "0";
 	m_default_configuration["OsdShowIndicators"]                          = "1";
+	m_default_configuration["OsdShowSettings"]                            = "0";
+	m_default_configuration["OsdShowInputs"]                              = "0";
 	m_default_configuration["OsdScale"]                                   = "100";
 	m_default_configuration["override_GL_ARB_copy_image"]                 = "-1";
 	m_default_configuration["override_GL_ARB_clip_control"]               = "-1";
@@ -1503,6 +1515,7 @@ void GSApp::Init()
 	m_default_configuration["UserHacks_Disable_Safe_Features"]            = "0";
 	m_default_configuration["UserHacks_DisablePartialInvalidation"]       = "0";
 	m_default_configuration["UserHacks_CPUSpriteRenderBW"]                = "0";
+	m_default_configuration["UserHacks_CPUCLUTRender"]                    = "0";
 	m_default_configuration["UserHacks_CPU_FB_Conversion"]                = "0";
 	m_default_configuration["UserHacks_Half_Bottom_Override"]             = "-1";
 	m_default_configuration["UserHacks_HalfPixelOffset"]                  = "0";
@@ -1752,6 +1765,7 @@ BEGIN_HOTKEY_LIST(g_gs_hotkeys)
 			 return;
 
 		 static constexpr std::array<const char*, static_cast<int>(GSInterlaceMode::Count)> option_names = {{
+			 "Automatic",
 			 "Off",
 			 "Weave (Top Field First)",
 			 "Weave (Bottom Field First)",
@@ -1759,7 +1773,8 @@ BEGIN_HOTKEY_LIST(g_gs_hotkeys)
 			 "Bob (Bottom Field First)",
 			 "Blend (Top Field First)",
 			 "Blend (Bottom Field First)",
-			 "Automatic",
+			 "Adaptive (Top Field First)",
+			 "Adaptive (Bottom Field First)",
 		 }};
 
 		 const GSInterlaceMode new_mode = static_cast<GSInterlaceMode>((static_cast<s32>(EmuConfig.GS.InterlaceMode) + 1) % static_cast<s32>(GSInterlaceMode::Count));

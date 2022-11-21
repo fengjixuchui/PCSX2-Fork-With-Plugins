@@ -24,6 +24,7 @@
 
 #include "common/Pcsx2Types.h"
 #include "common/SettingsInterface.h"
+#include "common/WindowInfo.h"
 
 /// Class, or source of an input event.
 enum class InputSourceType : u32
@@ -31,7 +32,7 @@ enum class InputSourceType : u32
 	Keyboard,
 	Pointer,
 #ifdef _WIN32
-	//DInput,
+	DInput,
 	XInput,
 #endif
 #ifdef SDL_BUILD
@@ -54,6 +55,13 @@ enum class InputSubclass : u32
 	ControllerHaptic = 3,
 };
 
+enum class InputModifier : u32
+{
+	None = 0,
+	Negate, ///< Input * -1, gets the negative side of the axis
+	FullAxis, ///< (Input * 0.5) + 0.5, uses both the negative and positive side of the axis together
+};
+
 /// A composite type representing a full input key which is part of an event.
 union InputBindingKey
 {
@@ -62,8 +70,8 @@ union InputBindingKey
 		InputSourceType source_type : 4;
 		u32 source_index : 8; ///< controller number
 		InputSubclass source_subtype : 2; ///< if 1, binding is for an axis and not a button (used for controllers)
-		u32 negative : 1; ///< if 1, binding is for the negative side of the axis
-		u32 unused : 17;
+		InputModifier modifier : 2;
+		u32 unused : 16;
 		u32 data;
 	};
 
@@ -78,7 +86,7 @@ union InputBindingKey
 	{
 		InputBindingKey r;
 		r.bits = bits;
-		r.negative = false;
+		r.modifier = InputModifier::None;
 		return r;
 	}
 };
@@ -255,6 +263,10 @@ namespace InputManager
 	/// Re-parses the sources part of the config and initializes any backends.
 	void ReloadSources(SettingsInterface& si, std::unique_lock<std::mutex>& settings_lock);
 
+	/// Called when a device change is triggered by the system (DBT_DEVNODES_CHANGED on Windows).
+	/// Returns true if any device changes are detected.
+	bool ReloadDevices();
+
 	/// Shuts down any enabled input sources.
 	void CloseSources();
 
@@ -303,6 +315,9 @@ namespace InputManager
 
 namespace Host
 {
+	/// Return the current window handle. Needed for DInput.
+	std::optional<WindowInfo> GetTopLevelWindowInfo();
+
 	/// Called when a new input device is connected.
 	void OnInputDeviceConnected(const std::string_view& identifier, const std::string_view& device_name);
 

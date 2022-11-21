@@ -720,22 +720,24 @@ void GSDevice12::DoMerge(GSTexture* sTex[3], GSVector4* sRect, GSTexture* dTex, 
 	static_cast<GSTexture12*>(dTex)->TransitionToState(D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 }
 
-void GSDevice12::DoInterlace(GSTexture* sTex, GSTexture* dTex, int shader, bool linear, float yoffset)
+void GSDevice12::DoInterlace(GSTexture* sTex, GSTexture* dTex, int shader, bool linear, float yoffset, int bufIdx)
 {
-	const GSVector2i size(dTex->GetSize());
-	const GSVector4 s = GSVector4(size);
+	const GSVector2i ds_i = dTex->GetSize();
+	const GSVector4  ds   = GSVector4(ds_i);
+	
 
 	const GSVector4 sRect(0, 0, 1, 1);
-	const GSVector4 dRect(0.0f, yoffset, s.x, s.y + yoffset);
+	const GSVector4 dRect(0.0f, yoffset, ds.x, ds.y + yoffset);
 
 	InterlaceConstantBuffer cb;
-	cb.ZrH = GSVector2(0, 1.0f / s.y);
 
-	GL_PUSH("DoInterlace %dx%d Shader:%d Linear:%d", size.x, size.y, shader, linear);
+	cb.ZrH = GSVector4(static_cast<float>(bufIdx), 1.0f / ds.y, ds.y, MAD_SENSITIVITY);
+
+	GL_PUSH("DoInterlace %dx%d Shader:%d Linear:%d", ds_i.x, ds_i.y, shader, linear);
 
 	static_cast<GSTexture12*>(dTex)->TransitionToState(D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-	const GSVector4i rc(0, 0, size.x, size.y);
+	const GSVector4i rc(0, 0, ds_i.x, ds_i.y);
 	EndRenderPass();
 	OMSetRenderTargets(dTex, nullptr, rc);
 	SetUtilityRootSignature();
@@ -1445,7 +1447,7 @@ void GSDevice12::DestroyStagingBuffer()
 
 void GSDevice12::DestroyResources()
 {
-	g_d3d12_context->ExecuteCommandList(true);
+	g_d3d12_context->ExecuteCommandList(D3D12::Context::WaitType::Sleep);
 
 	for (auto& it : m_tfx_pipelines)
 		g_d3d12_context->DeferObjectDestruction(it.second.get());
@@ -1734,10 +1736,20 @@ void GSDevice12::InitializeSamplers()
 		pxFailRel("Failed to initialize samplers");
 }
 
+static D3D12::Context::WaitType GetWaitType(bool wait, bool spin)
+{
+	if (!wait)
+		return D3D12::Context::WaitType::None;
+	if (spin)
+		return D3D12::Context::WaitType::Spin;
+	else
+		return D3D12::Context::WaitType::Sleep;
+}
+
 void GSDevice12::ExecuteCommandList(bool wait_for_completion)
 {
 	EndRenderPass();
-	g_d3d12_context->ExecuteCommandList(wait_for_completion);
+	g_d3d12_context->ExecuteCommandList(GetWaitType(wait_for_completion, GSConfig.HWSpinCPUForReadbacks));
 	InvalidateCachedState();
 }
 
@@ -1758,7 +1770,7 @@ void GSDevice12::ExecuteCommandListAndRestartRenderPass(const char* reason)
 
 	const bool was_in_render_pass = m_in_render_pass;
 	EndRenderPass();
-	g_d3d12_context->ExecuteCommandList(false);
+	g_d3d12_context->ExecuteCommandList(D3D12::Context::WaitType::None);
 	InvalidateCachedState();
 
 	if (was_in_render_pass)
@@ -2555,8 +2567,8 @@ void GSDevice12::RenderHW(GSHWDrawConfig& config)
 					config.drawarea.left, config.drawarea.top,
 					config.drawarea.width(), config.drawarea.height());
 
-				copy_ds->SetState(GSTexture::State::Invalidated);
-				CopyRect(config.ds, copy_ds, config.drawarea, config.drawarea.left, config.drawarea.top);
+				pxAssert(copy_ds->GetState() == GSTexture::State::Invalidated);
+				CopyRect(config.ds, copy_ds, GSVector4i(config.ds->GetSize()).zwxy(), 0, 0);
 				PSSetShaderResource(0, copy_ds, true);
 			}
 		}

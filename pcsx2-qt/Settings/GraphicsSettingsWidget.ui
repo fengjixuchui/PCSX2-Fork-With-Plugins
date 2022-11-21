@@ -151,6 +151,11 @@
         <widget class="QComboBox" name="interlacing">
          <item>
           <property name="text">
+           <string>Automatic (Default)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>None</string>
           </property>
          </item>
@@ -186,7 +191,12 @@
          </item>
          <item>
           <property name="text">
-           <string>Automatic (Default)</string>
+           <string>Adaptive (Top Field First)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Adaptive (Bottom Field First)</string>
           </property>
          </item>
         </widget>
@@ -388,7 +398,7 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QComboBox" name="upscaleMultiplier" />
+        <widget class="QComboBox" name="upscaleMultiplier"/>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_6">
@@ -643,6 +653,20 @@
            </property>
           </widget>
          </item>
+         <item row="1" column="0">
+          <widget class="QCheckBox" name="spinGPUDuringReadbacks">
+           <property name="text">
+            <string>Spin GPU During Readbacks</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QCheckBox" name="spinCPUDuringReadbacks">
+           <property name="text">
+            <string>Spin CPU During Readbacks</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
       </layout>
@@ -677,91 +701,6 @@
           </property>
          </item>
         </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_12">
-         <property name="text">
-          <string>Skipdraw Range:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <widget class="QSpinBox" name="skipDrawStart">
-           <property name="maximum">
-            <number>10000</number>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSpinBox" name="skipDrawEnd">
-           <property name="maximum">
-            <number>10000</number>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="3" column="0" colspan="2">
-        <layout class="QGridLayout" name="gridLayout">
-         <item row="0" column="0">
-          <widget class="QCheckBox" name="hwAutoFlush">
-           <property name="text">
-            <string>Auto Flush</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QCheckBox" name="frameBufferConversion">
-           <property name="text">
-            <string>Frame Buffer Conversion</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QCheckBox" name="disableDepthEmulation">
-           <property name="text">
-            <string>Disable Depth Emulation</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QCheckBox" name="memoryWrapping">
-           <property name="text">
-            <string>Memory Wrapping</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QCheckBox" name="disableSafeFeatures">
-           <property name="text">
-            <string>Disable Safe Features</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QCheckBox" name="preloadFrameData">
-           <property name="text">
-            <string>Preload Frame Data</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QCheckBox" name="disablePartialInvalidation">
-           <property name="text">
-            <string>Disable Partial Invalidation</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QCheckBox" name="textureInsideRt">
-           <property name="text">
-            <string>Texture Inside RT</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_36">
@@ -827,6 +766,123 @@
            <string>10 (640 Max Width)</string>
           </property>
          </item>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_12">
+         <property name="text">
+          <string>Skipdraw Range:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QSpinBox" name="skipDrawStart">
+           <property name="maximum">
+            <number>10000</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="skipDrawEnd">
+           <property name="maximum">
+            <number>10000</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="4" column="0" colspan="2">
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="hwAutoFlush">
+           <property name="text">
+            <string>Auto Flush</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QCheckBox" name="frameBufferConversion">
+           <property name="text">
+            <string>Frame Buffer Conversion</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QCheckBox" name="disableDepthEmulation">
+           <property name="text">
+            <string>Disable Depth Emulation</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QCheckBox" name="memoryWrapping">
+           <property name="text">
+            <string>Memory Wrapping</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QCheckBox" name="disableSafeFeatures">
+           <property name="text">
+            <string>Disable Safe Features</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QCheckBox" name="preloadFrameData">
+           <property name="text">
+            <string>Preload Frame Data</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QCheckBox" name="disablePartialInvalidation">
+           <property name="text">
+            <string>Disable Partial Invalidation</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QCheckBox" name="textureInsideRt">
+           <property name="text">
+            <string>Texture Inside RT</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="1">
+        <widget class="QComboBox" name="cpuCLUTRender">
+         <property name="currentText">
+          <string extracomment="0 (Disabled)">0 (Disabled)</string>
+         </property>
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <item>
+          <property name="text">
+           <string>0 (Disabled)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>1 (Normal)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>2 (Aggressive)</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_16">
+         <property name="text">
+          <string>Software CLUT Render:</string>
+         </property>
         </widget>
        </item>
       </layout>
@@ -1523,6 +1579,13 @@
        <string>Rendering</string>
       </attribute>
       <layout class="QFormLayout" name="formLayout_3">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_37">
+         <property name="text">
+          <string>Texture Filtering:</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="1">
         <widget class="QComboBox" name="swTextureFiltering">
          <property name="enabled">
@@ -1559,10 +1622,10 @@
          </item>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_37">
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_9">
          <property name="text">
-          <string>Texture Filtering:</string>
+          <string>Extra Rendering Threads:</string>
          </property>
         </widget>
        </item>
@@ -1570,13 +1633,6 @@
         <widget class="QSpinBox" name="extraSWThreads">
          <property name="suffix">
           <string> threads</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_9">
-         <property name="text">
-          <string>Extra Rendering Threads:</string>
          </property>
         </widget>
        </item>

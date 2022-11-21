@@ -276,7 +276,7 @@ std::string InputManager::ConvertInputBindingKeyToString(InputBindingKey key)
 		}
 		else if (key.source_subtype == InputSubclass::PointerAxis)
 		{
-			return fmt::format("Pointer-{}/{}{:c}", u32{key.source_index}, s_pointer_axis_names[key.data], key.negative ? '-' : '+');
+			return fmt::format("Pointer-{}/{}{:c}", u32{key.source_index}, s_pointer_axis_names[key.data], key.modifier == InputModifier::Negate ? '-' : '+');
 		}
 	}
 	else if (key.source_type < InputSourceType::Count && s_input_sources[static_cast<u32>(key.source_type)])
@@ -392,6 +392,7 @@ static std::array<const char*, static_cast<u32>(InputSourceType::Count)> s_input
 	"Keyboard",
 	"Mouse",
 #ifdef _WIN32
+	"DInput",
 	"XInput",
 #endif
 #ifdef SDL_BUILD
@@ -418,6 +419,9 @@ bool InputManager::GetInputSourceDefaultEnabled(InputSourceType type)
 			return true;
 
 #ifdef _WIN32
+		case InputSourceType::DInput:
+			return false;
+
 		case InputSourceType::XInput:
 			// Disable xinput by default if we have SDL.
 #ifdef SDL_BUILD
@@ -493,9 +497,9 @@ std::optional<InputBindingKey> InputManager::ParsePointerKey(const std::string_v
 
 			const std::string_view dir_part(sub_binding.substr(std::strlen(s_pointer_axis_names[i])));
 			if (dir_part == "+")
-				key.negative = false;
+				key.modifier = InputModifier::None;
 			else if (dir_part == "-")
-				key.negative = true;
+				key.modifier = InputModifier::Negate;
 			else
 				return std::nullopt;
 
@@ -673,11 +677,24 @@ bool InputManager::InvokeEvents(InputBindingKey key, float value, GenericInputBi
 				continue;
 
 			const u8 bit = static_cast<u8>(1) << i;
-			const bool negative = binding->keys[i].negative;
+			const bool negative = binding->keys[i].modifier == InputModifier::Negate;
 			const bool new_state = (negative ? (value < 0.0f) : (value > 0.0f));
 
-			// invert if we're negative, since the handler expects 0..1
-			const float value_to_pass = (negative ? ((value < 0.0f) ? -value : 0.0f) : (value > 0.0f) ? value : 0.0f);
+			float value_to_pass = 0.0f;
+			switch (binding->keys[i].modifier)
+			{
+				case InputModifier::None:
+					if (value > 0.0f)
+						value_to_pass = value;
+					break;
+				case InputModifier::Negate:
+					if (value < 0.0f)
+						value_to_pass = -value;
+					break;
+				case InputModifier::FullAxis:
+					value_to_pass = value * 0.5f + 0.5f;
+					break;
+			}
 
 			// axes are fired regardless of a state change, unless they're zero
 			// (but going from not-zero to zero will still fire, because of the full state)
@@ -1020,6 +1037,19 @@ void InputManager::ReloadBindings(SettingsInterface& si, SettingsInterface& bind
 // Source Management
 // ------------------------------------------------------------------------
 
+bool InputManager::ReloadDevices()
+{
+	bool changed = false;
+
+	for (u32 i = FIRST_EXTERNAL_INPUT_SOURCE; i < LAST_EXTERNAL_INPUT_SOURCE; i++)
+	{
+		if (s_input_sources[i])
+			changed |= s_input_sources[i]->ReloadDevices();
+	}
+
+	return changed;
+}
+
 void InputManager::CloseSources()
 {
 	for (u32 i = FIRST_EXTERNAL_INPUT_SOURCE; i < LAST_EXTERNAL_INPUT_SOURCE; i++)
@@ -1177,6 +1207,7 @@ static void UpdateInputSourceState(SettingsInterface& si, std::unique_lock<std::
 }
 
 #ifdef _WIN32
+#include "Frontend/DInputSource.h"
 #include "Frontend/XInputSource.h"
 #endif
 
@@ -1187,6 +1218,7 @@ static void UpdateInputSourceState(SettingsInterface& si, std::unique_lock<std::
 void InputManager::ReloadSources(SettingsInterface& si, std::unique_lock<std::mutex>& settings_lock)
 {
 #ifdef _WIN32
+	UpdateInputSourceState<DInputSource>(si, settings_lock, InputSourceType::DInput);
 	UpdateInputSourceState<XInputSource>(si, settings_lock, InputSourceType::XInput);
 #endif
 #ifdef SDL_BUILD

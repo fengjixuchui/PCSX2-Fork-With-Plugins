@@ -54,6 +54,11 @@
 #include "svnrev.h"
 #include "Tools/InputRecording/NewInputRecordingDlg.h"
 
+#ifdef _WIN32
+#include "common/RedtapeWindows.h"
+#include <Dbt.h>
+#endif
+
 #ifdef ENABLE_RAINTEGRATION
 #include "pcsx2/Frontend/Achievements.h"
 #endif
@@ -88,6 +93,7 @@ const char* MainWindow::DEFAULT_THEME_NAME = "darkfusion";
 
 MainWindow* g_main_window = nullptr;
 static QString s_unthemed_style_name;
+static QPalette s_unthemed_palette;
 static bool s_unthemed_style_name_set;
 
 #if defined(_WIN32) || defined(__APPLE__)
@@ -104,8 +110,7 @@ static bool s_use_central_widget = false;
 static bool s_vm_valid = false;
 static bool s_vm_paused = false;
 
-MainWindow::MainWindow(const QString& unthemed_style_name)
-	: m_unthemed_style_name(unthemed_style_name)
+MainWindow::MainWindow()
 {
 	pxAssert(!g_main_window);
 	g_main_window = this;
@@ -120,6 +125,9 @@ MainWindow::~MainWindow()
 	// we compare here, since recreate destroys the window later
 	if (g_main_window == this)
 		g_main_window = nullptr;
+#ifdef _WIN32
+	unregisterForDeviceNotifications();
+#endif
 #ifdef __APPLE__
 	CocoaTools::RemoveThemeChangeHandler(this);
 #endif
@@ -145,6 +153,10 @@ void MainWindow::initialize()
 	switchToGameListView();
 	updateWindowTitle();
 	updateSaveStateMenus(QString(), QString(), 0);
+
+#ifdef _WIN32
+	registerForDeviceNotifications();
+#endif
 }
 
 // TODO: Figure out how to set this in the .ui file
@@ -421,14 +433,20 @@ void MainWindow::recreate()
 	if (s_vm_valid)
 		requestShutdown(false, true, EmuConfig.SaveStateOnShutdown);
 
+	// We need to close input sources, because e.g. DInput uses our window handle.
+	g_emu_thread->closeInputSources();
+
 	close();
 	g_main_window = nullptr;
 
-	MainWindow* new_main_window = new MainWindow(m_unthemed_style_name);
+	MainWindow* new_main_window = new MainWindow();
 	new_main_window->initialize();
 	new_main_window->refreshGameList(false);
 	new_main_window->show();
 	deleteLater();
+
+	// Reload the sources we just closed.
+	g_emu_thread->reloadInputSources();
 }
 
 void MainWindow::recreateSettings()
@@ -468,6 +486,7 @@ void MainWindow::updateApplicationTheme()
 	{
 		s_unthemed_style_name_set = true;
 		s_unthemed_style_name = QApplication::style()->objectName();
+		s_unthemed_palette = QApplication::style()->standardPalette();
 	}
 
 	setStyleFromSettings();
@@ -480,7 +499,7 @@ void MainWindow::setStyleFromSettings()
 
 	if (theme == "fusion")
 	{
-		qApp->setPalette(QApplication::style()->standardPalette());
+		qApp->setPalette(s_unthemed_palette);
 		qApp->setStyleSheet(QString());
 		qApp->setStyle(QStyleFactory::create("Fusion"));
 	}
@@ -752,7 +771,7 @@ void MainWindow::setStyleFromSettings()
 	}
 	else
 	{
-		qApp->setPalette(QApplication::style()->standardPalette());
+		qApp->setPalette(s_unthemed_palette);
 		qApp->setStyleSheet(QString());
 		qApp->setStyle(s_unthemed_style_name);
 	}
@@ -797,6 +816,8 @@ void MainWindow::onBlockDumpActionToggled(bool checked)
 
 	Host::SetBaseStringSettingValue("EmuCore", "BlockDumpSaveDirectory", new_dir.toUtf8().constData());
 	Host::CommitBaseSettingChanges();
+
+	g_emu_thread->applySettings();
 }
 
 void MainWindow::saveStateToConfig()
@@ -949,7 +970,7 @@ void MainWindow::updateWindowState(bool force_visible)
 		return;
 
 	const bool hide_window = !isRenderingToMain() && shouldHideMainWindow();
-	const bool disable_resize = Host::GetBaseBoolSettingValue("UI", "DisableWindowResize", false);
+	const bool disable_resize = Host::GetBoolSettingValue("UI", "DisableWindowResize", false);
 	const bool has_window = s_vm_valid || m_display_widget;
 
 	// Need to test both valid and display widget because of startup (vm invalid while window is created).
@@ -1021,7 +1042,7 @@ bool MainWindow::shouldHideMouseCursor() const
 bool MainWindow::shouldHideMainWindow() const
 {
 	// NOTE: We can't use isRenderingToMain() here, because this happens post-fullscreen-switch.
-	return Host::GetBaseBoolSettingValue("UI", "HideMainWindowWhenRunning", false) ||
+	return Host::GetBoolSettingValue("UI", "HideMainWindowWhenRunning", false) ||
 		   (g_emu_thread->shouldRenderToMain() && isRenderingFullscreen()) ||
 		   QtHost::InNoGUIMode();
 }
@@ -1108,14 +1129,14 @@ bool MainWindow::requestShutdown(bool allow_confirm /* = true */, bool allow_sav
 	bool save_state = allow_save_to_state && default_save_to_state;
 
 	// Only confirm on UI thread because we need to display a msgbox.
-	if (!m_is_closing && allow_confirm && !GSDumpReplayer::IsReplayingDump() && Host::GetBaseBoolSettingValue("UI", "ConfirmShutdown", true))
+	if (!m_is_closing && allow_confirm && !GSDumpReplayer::IsReplayingDump() && Host::GetBoolSettingValue("UI", "ConfirmShutdown", true))
 	{
 		VMLock lock(pauseAndLockVM());
 
 		QMessageBox msgbox(lock.getDialogParent());
 		msgbox.setIcon(QMessageBox::Question);
 		msgbox.setWindowTitle(tr("Confirm Shutdown"));
-		msgbox.setText("Are you sure you want to shut down the virtual machine?");
+		msgbox.setText(tr("Are you sure you want to shut down the virtual machine?"));
 
 		QCheckBox* save_cb = new QCheckBox(tr("Save State For Resume"), &msgbox);
 		save_cb->setChecked(save_state);
@@ -1138,7 +1159,7 @@ bool MainWindow::requestShutdown(bool allow_confirm /* = true */, bool allow_sav
 	// reshow the main window during display updates, because otherwise fullscreen transitions and renderer switches
 	// would briefly show and then hide the main window. So instead, we do it on shutdown, here. Except if we're in
 	// batch mode, when we're going to exit anyway.
-	if (!isRenderingToMain() && isHidden() && !QtHost::InBatchMode())
+	if (!isRenderingToMain() && isHidden() && !QtHost::InBatchMode() && !g_emu_thread->isRunningFullscreenUI())
 		updateWindowState(true);
 
 	// Now we can actually shut down the VM.
@@ -1179,6 +1200,11 @@ void MainWindow::checkForSettingChanges()
 		m_display_widget->updateRelativeMode(s_vm_valid && !s_vm_paused);
 
 	updateWindowState();
+}
+
+std::optional<WindowInfo> MainWindow::getWindowInfo()
+{
+	return QtUtils::GetWindowInfoForWidget(this);
 }
 
 void Host::InvalidateSaveStateCache()
@@ -1708,6 +1734,10 @@ void MainWindow::onVMStopped()
 	{
 		switchToGameListView();
 	}
+
+	// reload played time
+	if (m_game_list_widget->isShowingGameList())
+		m_game_list_widget->refresh(false);
 }
 
 void MainWindow::onGameChanged(const QString& path, const QString& serial, const QString& name, quint32 crc)
@@ -1802,6 +1832,48 @@ void MainWindow::dropEvent(QDropEvent* event)
 			doStartFile(std::nullopt, filename);
 	}
 }
+
+void MainWindow::registerForDeviceNotifications()
+{
+#ifdef _WIN32
+	// We use these notifications to detect when a controller is connected or disconnected.
+	DEV_BROADCAST_DEVICEINTERFACE_W filter = {sizeof(DEV_BROADCAST_DEVICEINTERFACE_W), DBT_DEVTYP_DEVICEINTERFACE};
+	m_device_notification_handle = RegisterDeviceNotificationW((HANDLE)winId(), &filter,
+		DEVICE_NOTIFY_WINDOW_HANDLE | DEVICE_NOTIFY_ALL_INTERFACE_CLASSES);
+#endif
+}
+
+void MainWindow::unregisterForDeviceNotifications()
+{
+#ifdef _WIN32
+	if (!m_device_notification_handle)
+		return;
+
+	UnregisterDeviceNotification(static_cast<HDEVNOTIFY>(m_device_notification_handle));
+	m_device_notification_handle = nullptr;
+#endif
+}
+
+#ifdef _WIN32
+
+bool MainWindow::nativeEvent(const QByteArray& eventType, void* message, qintptr* result)
+{
+	static constexpr const char win_type[] = "windows_generic_MSG";
+	if (eventType == QByteArray(win_type, sizeof(win_type) - 1))
+	{
+		const MSG* msg = static_cast<const MSG*>(message);
+		if (msg->message == WM_DEVICECHANGE && msg->wParam == DBT_DEVNODES_CHANGED)
+		{
+			g_emu_thread->reloadInputDevices();
+			*result = 1;
+			return true;
+		}
+	}
+
+	return QMainWindow::nativeEvent(eventType, message, result);
+}
+
+#endif
 
 DisplayWidget* MainWindow::createDisplay(bool fullscreen, bool render_to_main)
 {

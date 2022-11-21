@@ -190,6 +190,7 @@ bool D3D12HostDisplay::CreateDevice(const WindowInfo& wi)
 	}
 
 	m_window_info = wi;
+	m_vsync_mode = Host::GetEffectiveVSyncMode();
 
 	if (m_window_info.type != WindowInfo::Type::Surfaceless && !CreateSwapChain(nullptr))
 		return false;
@@ -333,7 +334,7 @@ bool D3D12HostDisplay::ChangeWindow(const WindowInfo& new_wi)
 void D3D12HostDisplay::DestroySurface()
 {
 	// For some reason if we don't execute the command list here, the swap chain is in use.. not sure where.
-	g_d3d12_context->ExecuteCommandList(true);
+	g_d3d12_context->ExecuteCommandList(D3D12::Context::WaitType::Sleep);
 
 	if (IsFullscreen())
 		SetFullscreen(false, 0, 0, 0.0f);
@@ -438,7 +439,7 @@ void D3D12HostDisplay::ResizeWindow(s32 new_window_width, s32 new_window_height,
 		return;
 
 	// For some reason if we don't execute the command list here, the swap chain is in use.. not sure where.
-	g_d3d12_context->ExecuteCommandList(true);
+	g_d3d12_context->ExecuteCommandList(D3D12::Context::WaitType::Sleep);
 
 	DestroySwapChainRTVs();
 
@@ -509,7 +510,7 @@ bool D3D12HostDisplay::SetFullscreen(bool fullscreen, u32 width, u32 height, flo
 		return true;
 	}
 
-	g_d3d12_context->ExecuteCommandList(true);
+	g_d3d12_context->ExecuteCommandList(D3D12::Context::WaitType::Sleep);
 	DestroySwapChainRTVs();
 	m_swap_chain.reset();
 
@@ -585,7 +586,7 @@ void D3D12HostDisplay::EndPresent()
 	m_current_swap_chain_buffer = ((m_current_swap_chain_buffer + 1) % static_cast<u32>(m_swap_chain_buffers.size()));
 
 	swap_chain_buf.TransitionToState(g_d3d12_context->GetCommandList(), D3D12_RESOURCE_STATE_PRESENT);
-	g_d3d12_context->ExecuteCommandList(false);
+	g_d3d12_context->ExecuteCommandList(D3D12::Context::WaitType::None);
 
 	const bool vsync = static_cast<UINT>(m_vsync_mode != VsyncMode::Off);
 	if (!vsync && m_using_allow_tearing)

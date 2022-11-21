@@ -268,7 +268,8 @@ namespace x86Emitter
 
 		bool IsEmpty() const { return Id < 0; }
 		bool IsInvalid() const { return Id == xRegId_Invalid; }
-		bool IsExtended() const { return Id > 7; } // Register 8-15 need an extra bit to be selected
+		bool IsExtended() const { return (Id >= 0 && (Id & 0x0F) > 7); } // Register 8-15 need an extra bit to be selected
+		bool IsExtended8Bit() const { return (Is8BitOp() && Id >= 0x10); }
 		bool IsMem() const { return false; }
 		bool IsReg() const { return true; }
 
@@ -290,6 +291,9 @@ namespace x86Emitter
 		// is a valid non-null string for any Id, valid or invalid.  No assertions are generated.
 		const char* GetName();
 		int GetId() const { return Id; }
+
+		/// Returns true if the specified register is caller-saved (volatile).
+		static inline bool IsCallerSaved(uint id);
 	};
 
 	class xRegisterInt : public xRegisterBase
@@ -347,7 +351,14 @@ namespace x86Emitter
 		explicit xRegister8(const xRegisterInt& other)
 			: _parent(1, other.Id)
 		{
-			pxAssertDev(other.canMapIDTo(1), "spl, bpl, sil, dil not yet supported");
+			if (!other.canMapIDTo(1))
+				Id |= 0x10;
+		}
+		xRegister8(int regId, bool ext8bit)
+			: _parent(1, regId)
+		{
+			if (ext8bit)
+				Id |= 0x10;
 		}
 
 		bool operator==(const xRegister8& src) const { return Id == src.Id; }
@@ -442,6 +453,14 @@ namespace x86Emitter
 
 		static const inline xRegisterSSE& GetInstance(uint id);
 		static const inline xRegisterSSE& GetYMMInstance(uint id);
+
+		/// Returns the register to use when calling a C function.
+		/// arg_number is the argument position from the left, starting with 0.
+		/// sse_number is the argument position relative to the number of vector registers.
+		static const inline xRegisterSSE& GetArgRegister(uint arg_number, uint sse_number, bool ymm = false);
+
+		/// Returns true if the specified register is caller-saved (volatile).
+		static inline bool IsCallerSaved(uint id);
 	};
 
 	class xRegisterCL : public xRegister8
@@ -483,6 +502,11 @@ namespace x86Emitter
 		// Returns true if the register is the stack pointer: ESP.
 		bool IsStackPointer() const { return Id == 4; }
 
+		/// Returns the register to use when calling a C function.
+		/// arg_number is the argument position from the left, starting with 0.
+		/// sse_number is the argument position relative to the number of vector registers.
+		static const inline xAddressReg& GetArgRegister(uint arg_number, uint gpr_number);
+
 		xAddressVoid operator+(const xAddressReg& right) const;
 		xAddressVoid operator+(sptr right) const;
 		xAddressVoid operator+(const void* right) const;
@@ -490,7 +514,6 @@ namespace x86Emitter
 		xAddressVoid operator-(const void* right) const;
 		xAddressVoid operator*(int factor) const;
 		xAddressVoid operator<<(u32 shift) const;
-		xAddressReg& operator=(const xAddressReg&) = default;
 	};
 
 	// --------------------------------------------------------------------------------------
@@ -608,7 +631,10 @@ extern const xRegister16
 
 extern const xRegister8
     al, dl, bl,
-    ah, ch, dh, bh;
+    ah, ch, dh, bh,
+    spl, bpl, sil, dil,
+    r8b, r9b, r10b, r11b,
+    r12b, r13b, r14b, r15b;
 
 extern const xAddressReg
     arg1reg, arg2reg,
@@ -626,6 +652,28 @@ extern const xRegister32
 	// clang-format on
 
 	extern const xRegisterCL cl; // I'm special!
+
+	bool xRegisterBase::IsCallerSaved(uint id)
+	{
+#ifdef _WIN32
+		// The x64 ABI considers the registers RAX, RCX, RDX, R8, R9, R10, R11, and XMM0-XMM5 volatile.
+		return (id <= 2 || (id >= 8 && id <= 11));
+#else
+		// rax, rdi, rsi, rdx, rcx, r8, r9, r10, r11 are scratch registers.
+		return (id <= 2 || id == 6 || id == 7 || (id >= 8 && id <= 11));
+#endif
+	}
+
+	bool xRegisterSSE::IsCallerSaved(uint id)
+	{
+#ifdef _WIN32
+		// XMM6 through XMM15 are saved. Upper 128 bits is always volatile.
+		return (id < 6);
+#else
+		// All vector registers are volatile.
+		return true;
+#endif
+	}
 
 	const xRegisterSSE& xRegisterSSE::GetInstance(uint id)
 	{
@@ -651,6 +699,32 @@ extern const xRegister32
 
 		pxAssert(id < iREGCNT_XMM);
 		return *m_tbl_ymmRegs[id];
+	}
+
+	const xRegisterSSE& xRegisterSSE::GetArgRegister(uint arg_number, uint sse_number, bool ymm)
+	{
+#ifdef _WIN32
+		// Windows passes arguments according to their position from the left.
+		return ymm ? GetYMMInstance(arg_number) : GetInstance(arg_number);
+#else
+		// Linux counts the number of vector parameters.
+		return ymm ? GetYMMInstance(sse_number) : GetInstance(sse_number);
+#endif
+	}
+
+	const xAddressReg& xAddressReg::GetArgRegister(uint arg_number, uint gpr_number)
+	{
+#ifdef _WIN32
+		// Windows passes arguments according to their position from the left.
+		static constexpr const xAddressReg* regs[] = {&rcx, &rdx, &r8, &r9};
+		pxAssert(arg_number < std::size(regs));
+		return *regs[arg_number];
+#else
+		// Linux counts the number of GPR parameters.
+		static constexpr const xAddressReg* regs[] = {&rdi, &rsi, &rdx, &rcx};
+		pxAssert(gpr_number < std::size(regs));
+		return *regs[gpr_number];
+#endif
 	}
 
 	// --------------------------------------------------------------------------------------
@@ -771,7 +845,7 @@ extern const xRegister32
 		bool IsMem() const { return true; }
 		bool IsReg() const { return false; }
 		bool IsExtended() const { return false; } // Non sense but ease template
-		bool IsWide() const { return GetOperandSize() == 8; }
+		bool IsWide() const { return _operandSize == 8; }
 
 		operator xAddressVoid()
 		{

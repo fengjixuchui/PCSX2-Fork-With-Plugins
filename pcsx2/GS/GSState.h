@@ -186,6 +186,7 @@ protected:
 	void GrowVertexBuffer();
 	bool IsAutoFlushDraw();
 	void HandleAutoFlush();
+	void CLUTAutoFlush();
 
 	template <u32 prim, bool auto_flush, bool index_swap>
 	void VertexKick(u32 skip);
@@ -228,6 +229,7 @@ public:
 	GSDrawingEnvironment m_env;
 	GSDrawingEnvironment m_backup_env;
 	GSDrawingEnvironment m_prev_env;
+	GSVector4i temp_draw_rect;
 	GSDrawingContext* m_context;
 	u32 m_crc;
 	CRC::Game m_game;
@@ -283,12 +285,13 @@ public:
 		TEXFLUSH = 1 << 4,
 		GSTRANSFER = 1 << 5,
 		UPLOADDIRTYTEX = 1 << 6,
-		DOWNLOADFIFO = 1 << 7,
-		SAVESTATE = 1 << 8,
-		LOADSTATE = 1 << 9,
-		AUTOFLUSH = 1 << 10,
-		VSYNC  = 1 << 11,
-		GSREOPEN = 1 << 12,
+		LOCALTOLOCALMOVE = 1 << 7,
+		DOWNLOADFIFO = 1 << 8,
+		SAVESTATE = 1 << 9,
+		LOADSTATE = 1 << 10,
+		AUTOFLUSH = 1 << 11,
+		VSYNC  = 1 << 12,
+		GSREOPEN = 1 << 13,
 	};
 
 	GSFlushReason m_state_flush_reason;
@@ -370,6 +373,7 @@ public:
 	virtual void PurgePool() = 0;
 	virtual void InvalidateVideoMem(const GIFRegBITBLTBUF& BITBLTBUF, const GSVector4i& r) {}
 	virtual void InvalidateLocalMem(const GIFRegBITBLTBUF& BITBLTBUF, const GSVector4i& r, bool clut = false) {}
+	virtual void ExpandTarget(const GIFRegBITBLTBUF& BITBLTBUF, const GSVector4i& r) {}
 
 	virtual void Move();
 

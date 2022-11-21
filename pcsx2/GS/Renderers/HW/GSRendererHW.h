@@ -127,6 +127,8 @@ private:
 	void SwSpriteRender();
 	bool CanUseSwSpriteRender();
 
+	bool PossibleCLUTDraw();
+	bool PossibleCLUTDrawAggressive();
 	bool CanUseSwPrimRender(bool no_rt, bool no_ds, bool draw_sprite_tex);
 	bool SwPrimRender();
 
@@ -196,6 +198,7 @@ public:
 
 	GSTexture* GetOutput(int i, int& y_offset) override;
 	GSTexture* GetFeedbackOutput() override;
+	void ExpandTarget(const GIFRegBITBLTBUF& BITBLTBUF, const GSVector4i& r);
 	void InvalidateVideoMem(const GIFRegBITBLTBUF& BITBLTBUF, const GSVector4i& r) override;
 	void InvalidateLocalMem(const GIFRegBITBLTBUF& BITBLTBUF, const GSVector4i& r, bool clut = false) override;
 	void Move() override;

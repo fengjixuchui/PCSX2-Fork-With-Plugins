@@ -653,6 +653,9 @@ void GSState::DumpVertices(const std::string& filename)
 		case GSFlushReason::UPLOADDIRTYTEX:
 			file << "GS UPLOAD OVERWRITES CURRENT TEXTURE OR CLUT";
 			break;
+		case GSFlushReason::LOCALTOLOCALMOVE:
+			file << "GS LOCAL TO LOCAL OVERWRITES CURRENT TEXTURE OR CLUT";
+			break;
 		case GSFlushReason::DOWNLOADFIFO:
 			file << "DOWNLOAD FIFO";
 			break;
@@ -774,16 +777,8 @@ __inline void GSState::CheckFlushes()
 	if (m_dirty_gs_regs && m_index.tail > 0)
 	{
 		if (TestDrawChanged())
-		{
 			Flush(GSFlushReason::CONTEXTCHANGE);
-		}
 	}
-	if ((m_context->FRAME.FBMSK & GSLocalMemory::m_psm[m_context->FRAME.PSM].fmsk) != GSLocalMemory::m_psm[m_context->FRAME.PSM].fmsk)
-		m_mem.m_clut.Invalidate(m_context->FRAME.Block());
-
-	// Hey, why not check? I mean devs have done crazier things..
-	if(!m_context->ZBUF.ZMSK)
-		m_mem.m_clut.Invalidate(m_context->ZBUF.Block());
 }
 
 void GSState::GIFPackedRegHandlerNull(const GIFPackedReg* RESTRICT r)
@@ -1070,13 +1065,19 @@ void GSState::ApplyTEX0(GIFRegTEX0& TEX0)
 
 	GL_REG("Apply TEX0_%d = 0x%x_%x", i, TEX0.U32[1], TEX0.U32[0]);
 
-	// even if TEX0 did not change, a new palette may have been uploaded and will overwrite the currently queued for drawing
+	// Even if TEX0 did not change, a new palette may have been uploaded and will overwrite the currently queued for drawing.
 	const bool wt = m_mem.m_clut.WriteTest(TEX0, m_env.TEXCLUT);
 
-	// clut loading already covered with WriteTest, for drawing only have to check CPSM and CSA (MGS3 intro skybox would be drawn piece by piece without this)
-
 	if (wt)
+	{
+		m_mem.m_clut.SetNextCLUTTEX0(TEX0.U64);
+		if (TEX0.CBP != m_mem.m_clut.GetCLUTCBP())
+		{
+			m_mem.m_clut.ClearDrawInvalidity();
+			CLUTAutoFlush();
+		}
 		Flush(GSFlushReason::CLUTCHANGE);
+	}
 
 	TEX0.CPSM &= 0xa; // 1010b
 
@@ -1094,7 +1095,7 @@ void GSState::ApplyTEX0(GIFRegTEX0& TEX0)
 		{
 			BITBLTBUF.SBP = TEX0.CBP;
 			BITBLTBUF.SBW = 1;
-			BITBLTBUF.SPSM = TEX0.CSM;
+			BITBLTBUF.SPSM = TEX0.CPSM;
 
 			r.left = 0;
 			r.top = 0;
@@ -1103,12 +1104,13 @@ void GSState::ApplyTEX0(GIFRegTEX0& TEX0)
 
 			int blocks = 4;
 
-			if (GSLocalMemory::m_psm[TEX0.CPSM].bpp == 16)
+			if (GSLocalMemory::m_psm[TEX0.CPSM].trbpp == 16)
 				blocks >>= 1;
 
-			if (GSLocalMemory::m_psm[TEX0.PSM].bpp == 4)
+			if (GSLocalMemory::m_psm[TEX0.PSM].trbpp == 4)
 				blocks >>= 1;
 
+			// Invalidating videomem is slow, so *only* do it when it's definitely a CLUT draw in HW mode.
 			for (int j = 0; j < blocks; j++, BITBLTBUF.SBP++)
 				InvalidateLocalMem(BITBLTBUF, r, true);
 		}
@@ -1116,7 +1118,7 @@ void GSState::ApplyTEX0(GIFRegTEX0& TEX0)
 		{
 			BITBLTBUF.SBP = TEX0.CBP;
 			BITBLTBUF.SBW = m_env.TEXCLUT.CBW;
-			BITBLTBUF.SPSM = TEX0.CSM;
+			BITBLTBUF.SPSM = TEX0.CPSM;
 
 			r.left = m_env.TEXCLUT.COU;
 			r.top = m_env.TEXCLUT.COV;
@@ -1145,8 +1147,6 @@ void GSState::GIFRegHandlerTEX0(const GIFReg* RESTRICT r)
 	GL_REG("TEX0_%d = 0x%x_%x", i, r->U32[1], r->U32[0]);
 
 	GIFRegTEX0 TEX0 = r->TEX0;
-	GIFRegMIPTBP1 temp_MIPTBP1;
-	bool MTBAReloaded = false;
 	// Max allowed MTBA size for 32bit swizzled textures (including 8H 4HL etc) is 512, 16bit and normal 8/4bit formats can be 1024
 	const u32 maxTex = (GSLocalMemory::m_psm[TEX0.PSM].bpp < 32) ? 10 : 9;
 
@@ -1171,6 +1171,7 @@ void GSState::GIFRegHandlerTEX0(const GIFReg* RESTRICT r)
 	// Format must be a color, Z formats do not trigger MTBA (but are valid for Mipmapping)
 	if (m_env.CTXT[i].TEX1.MTBA && TEX0.TW >= 5 && TEX0.TW <= maxTex && (TEX0.PSM & 0x30) != 0x30)
 	{
+		GIFRegMIPTBP1& mip_tbp1 = m_env.CTXT[i].MIPTBP1;
 		// NOTE 1: TEX1.MXL must not be automatically set to 3 here and it has no effect on MTBA.
 		// NOTE 2: Mipmap levels are packed with a minimum distance between them of 1 block, even down at 4bit textures under 16x16.
 		// NOTE 3: Everything is derrived from the width of the texture, TBW and TH are completely ignored (useful for handling non-rectangular ones)
@@ -1187,39 +1188,32 @@ void GSState::GIFRegHandlerTEX0(const GIFReg* RESTRICT r)
 		bw = std::max<u32>(bw >> 1, 1);
 		tex_size = std::max<u32>(tex_size >> 2, 1);
 
-		temp_MIPTBP1.TBP1 = bp;
-		temp_MIPTBP1.TBW1 = bw;
+		mip_tbp1.TBP1 = bp;
+		mip_tbp1.TBW1 = bw;
 
 		bp += tex_size;
 		bw = std::max<u32>(bw >> 1, 1);
 		tex_size = std::max<u32>(tex_size >> 2, 1);
 
-		temp_MIPTBP1.TBP2 = bp;
-		temp_MIPTBP1.TBW2 = bw;
+		mip_tbp1.TBP2 = bp;
+		mip_tbp1.TBW2 = bw;
 
 		bp += tex_size;
 		bw = std::max<u32>(bw >> 1, 1);
 
-		temp_MIPTBP1.TBP3 = bp;
-		temp_MIPTBP1.TBW3 = bw;
-
-		MTBAReloaded = true;
-	}
-
-	ApplyTEX0<i>(TEX0);
-
-	if (MTBAReloaded)
-	{
-		m_env.CTXT[i].MIPTBP1 = temp_MIPTBP1;
+		mip_tbp1.TBP3 = bp;
+		mip_tbp1.TBW3 = bw;
 
 		if (i == m_prev_env.PRIM.CTXT)
 		{
-			if (m_prev_env.CTXT[i].MIPTBP1.U64 ^ m_env.CTXT[i].MIPTBP1.U64)
+			if (m_prev_env.CTXT[i].MIPTBP1.U64 ^ mip_tbp1.U64)
 				m_dirty_gs_regs |= (1 << DIRTY_REG_MIPTBP1);
 			else
 				m_dirty_gs_regs &= ~(1 << DIRTY_REG_MIPTBP1);
 		}
 	}
+
+	ApplyTEX0<i>(TEX0);
 }
 
 template <int i>
@@ -1770,7 +1764,7 @@ void GSState::FlushWrite()
 	r.top = m_env.TRXPOS.DSAY;
 	r.right = r.left + m_env.TRXREG.RRW;
 	r.bottom = r.top + m_env.TRXREG.RRH;
-
+	ExpandTarget(m_env.BITBLTBUF, r);
 	InvalidateVideoMem(m_env.BITBLTBUF, r);
 
 	const GSLocalMemory::writeImage wi = GSLocalMemory::m_psm[m_env.BITBLTBUF.DPSM].wi;
@@ -2002,13 +1996,21 @@ void GSState::Write(const u8* mem, int len)
 	if (!m_tr.Update(w, h, psm.trbpp, len))
 		return;
 
-	// TODO: Not really sufficient if a partial texture update is done outside the block.
-	// No need to check CLUT here, we can invalidate it below, no need to flush it since TEX0 needs to update, then we can flush.
-	// Only flush on a NEW transfer if a pending one is using the same address.
-	// Check Fast & Furious (Hardare mode) and Assault Suits Valken (either renderer).
-	if (m_tr.end == 0 && m_index.tail > 0 && m_prev_env.PRIM.TME &&
-		(blit.DBP == m_prev_env.CTXT[m_prev_env.PRIM.CTXT].TEX0.TBP0 || blit.DBP == m_prev_env.CTXT[m_prev_env.PRIM.CTXT].TEX0.CBP))
+	
+
+	GIFRegTEX0& prev_tex0 = m_prev_env.CTXT[m_prev_env.PRIM.CTXT].TEX0;
+
+	const u32 write_start_bp = m_mem.m_psm[blit.DPSM].info.bn(m_env.TRXPOS.DSAX, m_env.TRXPOS.DSAY, blit.DBP, blit.DBW); // (m_mem.*psm.pa)(static_cast<int>(m_env.TRXPOS.DSAX), static_cast<int>(m_env.TRXPOS.DSAY), blit.DBP, blit.DBW) >> 6;
+	const u32 write_end_bp = m_mem.m_psm[blit.DPSM].info.bn(m_env.TRXPOS.DSAX + w - 1, m_env.TRXPOS.DSAY + h - 1, blit.DBP, blit.DBW); // (m_mem.*psm.pa)(w + static_cast<int>(m_env.TRXPOS.DSAX) - 1, h + static_cast<int>(m_env.TRXPOS.DSAY) - 1, blit.DBP, blit.DBW) >> 6;
+	const u32 tex_end_bp = m_mem.m_psm[prev_tex0.PSM].info.bn((1 << prev_tex0.TW) - 1, (1 << prev_tex0.TH) - 1, prev_tex0.TBP0, prev_tex0.TBW); // (m_mem.*psm.pa)((1 << prev_tex0.TW) - 1, (1 << prev_tex0.TH) - 1, prev_tex0.TBP0, prev_tex0.TBW) >> 6;
+	// Only flush on a NEW transfer if a pending one is using the same address or overlap.
+	// Check Fast & Furious (Hardare mode) and Assault Suits Valken (either renderer) and Tomb Raider - Angel of Darkness menu (TBP != DBP but overlaps).
+	if (m_tr.end == 0 && m_index.tail > 0 && m_prev_env.PRIM.TME && write_end_bp > prev_tex0.TBP0 && write_start_bp <= tex_end_bp)
+	{
 		Flush(GSFlushReason::UPLOADDIRTYTEX);
+	}
+	// Invalid the CLUT if it crosses paths.
+	m_mem.m_clut.InvalidateRange(write_start_bp, write_end_bp);
 
 	GL_CACHE("Write! ...  => 0x%x W:%d F:%s (DIR %d%d), dPos(%d %d) size(%d %d)",
 			 blit.DBP, blit.DBW, psm_str(blit.DPSM),
@@ -2024,7 +2026,7 @@ void GSState::Write(const u8* mem, int len)
 		r.top = m_env.TRXPOS.DSAY;
 		r.right = r.left + m_env.TRXREG.RRW;
 		r.bottom = r.top + m_env.TRXREG.RRH;
-
+		ExpandTarget(m_env.BITBLTBUF, r);
 		InvalidateVideoMem(blit, r);
 
 		(m_mem.*psm.wi)(m_tr.x, m_tr.y, mem, m_tr.total, blit, m_env.TRXPOS, m_env.TRXREG);
@@ -2042,13 +2044,6 @@ void GSState::Write(const u8* mem, int len)
 		if (m_tr.end >= m_tr.total)
 			FlushWrite();
 	}
-
-	const int page_width = std::max(1, ((w + static_cast<int>(m_env.TRXPOS.DSAX)) / psm.pgs.x));
-	const int page_height = std::max(1, ((h + static_cast<int>(m_env.TRXPOS.DSAY)) / psm.pgs.y));
-	const int pitch = (std::max(1U, blit.DBW) * 64) / psm.pgs.x;
-
-	// Try to avoid flushing draws if it doesn't cross paths
-	m_mem.m_clut.InvalidateRange(blit.DBP, blit.DBP + ((page_width << 5) + ((page_height * pitch) << 5)));
 }
 
 void GSState::InitReadFIFO(u8* mem, int len)
@@ -2151,6 +2146,21 @@ void GSState::Move()
 	const GSOffset spo = m_mem.GetOffset(sbp, sbw, m_env.BITBLTBUF.SPSM);
 	const GSOffset dpo = m_mem.GetOffset(dbp, dbw, m_env.BITBLTBUF.DPSM);
 
+	GIFRegTEX0& prev_tex0 = m_prev_env.CTXT[m_prev_env.PRIM.CTXT].TEX0;
+
+	const u32 write_start_bp = m_mem.m_psm[m_env.BITBLTBUF.DPSM].info.bn(m_env.TRXPOS.DSAX, m_env.TRXPOS.DSAY, dbp, dbw); // (m_mem.*dpsm.pa)(static_cast<int>(m_env.TRXPOS.DSAX), static_cast<int>(m_env.TRXPOS.DSAY), dbp, dbw) >> 6;
+	const u32 write_end_bp = m_mem.m_psm[m_env.BITBLTBUF.DPSM].info.bn(m_env.TRXPOS.DSAX + w - 1, m_env.TRXPOS.DSAY + h - 1, dbp, dbw); // (m_mem.*dpsm.pa)(w + static_cast<int>(m_env.TRXPOS.DSAX) - 1, h + static_cast<int>(m_env.TRXPOS.DSAY) - 1, dbp, dbw) >> 6;
+	const u32 tex_end_bp = m_mem.m_psm[prev_tex0.PSM].info.bn((1 << prev_tex0.TW) - 1, (1 << prev_tex0.TH) - 1, prev_tex0.TBP0, prev_tex0.TBW); // (m_mem.*dpsm.pa)((1 << prev_tex0.TW) - 1, (1 << prev_tex0.TH) - 1, prev_tex0.TBP0, prev_tex0.TBW) >> 6;
+	// Only flush on a NEW transfer if a pending one is using the same address or overlap.
+	// Unknown if games use this one, but best to be safe.
+
+	if (m_index.tail > 0 && m_prev_env.PRIM.TME && write_end_bp >= prev_tex0.TBP0 && write_start_bp <= tex_end_bp)
+	{
+		Flush(GSFlushReason::LOCALTOLOCALMOVE);
+	}
+	// Invalid the CLUT if it crosses paths.
+	m_mem.m_clut.InvalidateRange(write_start_bp, write_end_bp);
+
 	auto genericCopy = [=](const GSOffset& dpo, const GSOffset& spo, auto&& getPAHelper, auto&& pxCopyFn)
 	{
 		int _sy = sy, _dy = dy; // Faster with local copied variables, compiler optimizations are dumb
@@ -2162,7 +2172,10 @@ void GSState::Move()
 			const int ypage = _sy & ~(page_height - 1);
 			// Copying from itself to itself (rotating textures) used in Gitaroo Man stage 8
 			// What probably happens is because the copy is buffered, the source stays just ahead of the destination.
-			if (sbp == dbp && (((_sy < _dy) && ((ypage + page_height) > _dy)) || ((sx < dx) && ((xpage + page_width) > dx))))
+			// No need to do all this if the copy source/destination don't intersect, however.
+			const bool intersect = !(GSVector4i(sx, sy, sx + w, sy + h).rintersect(GSVector4i(dx, dy, dx + w, dy + h)).rempty());
+
+			if (intersect && sbp == dbp && (((_sy < _dy) && ((ypage + page_height) > _dy)) || ((sx < dx) && ((xpage + page_width) > dx))))
 			{
 				int starty = (yinc > 0) ? 0 : h-1;
 				int endy = (yinc > 0) ? h : -1;
@@ -2170,8 +2183,8 @@ void GSState::Move()
 
 				if (((_sy < _dy) && ((ypage + page_height) > _dy)) && yinc > 0)
 				{
-					_sy += h;
-					_dy += h;
+					_sy += h-1;
+					_dy += h-1;
 					starty = h-1;
 					endy = -1;
 					y_inc = -y_inc;
@@ -2179,21 +2192,21 @@ void GSState::Move()
 
 				for (int y = starty; y != endy; y+= y_inc, _sy += y_inc, _dy += y_inc)
 				{
-					auto s = getPAHelper(spo, sx, _sy);
-					auto d = getPAHelper(dpo, dx, _dy);
+					auto s = getPAHelper(spo, 0, _sy);
+					auto d = getPAHelper(dpo, 0, _dy);
 
 					if (((sx < dx) && ((xpage + page_width) > dx)))
 					{
 						for (int x = w - 1; x >= 0; x--)
 						{
-							pxCopyFn(d, s, x);
+							pxCopyFn(d, s, (dx + x) & 2047, (sx + x) & 2047);
 						}
 					}
 					else
 					{
 						for (int x = 0; x < w; x++)
 						{
-							pxCopyFn(d, s, x);
+							pxCopyFn(d, s, (dx + x) & 2047, (sx + x) & 2047);
 						}
 					}
 				}
@@ -2202,12 +2215,12 @@ void GSState::Move()
 			{
 				for (int y = 0; y < h; y++, _sy += yinc, _dy += yinc)
 				{
-					auto s = getPAHelper(spo, sx, _sy);
-					auto d = getPAHelper(dpo, dx, _dy);
+					auto s = getPAHelper(spo, 0, _sy);
+					auto d = getPAHelper(dpo, 0, _dy);
 
 					for (int x = 0; x < w; x++)
 					{
-						pxCopyFn(d, s, x);
+						pxCopyFn(d, s, (dx + x) & 2047, (sx + x) & 2047);
 					}
 				}
 			}
@@ -2216,12 +2229,12 @@ void GSState::Move()
 		{
 			for (int y = 0; y < h; y++, _sy += yinc, _dy += yinc)
 			{
-				auto s = getPAHelper(spo, sx, _sy);
-				auto d = getPAHelper(dpo, dx, _dy);
+				auto s = getPAHelper(spo, 0, _sy);
+				auto d = getPAHelper(dpo, 0, _dy);
 
 				for (int x = 0; x < w; x++)
 				{
-					pxCopyFn(d, s, -x);
+					pxCopyFn(d, s, (dx - x) & 2047, (sx - x) & 2047);
 				}
 			}
 		}
@@ -2231,9 +2244,9 @@ void GSState::Move()
 	{
 		genericCopy(dpo, spo,
 			[](const GSOffset& o, int x, int y) { return o.paMulti(x, y); },
-			[=](const GSOffset::PAHelper& d, const GSOffset::PAHelper& s, int x)
+			[=](const GSOffset::PAHelper& d, const GSOffset::PAHelper& s, int dx, int sx)
 			{
-				return pxCopyFn(d.value(x), s.value(x));
+				return pxCopyFn(d.value(dx), s.value(sx));
 			});
 	};
 
@@ -2241,9 +2254,9 @@ void GSState::Move()
 	{
 		genericCopy(dpo, spo,
 			[=](const GSOffset& o, int x, int y) { return o.paMulti(vm, x, y); },
-			[=](const auto& d, const auto& s, int x)
+			[=](const auto& d, const auto& s, int dx, int sx)
 			{
-				return pxCopyFn(d.value(x), s.value(x));
+				return pxCopyFn(d.value(dx), s.value(sx));
 			});
 	};
 
@@ -2292,12 +2305,6 @@ void GSState::Move()
 			(m_mem.*dpsm.wpa)(doff, (m_mem.*spsm.rpa)(soff));
 		});
 	}
-	const int page_width = std::max(1, ((w + static_cast<int>(m_env.TRXPOS.DSAX)) / dpsm.pgs.x));
-	const int page_height = std::max(1, ((h + static_cast<int>(m_env.TRXPOS.DSAY)) / dpsm.pgs.y));
-	const int pitch = (std::max(1, dbw) * 64) / dpsm.pgs.x;
-
-	// Try to avoid flushing draws if it doesn't cross paths
-	m_mem.m_clut.InvalidateRange(dbp, dbp + ((page_width << 5) + ((page_height * pitch) << 5)));
 }
 
 void GSState::SoftReset(u32 mask)
@@ -2946,17 +2953,68 @@ GSState::PRIM_OVERLAP GSState::PrimitiveOverlap()
 
 __forceinline bool GSState::IsAutoFlushDraw()
 {
+	if (!PRIM->TME)
+		return false;
+
 	const u32 frame_mask = GSLocalMemory::m_psm[m_context->TEX0.PSM].fmsk;
-	const bool frame_hit = (m_context->FRAME.Block() == m_context->TEX0.TBP0) && !(m_context->TEST.ATE && m_context->TEST.ATST == 0 && m_context->TEST.AFAIL == 2) && ((m_context->FRAME.FBMSK & frame_mask) != frame_mask);
+	const bool frame_hit = m_context->FRAME.Block() == m_context->TEX0.TBP0 && !(m_context->TEST.ATE && m_context->TEST.ATST == 0 && m_context->TEST.AFAIL == 2) && ((m_context->FRAME.FBMSK & frame_mask) != frame_mask);
 	// There's a strange behaviour we need to test on a PS2 here, if the FRAME is a Z format, like Powerdrome something swaps over, and it seems Alpha Fail of "FB Only" writes to the Z.. it's odd.
 	const bool zbuf_hit = (m_context->ZBUF.Block() == m_context->TEX0.TBP0) && !(m_context->TEST.ATE && m_context->TEST.ATST == 0 && m_context->TEST.AFAIL != 2) && !m_context->ZBUF.ZMSK;
 	const u32 frame_z_psm = frame_hit ? m_context->FRAME.PSM : m_context->ZBUF.PSM;
 	const u32 frame_z_bp = frame_hit ? m_context->FRAME.Block() : m_context->ZBUF.Block();
 
-	if (PRIM->TME && (frame_hit || zbuf_hit) && GSUtil::HasSharedBits(frame_z_bp, frame_z_psm, m_context->TEX0.TBP0, m_context->TEX0.PSM))
+	if ((frame_hit || zbuf_hit) && GSUtil::HasSharedBits(frame_z_bp, frame_z_psm, m_context->TEX0.TBP0, m_context->TEX0.PSM))
 		return true;
 	
 	return false;
+}
+
+__forceinline void GSState::CLUTAutoFlush()
+{
+	if (m_mem.m_clut.IsInvalid() & 2)
+		return;
+
+	size_t  n = 1;
+
+	switch (PRIM->PRIM)
+	{
+		case GS_POINTLIST:
+			n = 1;
+			break;
+		case GS_LINELIST:
+		case GS_LINESTRIP:
+		case GS_SPRITE:
+			n = 2;
+			break;
+		case GS_TRIANGLELIST:
+		case GS_TRIANGLESTRIP:
+			n = 3;
+			break;
+		case GS_TRIANGLEFAN:
+			n = 3;
+			break;
+		case GS_INVALID:
+		default:
+			break;
+	}
+
+	if ((m_index.tail > 0 || (m_vertex.tail == n - 1)) && (GSLocalMemory::m_psm[m_context->TEX0.PSM].pal == 0 || !PRIM->TME))
+	{
+		const GSLocalMemory::psm_t& psm = GSLocalMemory::m_psm[m_context->FRAME.PSM];
+
+		if ((m_context->FRAME.FBMSK & psm.fmsk) != psm.fmsk && GSLocalMemory::m_psm[m_mem.m_clut.GetCLUTCPSM()].bpp == psm.bpp)
+		{
+			const u32 startbp = psm.info.bn(temp_draw_rect.x, temp_draw_rect.y, m_context->FRAME.Block(), m_context->FRAME.FBW);
+
+			// If it's a point, then we only have one coord, so the address for start and end will be the same, which is bad for the following check.
+			u32 endbp = startbp;
+			// otherwise calculate the end.
+			if (PRIM->PRIM != GS_POINTLIST || (m_index.tail > 1))
+				endbp = psm.info.bn(temp_draw_rect.z - 1, temp_draw_rect.w - 1, m_context->FRAME.Block(), m_context->FRAME.FBW);
+
+			m_mem.m_clut.InvalidateRange(startbp, endbp, true);
+		}
+	}
 }
 
 __forceinline void GSState::HandleAutoFlush()
@@ -3179,7 +3237,7 @@ __forceinline void GSState::VertexKick(u32 skip)
 
 	ASSERT(m_vertex.tail < m_vertex.maxcount + 3);
 
-	if (auto_flush && m_index.tail > 0 && ((m_vertex.tail + 1) - m_vertex.head) >= n)
+	if (auto_flush && skip == 0 && m_index.tail > 0 && ((m_vertex.tail + 1) - m_vertex.head) >= n)
 	{
 		HandleAutoFlush();
 	}
@@ -3392,6 +3450,37 @@ __forceinline void GSState::VertexKick(u32 skip)
 		default:
 			__assume(0);
 	}
+
+	
+	
+	GSVector4i draw_coord;
+	const GSVector2i offset = GSVector2i(m_context->XYOFFSET.OFX, m_context->XYOFFSET.OFY);
+
+	for (size_t i = 0; i < n; i++)
+	{
+		const GSVertex* v = &m_vertex.buff[m_index.buff[(m_index.tail - n) + i]];
+		draw_coord.x = (static_cast<int>(v->XYZ.X) - offset.x) >> 4;
+		draw_coord.y = (static_cast<int>(v->XYZ.Y) - offset.y) >> 4;
+
+		if (m_vertex.tail == n && i == 0)
+		{
+			temp_draw_rect.x = draw_coord.x;
+			temp_draw_rect.y = draw_coord.y;
+			temp_draw_rect = temp_draw_rect.xyxy();
+		}
+		else
+		{
+			temp_draw_rect.x = std::min(draw_coord.x, temp_draw_rect.x);
+			temp_draw_rect.y = std::min(draw_coord.y, temp_draw_rect.y);
+			temp_draw_rect.z = std::max(draw_coord.x, temp_draw_rect.z);
+			temp_draw_rect.w = std::max(draw_coord.y, temp_draw_rect.w);
+		}
+	}
+
+	const GSVector4i scissor = GSVector4i(m_context->scissor.in);
+	temp_draw_rect.rintersect(scissor);
+
+	CLUTAutoFlush();
 }
 
 /// Checks if region repeat is used (applying it does something to at least one of the values in min...max)

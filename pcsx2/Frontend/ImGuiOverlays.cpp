@@ -100,8 +100,10 @@ void ImGuiManager::DrawPerformanceOverlay()
 
 #ifdef PCSX2_CORE
 	const bool paused = (VMManager::GetState() == VMState::Paused);
+	const bool fsui_active = FullscreenUI::HasActiveWindow();
 #else
-	constexpr bool paused = false;
+	const bool paused = false;
+	const bool fsui_active = false;
 #endif
 
 	if (!paused)
@@ -224,7 +226,7 @@ void ImGuiManager::DrawPerformanceOverlay()
 			}
 		}
 	}
-	else
+	else if (!fsui_active)
 	{
 		if (GSConfig.OsdShowIndicators)
 		{
@@ -377,8 +379,32 @@ void ImGuiManager::DrawSettingsOverlay()
 			APPEND("TCO={}/{} ", GSConfig.UserHacks_TCOffsetX, GSConfig.UserHacks_TCOffsetY);
 		if (GSConfig.UserHacks_CPUSpriteRenderBW != 0)
 			APPEND("CSBW={} ", GSConfig.UserHacks_CPUSpriteRenderBW);
+		if (GSConfig.UserHacks_CPUCLUTRender != 0)
+			APPEND("CCD={} ", GSConfig.UserHacks_CPUCLUTRender);
 		if (GSConfig.SkipDrawStart != 0 || GSConfig.SkipDrawEnd != 0)
 			APPEND("SD={}/{} ", GSConfig.SkipDrawStart, GSConfig.SkipDrawEnd);
+		if (GSConfig.UserHacks_TextureInsideRt)
+			APPEND("TexRT ");
+		if (GSConfig.UserHacks_WildHack)
+			APPEND("WA ");
+		if (GSConfig.UserHacks_MergePPSprite)
+			APPEND("MS ");
+		if (GSConfig.UserHacks_AlignSpriteX)
+			APPEND("AS ");
+		if (GSConfig.UserHacks_AutoFlush)
+			APPEND("AF ");
+		if (GSConfig.UserHacks_CPUFBConversion)
+			APPEND("FBC ");
+		if(GSConfig.UserHacks_DisableDepthSupport)
+			APPEND("DDE ");
+		if (GSConfig.UserHacks_DisablePartialInvalidation)
+			APPEND("DPIV ");
+		if (GSConfig.UserHacks_DisableSafeFeatures)
+			APPEND("DSF ");
+		if (GSConfig.WrapGSMem)
+			APPEND("WGSM ");
+		if (GSConfig.PreloadFrameWithGSData)
+			APPEND("PLFD ");
 	}
 
 #undef APPEND
