@@ -1364,13 +1364,18 @@ static uint cdvdStartSeek(uint newsector, CDVD_MODE_TYPE mode)
 		}
 		else
 		{
-			psxRegs.interrupt &= ~(1 << IopEvt_CdvdSectorReady);
-			cdvd.nextSectorsBuffered = 0;
+			if (delta >= cdvd.nextSectorsBuffered)
+			{
+				psxRegs.interrupt &= ~(1 << IopEvt_CdvdSectorReady);
+				cdvd.nextSectorsBuffered = 0;
+			}
+			else
+				cdvd.nextSectorsBuffered -= delta;
 		}
 	}
 
 	// Only do this on reads, the seek kind of accounts for this and then it reads the sectors after
-	if ((delta || cdvd.Action == cdvdAction_Seek) && !isSeeking)
+	if ((delta || cdvd.Action == cdvdAction_Seek) && !isSeeking && !cdvd.nextSectorsBuffered)
 	{
 		const u32 rotationalLatency = cdvdRotationalLatency((CDVD_MODE_TYPE)cdvdIsDVD());
 		//DevCon.Warning("%s rotational latency at sector %d is %d cycles", (cdvd.SpindlCtrl & CDVD_SPINDLE_CAV) ? "CAV" : "CLV", cdvd.SeekToSector, rotationalLatency);
@@ -1378,8 +1383,19 @@ static uint cdvdStartSeek(uint newsector, CDVD_MODE_TYPE mode)
 		CDVDSECTORREADY_INT(seektime);
 		seektime += (cdvd.BlockSize / 4) * 12;
 	}
-	else
+	else if (!isSeeking) // Not seeking but we have buffered stuff, need to just account for DMA time (and kick the read DMA if it's not running for some reason.
+	{
+		if (!(psxRegs.interrupt & (1 << IopEvt_CdvdSectorReady)))
+		{
+			seektime += cdvd.ReadTime;
+			CDVDSECTORREADY_INT(seektime);
+		}
+		seektime += (cdvd.BlockSize / 4) * 12;
+	}
+	else // We're seeking, so kick off the buffering after the seek finishes.
+	{
 		CDVDSECTORREADY_INT(seektime);
+	}
 
 	// Clear the action on the following command, so we can rotate after seek.
 	if (cdvd.nCommand != N_CD_SEEK)

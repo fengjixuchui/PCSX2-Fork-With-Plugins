@@ -529,15 +529,15 @@ GSTextureCache::Target* GSTextureCache::LookupTarget(const GIFRegTEX0& TEX0, con
 		// 2nd try ! Try to find a frame at the requested bp -> bp + size is inside of (or equal to)
 		if (!dst)
 		{
+			const u32 needed_end = GSLocalMemory::m_psm[TEX0.PSM].info.bn(real_w - 1, real_h - 1, bp, TEX0.TBW);
 			for (auto t : list)
 			{
 				// Make sure the target is inside the texture
 				if (t->m_TEX0.TBP0 <= bp && bp <= t->m_end_block && t->Inside(bp, TEX0.TBW, TEX0.PSM, GSVector4i(0, 0, real_w, real_h)))
 				{
-					if (old_found && t->m_age > 4)
-					{
+					// If we already have an old one, make sure the "new" one matches at least on one end (double buffer?).
+					if (old_found && (t->m_age > 4 || (t->m_TEX0.TBP0 != bp && needed_end != t->m_end_block)))
 						continue;
-					}
 
 					dst = t;
 					GL_CACHE("TC: Lookup Frame %dx%d, inclusive hit: %d (0x%x, took 0x%x -> 0x%x %s)", size.x, size.y, t->m_texture->GetID(), bp, t->m_TEX0.TBP0, t->m_end_block, psm_str(TEX0.PSM));
@@ -783,7 +783,7 @@ void GSTextureCache::ExpandTarget(const GIFRegBITBLTBUF& BITBLTBUF, const GSVect
 			{
 				AddDirtyRectTarget(dst, r, TEX0.PSM, TEX0.TBW);
 				GetTargetHeight(TEX0.TBP0, TEX0.TBW, TEX0.PSM, r.w);
-				dst->Update(true);
+				dst->UpdateValidity(r);
 			}
 		}
 	}
@@ -1644,9 +1644,7 @@ void GSTextureCache::IncAge()
 		HashCacheEntry& e = it->second;
 		if (e.refcount == 0 && ++e.age > max_hash_cache_age)
 		{
-			if (!e.is_replacement)
-				m_hash_cache_memory_usage -= e.texture->GetMemUsage();
-
+			m_hash_cache_memory_usage -= e.texture->GetMemUsage();
 			g_gs_device->Recycle(e.texture);
 			m_hash_cache.erase(it++);
 		}
@@ -2129,6 +2127,7 @@ GSTextureCache::HashCacheEntry* GSTextureCache::LookupHashCache(const GIFRegTEX0
 			// found a replacement texture! insert it into the hash cache, and clear paltex (since it's not indexed)
 			paltex = false;
 			const HashCacheEntry entry{replacement_tex, 1u, 0u, true};
+			m_hash_cache_memory_usage += entry.texture->GetMemUsage();
 			return &m_hash_cache.emplace(key, entry).first->second;
 		}
 		else if (
@@ -3163,6 +3162,9 @@ void GSTextureCache::InvalidateTemporarySource()
 
 void GSTextureCache::InjectHashCacheTexture(const HashCacheKey& key, GSTexture* tex)
 {
+	// When we insert we update memory usage. Old texture gets removed below.
+	m_hash_cache_memory_usage += tex->GetMemUsage();
+
 	auto it = m_hash_cache.find(key);
 	if (it == m_hash_cache.end())
 	{
