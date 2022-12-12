@@ -112,7 +112,9 @@ GraphicsSettingsWidget::GraphicsSettingsWidget(SettingsDialog* dialog, QWidget* 
 	SettingWidgetBinder::BindWidgetToBoolSetting(sif, m_ui.PCRTCOverscan, "EmuCore/GS", "pcrtc_overscan", false);
 	SettingWidgetBinder::BindWidgetToBoolSetting(sif, m_ui.PCRTCAntiBlur, "EmuCore/GS", "pcrtc_antiblur", true);
 	SettingWidgetBinder::BindWidgetToBoolSetting(sif, m_ui.DisableInterlaceOffset, "EmuCore/GS", "disable_interlace_offset", false);
-	SettingWidgetBinder::BindWidgetToFloatSetting(sif, m_ui.zoom, "EmuCore/GS", "Zoom", 100.0f);
+	SettingWidgetBinder::BindWidgetToIntSetting(sif, m_ui.screenshotSize, "EmuCore/GS", "ScreenshotSize", static_cast<int>(GSScreenshotSize::WindowResolution));
+	SettingWidgetBinder::BindWidgetToIntSetting(sif, m_ui.screenshotFormat, "EmuCore/GS", "ScreenshotFormat", static_cast<int>(GSScreenshotFormat::PNG));
+	SettingWidgetBinder::BindWidgetToIntSetting(sif, m_ui.screenshotQuality, "EmuCore/GS", "ScreenshotQuality", 50);
 	SettingWidgetBinder::BindWidgetToFloatSetting(sif, m_ui.stretchY, "EmuCore/GS", "StretchY", 100.0f);
 	SettingWidgetBinder::BindWidgetToIntSetting(sif, m_ui.cropLeft, "EmuCore/GS", "CropLeft", 0);
 	SettingWidgetBinder::BindWidgetToIntSetting(sif, m_ui.cropTop, "EmuCore/GS", "CropTop", 0);
@@ -357,10 +359,12 @@ GraphicsSettingsWidget::GraphicsSettingsWidget(SettingsDialog* dialog, QWidget* 
 
 		dialog->registerWidgetHelp(m_ui.interlacing, tr("Deinterlacing"), tr("Automatic (Default)"), tr(""));
 
-		dialog->registerWidgetHelp(m_ui.zoom, tr("Zoom"), tr("100%"),
-			tr("Zoom = 100: Fit the entire image to the window without any cropping."
-			"Above/Below 100: Zoom In/Out."
-			"0: Automatic-Zoom-In until the black-bars are gone (Aspect ratio is kept, some of the image goes out of screen)."));
+		dialog->registerWidgetHelp(m_ui.screenshotSize, tr("Screenshot Size"), tr("Screen Resolution"),
+			tr("Determines the resolution at which screenshots will be saved. Internal resolutions preserve more detail at the cost of file size."));
+		dialog->registerWidgetHelp(m_ui.screenshotFormat, tr("Screenshot Format"), tr("PNG"),
+			tr("Selects the format which will be used to save screenshots. JPEG produces smaller files, but loses detail."));
+		dialog->registerWidgetHelp(m_ui.screenshotQuality, tr("Screenshot Quality"), tr("50%"),
+			tr("Selects the quality at which screenshots will be compressed. Higher values preserve more detail for JPEG, and reduce file size for PNG."));
 
 		dialog->registerWidgetHelp(m_ui.stretchY, tr("Stretch Height"), tr("100%"), tr(""));
 
@@ -738,11 +742,25 @@ void GraphicsSettingsWidget::updateRendererDependentOptions()
 	const bool hw_fixes = (is_hardware && m_ui.enableHWFixes->checkState() == Qt::Checked);
 	const int prev_tab = m_ui.tabs->currentIndex();
 
-	m_ui.tabs->setTabVisible(1, is_hardware); // hw rendering
-	m_ui.tabs->setTabVisible(2, is_software); // sw rendering
-	m_ui.tabs->setTabVisible(3, hw_fixes); // hardware fixes
-	m_ui.tabs->setTabVisible(4, hw_fixes); // upscaling fixes
-	m_ui.tabs->setTabVisible(5, is_hardware); // texture replacement
+	// hw rendering
+	m_ui.tabs->setTabEnabled(1, is_hardware);
+	m_ui.tabs->setTabVisible(1, is_hardware);
+
+	// sw rendering
+	m_ui.tabs->setTabEnabled(2, is_software);
+	m_ui.tabs->setTabVisible(2, is_software);
+
+	// hardware fixes
+	m_ui.tabs->setTabEnabled(3, hw_fixes);
+	m_ui.tabs->setTabVisible(3, hw_fixes);
+
+	// upscaling fixes
+	m_ui.tabs->setTabEnabled(4, hw_fixes);
+	m_ui.tabs->setTabVisible(4, hw_fixes);
+
+	// texture replacement
+	m_ui.tabs->setTabEnabled(5, is_hardware);
+	m_ui.tabs->setTabVisible(5, is_hardware);
 
 	// move back to the renderer if we're on one of the now-hidden tabs
 	if (is_software && (prev_tab == 1 || (prev_tab >= 2 && prev_tab <= 5)))
