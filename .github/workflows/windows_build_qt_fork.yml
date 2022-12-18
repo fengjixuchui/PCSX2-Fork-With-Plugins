@@ -106,7 +106,7 @@ jobs:
           )
 
       - name: Download Plugin Injector artifact
-        uses: robinraju/release-downloader@v1.3
+        uses: robinraju/release-downloader@v1.6
         with:
           repository: "ThirteenAG/PCSX2PluginInjector"
           tag: "latest"
