@@ -157,6 +157,9 @@ namespace usb_pad
 				{SettingInfo::Type::Integer, "SteeringSmoothing", "Steering Smoothing",
 					"Smooths out changes in steering to the specified percentage per poll. Needed for using keyboards.",
 					"0", "0", "100", "1", "%d%%", nullptr, nullptr, 1.0f},
+				{SettingInfo::Type::Integer, "SteeringDeadzone", "Steering Deadzone",
+					"Steering axis deadzone for pads or non self centering wheels.",
+					"0", "0", "100", "1", "%d%%", nullptr, nullptr, 1.0f},
 			};
 
 			return info;
@@ -206,6 +209,8 @@ namespace usb_pad
 			steering_step = static_cast<u16>(std::clamp<s32>((steering_range * smoothing_percent) / 100,
 				1, std::numeric_limits<u16>::max()));
 		}
+
+		steering_deadzone = (steering_range * USB::GetConfigInt(si, port, devname, "SteeringDeadzone", 0)) / 100;
 
 		if (HasFF())
 		{
@@ -439,17 +444,25 @@ namespace usb_pad
 		}
 	}
 
+	s16 PadState::ApplySteeringAxisDeadzone(float value)
+	{
+		const s16 raw_steering = static_cast<s16>(std::lroundf(value * static_cast<float>(steering_range)));
+		const s16 deadzone_offset = static_cast<s16>(std::lroundf(value * static_cast<float>(steering_deadzone)));
+
+		return std::max((raw_steering - steering_deadzone + deadzone_offset ), 0);
+	}
+
 	void PadState::SetBindValue(u32 bind_index, float value)
 	{
 		switch (bind_index)
 		{
 			case CID_STEERING_L:
-				data.steering_left = static_cast<s16>(std::lroundf(value * static_cast<float>(steering_range)));
+				data.steering_left = ApplySteeringAxisDeadzone(value);
 				UpdateSteering();
 				break;
 
 			case CID_STEERING_R:
-				data.steering_right = static_cast<s16>(std::lroundf(value * static_cast<float>(steering_range)));
+				data.steering_right = ApplySteeringAxisDeadzone(value);
 				UpdateSteering();
 				break;
 
@@ -933,28 +946,27 @@ namespace usb_pad
 	{
 		static constexpr const InputBindingInfo bindings[] = {
 			{"Red1", "Player 1 Red", InputBindingInfo::Type::Button, CID_BUTTON0, GenericInputBinding::Circle},
-			{"Red2", "Player 2 Red", InputBindingInfo::Type::Button, CID_BUTTON5, GenericInputBinding::Unknown},
-			{"Red3", "Player 3 Red", InputBindingInfo::Type::Button, CID_BUTTON10, GenericInputBinding::Unknown},
-			{"Red4", "Player 4 Red", InputBindingInfo::Type::Button, CID_BUTTON15, GenericInputBinding::Unknown},
-			
 			{"Blue1", "Player 1 Blue", InputBindingInfo::Type::Button, CID_BUTTON4, GenericInputBinding::R1},
-			{"Blue2", "Player 2 Blue", InputBindingInfo::Type::Button, CID_BUTTON9, GenericInputBinding::Unknown},
-			{"Blue3", "Player 3 Blue", InputBindingInfo::Type::Button, CID_BUTTON14, GenericInputBinding::Unknown},
-			{"Blue4", "Player 4 Blue", InputBindingInfo::Type::Button, CID_BUTTON19, GenericInputBinding::Unknown},
-			
 			{"Orange1", "Player 1 Orange", InputBindingInfo::Type::Button, CID_BUTTON3, GenericInputBinding::Cross},
-			{"Orange2", "Player 2 Orange", InputBindingInfo::Type::Button, CID_BUTTON8, GenericInputBinding::Unknown},
-			{"Orange3", "Player 3 Orange", InputBindingInfo::Type::Button, CID_BUTTON13, GenericInputBinding::Unknown},
-			{"Orange4", "Player 4 Orange", InputBindingInfo::Type::Button, CID_BUTTON18, GenericInputBinding::Unknown},
-			
 			{"Green1", "Player 1 Green", InputBindingInfo::Type::Button, CID_BUTTON2, GenericInputBinding::Triangle},
-			{"Green2", "Player 2 Green", InputBindingInfo::Type::Button, CID_BUTTON7, GenericInputBinding::Unknown},
-			{"Green3", "Player 3 Green", InputBindingInfo::Type::Button, CID_BUTTON12, GenericInputBinding::Unknown},
-			{"Green4", "Player 4 Green", InputBindingInfo::Type::Button, CID_BUTTON17, GenericInputBinding::Unknown},
-			
 			{"Yellow1", "Player 1 Yellow", InputBindingInfo::Type::Button, CID_BUTTON1, GenericInputBinding::Square},
+
+			{"Red2", "Player 2 Red", InputBindingInfo::Type::Button, CID_BUTTON5, GenericInputBinding::Unknown},
+			{"Blue2", "Player 2 Blue", InputBindingInfo::Type::Button, CID_BUTTON9, GenericInputBinding::Unknown},
+			{"Orange2", "Player 2 Orange", InputBindingInfo::Type::Button, CID_BUTTON8, GenericInputBinding::Unknown},
+			{"Green2", "Player 2 Green", InputBindingInfo::Type::Button, CID_BUTTON7, GenericInputBinding::Unknown},
 			{"Yellow2", "Player 2 Yellow", InputBindingInfo::Type::Button, CID_BUTTON6, GenericInputBinding::Unknown},
+
+			{"Red3", "Player 3 Red", InputBindingInfo::Type::Button, CID_BUTTON10, GenericInputBinding::Unknown},
+			{"Blue3", "Player 3 Blue", InputBindingInfo::Type::Button, CID_BUTTON14, GenericInputBinding::Unknown},
+			{"Orange3", "Player 3 Orange", InputBindingInfo::Type::Button, CID_BUTTON13, GenericInputBinding::Unknown},
+			{"Green3", "Player 3 Green", InputBindingInfo::Type::Button, CID_BUTTON12, GenericInputBinding::Unknown},
 			{"Yellow3", "Player 3 Yellow", InputBindingInfo::Type::Button, CID_BUTTON11, GenericInputBinding::Unknown},
+
+			{"Red4", "Player 4 Red", InputBindingInfo::Type::Button, CID_BUTTON15, GenericInputBinding::Unknown},
+			{"Blue4", "Player 4 Blue", InputBindingInfo::Type::Button, CID_BUTTON19, GenericInputBinding::Unknown},
+			{"Orange4", "Player 4 Orange", InputBindingInfo::Type::Button, CID_BUTTON18, GenericInputBinding::Unknown},
+			{"Green4", "Player 4 Green", InputBindingInfo::Type::Button, CID_BUTTON17, GenericInputBinding::Unknown},
 			{"Yellow4", "Player 4 Yellow", InputBindingInfo::Type::Button, CID_BUTTON16, GenericInputBinding::Unknown},
 		};
 
