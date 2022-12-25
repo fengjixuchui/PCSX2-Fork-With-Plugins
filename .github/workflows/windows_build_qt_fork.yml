@@ -124,7 +124,7 @@ jobs:
           exclusions: '*.bsc *.exp *.ilk *.iobj *.ipdb *.pdb *.lib'
       - name: Get release info
         id: release_info
-        uses: cardinalby/git-get-release-action@1.1.1
+        uses: cardinalby/git-get-release-action@1.2.4
         env:
          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
