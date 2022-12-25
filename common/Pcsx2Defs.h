@@ -31,6 +31,7 @@
 
 #include "Pcsx2Types.h"
 #include <cstddef>
+#include <cassert>
 
 #include "common/emitter/x86_intrin.h"
 
@@ -158,7 +159,7 @@ static constexpr size_t __pagemask = PCSX2_PAGESIZE - 1;
 // Makes sure that if anyone includes xbyak, it doesn't do anything bad
 #define XBYAK_ENABLE_OMITTED_OPERAND
 
-#ifdef __x86_64__
+#if defined(__x86_64__) && !defined(_M_AMD64)
 	#define _M_AMD64
 #endif
 

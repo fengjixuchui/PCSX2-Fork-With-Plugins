@@ -21,11 +21,7 @@
 #include "CDVD/Ps1CD.h"
 #include "SPU2/spu2.h"
 #include "DEV9/DEV9.h"
-#ifdef PCSX2_CORE
 #include "USB/USB.h"
-#else
-#include "USB/USBNull.h"
-#endif
 #include "IopCounters.h"
 #include "IopDma.h"
 #include "R3000A.h"
@@ -346,7 +342,7 @@ static __fi void _HwWrite_16or32_Page1( u32 addr, T val )
 
 			mcase(HW_IREG):
 				psxHu(addr) &= val;
-				if ((val == 0xffffffff) ) {
+				if (val == 0xffffffff) {
 					psxHu32(addr) |= 1 << 2;
 					psxHu32(addr) |= 1 << 3;
 				}

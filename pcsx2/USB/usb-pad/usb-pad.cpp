@@ -616,19 +616,6 @@ namespace usb_pad
 #endif
 	}
 
-	static u32 gametrak_compute_key(u32* key)
-	{
-		u32 ret = 0;
-		ret = *key << 2 & 0xFC0000;
-		ret |= *key << 17 & 0x020000;
-		ret ^= *key << 16 & 0xFE0000;
-		ret |= *key & 0x010000;
-		ret |= *key >> 9 & 0x007F7F;
-		ret |= *key << 7 & 0x008080;
-		*key = ret;
-		return ret >> 16;
-	}
-
 	static void pad_handle_data(USBDevice* dev, USBPacket* p)
 	{
 		PadState* s = USB_CONTAINER_OF(dev, PadState, dev);
@@ -870,9 +857,10 @@ namespace usb_pad
 		s->SetBindValue(bind_index, value);
 	}
 
-	std::vector<std::string> PadDevice::SubTypes() const
+	gsl::span<const char*> PadDevice::SubTypes() const
 	{
-		return {"Driving Force", "Driving Force Pro", "Driving Force Pro (rev11.02)", "GT Force"};
+		static const char* subtypes[] = {"Driving Force", "Driving Force Pro", "Driving Force Pro (rev11.02)", "GT Force"};
+		return subtypes;
 	}
 
 	gsl::span<const InputBindingInfo> PadDevice::Bindings(u32 subtype) const
@@ -932,7 +920,7 @@ namespace usb_pad
 		return nullptr;
 	}
 
-	std::vector<std::string> RBDrumKitDevice::SubTypes() const
+	gsl::span<const char*> RBDrumKitDevice::SubTypes() const
 	{
 		return {};
 	}
@@ -969,7 +957,7 @@ namespace usb_pad
 		return "BuzzDevice";
 	}
 
-	std::vector<std::string> BuzzDevice::SubTypes() const
+	gsl::span<const char*> BuzzDevice::SubTypes() const
 	{
 		return {};
 	}
@@ -1043,7 +1031,7 @@ namespace usb_pad
 		return "Keyboardmania";
 	}
 
-	std::vector<std::string> KeyboardmaniaDevice::SubTypes() const
+	gsl::span<const char*> KeyboardmaniaDevice::SubTypes() const
 	{
 		return {};
 	}

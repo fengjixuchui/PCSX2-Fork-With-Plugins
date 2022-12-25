@@ -24,11 +24,7 @@
 #include "Common.h"
 #include "SPU2/spu2.h"
 #include "DEV9/DEV9.h"
-#ifdef PCSX2_CORE
 #include "USB/USB.h"
-#else
-#include "USB/USBNull.h"
-#endif
 #include "IopHw.h"
 #include "IopDma.h"
 #include "CDVD/CDVD.h"
@@ -79,12 +75,15 @@ u8 psxvblankgate = 0;
 // which ensures they stay 100% in sync with the EE's hblank counters.
 #define PSXHBLANK 0x2001
 
+#if 0
+// Unused
 static void psxRcntReset(int index)
 {
 	psxCounters[index].count = 0;
 	psxCounters[index].mode &= ~0x18301C00;
 	psxCounters[index].sCycleT = psxRegs.cycle;
 }
+#endif
 
 static void _rcntSet(int cntidx)
 {

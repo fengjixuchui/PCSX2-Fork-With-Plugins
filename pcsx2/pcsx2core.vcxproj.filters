@@ -389,9 +389,6 @@
     <ClCompile Include="ShiftJisToUnicode.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
-    <ClCompile Include="Dump.cpp">
-      <Filter>System</Filter>
-    </ClCompile>
     <ClCompile Include="Pcsx2Config.cpp">
       <Filter>System</Filter>
     </ClCompile>
@@ -1175,9 +1172,6 @@
     <ClCompile Include="GS\GSCapture.cpp">
       <Filter>System\Ps2\GS\Window</Filter>
     </ClCompile>
-    <ClCompile Include="GS\Window\GSSetting.cpp">
-      <Filter>System\Ps2\GS\Window</Filter>
-    </ClCompile>
     <ClCompile Include="GS\Renderers\DX11\D3D.cpp">
       <Filter>System\Ps2\GS\Renderers\Direct3D11</Filter>
     </ClCompile>
@@ -1446,9 +1440,6 @@
       <Filter>System\Include</Filter>
     </ClInclude>
     <ClInclude Include="Config.h">
-      <Filter>System\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Dump.h">
       <Filter>System\Include</Filter>
     </ClInclude>
     <ClInclude Include="SaveState.h">
@@ -2121,9 +2112,6 @@
       <Filter>System\Ps2\GS\Renderers\Common</Filter>
     </ClInclude>
     <ClInclude Include="GS\GSCapture.h">
-      <Filter>System\Ps2\GS\Window</Filter>
-    </ClInclude>
-    <ClInclude Include="GS\Window\GSSetting.h">
       <Filter>System\Ps2\GS\Window</Filter>
     </ClInclude>
     <ClInclude Include="GS\resource.h">
