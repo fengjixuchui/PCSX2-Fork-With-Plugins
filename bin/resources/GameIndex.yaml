@@ -1847,6 +1847,8 @@ SCED-50750:
 SCED-50781:
   name: "Destruction Derby Arenas [Beta]"
   region: "PAL-M5"
+  roundModes:
+    vu1RoundMode: 0 # Fixes tyre textures.
   gsHWFixes:
     halfPixelOffset: 2 # Corrects shadow position.
 SCED-50825:
@@ -3026,6 +3028,8 @@ SCES-50781:
   name: "Destruction Derby Arenas [Beta, Promo, & Full Retail]"
   region: "PAL-M6"
   compat: 5
+  roundModes:
+    vu1RoundMode: 0 # Fixes tyre textures.
   gsHWFixes:
     halfPixelOffset: 2 # Corrects shadow position.
 SCES-50791:
@@ -3301,6 +3305,14 @@ SCES-51607:
   gsHWFixes:
     mipmap: 1
     autoFlush: 1
+  dynaPatches:
+    - pattern:
+        - { offset: 0x0, value: 0x0280202d }
+        - { offset: 0x4, value: 0x3c0140d0 }
+        - { offset: 0x8, value: 0x44810800 }
+        - { offset: 0x10, value: 0x46000836 }
+      replacement:
+        - { offset: 0x4, value: 0x3c013f80 }
   memcardFilters: # Reads Ratchet 1 data.
     - "SCES-51607"
     - "SCES-50916"
@@ -3417,6 +3429,8 @@ SCES-51977:
 SCES-51979:
   name: "Destruction Derby Arenas"
   region: "PAL-M6"
+  roundModes:
+    vu1RoundMode: 0 # Fixes tyre textures.
   gsHWFixes:
     halfPixelOffset: 2 # Corrects shadow position.
 SCES-52004:
@@ -13897,27 +13911,37 @@ SLES-52132:
   region: "PAL-E"
   gsHWFixes:
     texturePreloading: 1 # Performs much better with partial preload.
+  roundModes:
+    vu1RoundMode: 0 # Fixes missing light cones curtains and certain effects.
 SLES-52133:
   name: "Hitman - Contracts"
   region: "PAL-F"
   gsHWFixes:
     texturePreloading: 1 # Performs much better with partial preload.
+  roundModes:
+    vu1RoundMode: 0 # Fixes missing light cones curtains and certain effects.
 SLES-52134:
   name: "Hitman - Contracts"
   region: "PAL-I"
   compat: 4
   gsHWFixes:
     texturePreloading: 1 # Performs much better with partial preload.
+  roundModes:
+    vu1RoundMode: 0 # Fixes missing light cones curtains and certain effects.
 SLES-52135:
   name: "Hitman - Contracts"
   region: "PAL-G"
   gsHWFixes:
     texturePreloading: 1 # Performs much better with partial preload.
+  roundModes:
+    vu1RoundMode: 0 # Fixes missing light cones curtains and certain effects.
 SLES-52136:
   name: "Hitman - Contracts"
   region: "PAL-S"
   gsHWFixes:
     texturePreloading: 1 # Performs much better with partial preload.
+  roundModes:
+    vu1RoundMode: 0 # Fixes missing light cones curtains and certain effects.
 SLES-52143:
   name: "Carmen Sandiego - The Secret of the Stolen Drums"
   region: "PAL-M4"
@@ -22683,6 +22707,8 @@ SLKA-15032:
 SLKA-15033:
   name: "Princess Maker 2"
   region: "NTSC-K"
+  gsHWFixes:
+    preloadFrameData: 1 # Fixes black screen.
 SLKA-15043:
   name: "Super Puzzle Bobble Collection Vol 1"
   region: "NTSC-K"
@@ -23287,6 +23313,8 @@ SLKA-25218:
   region: "NTSC-K"
   gsHWFixes:
     texturePreloading: 1 # Performs much better with partial preload.
+  roundModes:
+    vu1RoundMode: 0 # Fixes missing light cones curtains and certain effects.
 SLKA-25219:
   name: "Monster Hunter G"
   region: "NTSC-K"
@@ -26553,6 +26581,8 @@ SLPM-62700:
 SLPM-62701:
   name: "Princess Maker 2 [Best Hit Selection]"
   region: "NTSC-J"
+  gsHWFixes:
+    preloadFrameData: 1 # Fixes black screen.
 SLPM-62702:
   name: "Momotaro Densetsu 15"
   region: "NTSC-J"
@@ -35411,6 +35441,8 @@ SLPS-20392:
 SLPS-20393:
   name: "Princess Maker 2"
   region: "NTSC-J"
+  gsHWFixes:
+    preloadFrameData: 1 # Fixes black screen.
 SLPS-20394:
   name: "Suki na Mono wa Sukida Rashouganai + White Flower + Sukisyo!"
   region: "NTSC-J"
@@ -37232,6 +37264,8 @@ SLPS-25406:
   region: "NTSC-J"
   gsHWFixes:
     texturePreloading: 1 # Performs much better with partial preload.
+  roundModes:
+    vu1RoundMode: 0 # Fixes missing light cones curtains and certain effects.
 SLPS-25407:
   name: "King of Fighters 2003, The"
   region: "NTSC-J"
@@ -43548,6 +43582,8 @@ SLUS-20855:
   name: "Destruction Derby Arenas"
   region: "NTSC-U"
   compat: 5
+  roundModes:
+    vu1RoundMode: 0 # Fixes tyre textures.
   gsHWFixes:
     halfPixelOffset: 2 # Corrects shadow position.
 SLUS-20856:
@@ -43685,6 +43721,8 @@ SLUS-20882:
   compat: 4
   gsHWFixes:
     texturePreloading: 1 # Performs much better with partial preload.
+  roundModes:
+    vu1RoundMode: 0 # Fixes missing light cones curtains and certain effects.
 SLUS-20883:
   name: "Tom Clancy's Rainbow Six 3"
   region: "NTSC-U"
