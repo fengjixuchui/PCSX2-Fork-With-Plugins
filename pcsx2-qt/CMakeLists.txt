@@ -4,12 +4,6 @@ set(CMAKE_AUTOUIC ON)
 
 add_executable(pcsx2-qt)
 
-if (PACKAGE_MODE)
-	message(FATAL_ERROR "Package mode is not supported for Qt builds.")
-else()
-	install(TARGETS pcsx2-qt DESTINATION ${CMAKE_SOURCE_DIR}/bin)
-endif()
-
 target_sources(pcsx2-qt PRIVATE
 	AboutDialog.cpp
 	AboutDialog.h
@@ -140,6 +134,12 @@ target_sources(pcsx2-qt PRIVATE
 	Debugger/BreakpointDialog.cpp
 	Debugger/BreakpointDialog.h
 	Debugger/BreakpointDialog.ui
+	Debugger/Models/BreakpointModel.cpp
+	Debugger/Models/BreakpointModel.h
+	Debugger/Models/ThreadModel.cpp
+	Debugger/Models/ThreadModel.h
+	Debugger/Models/StackModel.cpp
+	Debugger/Models/StackModel.h
 	Tools/InputRecording/NewInputRecordingDlg.cpp
 	Tools/InputRecording/NewInputRecordingDlg.h
 	Tools/InputRecording/NewInputRecordingDlg.ui

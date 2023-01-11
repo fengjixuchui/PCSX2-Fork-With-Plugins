@@ -210,10 +210,14 @@ Pcsx2Config::RecompilerOptions::RecompilerOptions()
 	EnableFastmem = true;
 
 	// vu and fpu clamping default to standard overflow.
-	vuOverflow = true;
-	//vuExtraOverflow = false;
-	//vuSignOverflow = false;
-	//vuUnderflow = false;
+	vu0Overflow = true;
+	//vu0ExtraOverflow = false;
+	//vu0SignOverflow = false;
+	//vu0Underflow = false;
+	vu1Overflow = true;
+	//vu1ExtraOverflow = false;
+	//vu1SignOverflow = false;
+	//vu1Underflow = false;
 
 	fpuOverflow = true;
 	//fpuExtraOverflow = false;
@@ -240,18 +244,34 @@ void Pcsx2Config::RecompilerOptions::ApplySanityCheck()
 
 	bool vuIsOk = true;
 
-	if (vuExtraOverflow)
-		vuIsOk = vuIsOk && vuOverflow;
-	if (vuSignOverflow)
-		vuIsOk = vuIsOk && vuExtraOverflow;
+	if (vu0ExtraOverflow)
+		vuIsOk = vuIsOk && vu0Overflow;
+	if (vu0SignOverflow)
+		vuIsOk = vuIsOk && vu0ExtraOverflow;
 
 	if (!vuIsOk)
 	{
 		// Values are wonky; assume the defaults.
-		vuOverflow = RecompilerOptions().vuOverflow;
-		vuExtraOverflow = RecompilerOptions().vuExtraOverflow;
-		vuSignOverflow = RecompilerOptions().vuSignOverflow;
-		vuUnderflow = RecompilerOptions().vuUnderflow;
+		vu0Overflow = RecompilerOptions().vu0Overflow;
+		vu0ExtraOverflow = RecompilerOptions().vu0ExtraOverflow;
+		vu0SignOverflow = RecompilerOptions().vu0SignOverflow;
+		vu0Underflow = RecompilerOptions().vu0Underflow;
+	}
+
+	vuIsOk = true;
+
+	if (vu1ExtraOverflow)
+		vuIsOk = vuIsOk && vu1Overflow;
+	if (vu1SignOverflow)
+		vuIsOk = vuIsOk && vu1ExtraOverflow;
+
+	if (!vuIsOk)
+	{
+		// Values are wonky; assume the defaults.
+		vu1Overflow = RecompilerOptions().vu1Overflow;
+		vu1ExtraOverflow = RecompilerOptions().vu1ExtraOverflow;
+		vu1SignOverflow = RecompilerOptions().vu1SignOverflow;
+		vu1Underflow = RecompilerOptions().vu1Underflow;
 	}
 }
 
@@ -266,10 +286,14 @@ void Pcsx2Config::RecompilerOptions::LoadSave(SettingsWrapper& wrap)
 	SettingsWrapBitBool(EnableVU1);
 	SettingsWrapBitBool(EnableFastmem);
 
-	SettingsWrapBitBool(vuOverflow);
-	SettingsWrapBitBool(vuExtraOverflow);
-	SettingsWrapBitBool(vuSignOverflow);
-	SettingsWrapBitBool(vuUnderflow);
+	SettingsWrapBitBool(vu0Overflow);
+	SettingsWrapBitBool(vu0ExtraOverflow);
+	SettingsWrapBitBool(vu0SignOverflow);
+	SettingsWrapBitBool(vu0Underflow);
+	SettingsWrapBitBool(vu1Overflow);
+	SettingsWrapBitBool(vu1ExtraOverflow);
+	SettingsWrapBitBool(vu1SignOverflow);
+	SettingsWrapBitBool(vu1Underflow);
 
 	SettingsWrapBitBool(fpuOverflow);
 	SettingsWrapBitBool(fpuExtraOverflow);
@@ -287,14 +311,16 @@ bool Pcsx2Config::CpuOptions::CpusChanged(const CpuOptions& right) const
 Pcsx2Config::CpuOptions::CpuOptions()
 {
 	sseMXCSR.bitmask = DEFAULT_sseMXCSR;
-	sseVUMXCSR.bitmask = DEFAULT_sseVUMXCSR;
+	sseVU0MXCSR.bitmask = DEFAULT_sseVUMXCSR;
+	sseVU1MXCSR.bitmask = DEFAULT_sseVUMXCSR;
 	AffinityControlMode = 0;
 }
 
 void Pcsx2Config::CpuOptions::ApplySanityCheck()
 {
 	sseMXCSR.ClearExceptionFlags().DisableExceptions();
-	sseVUMXCSR.ClearExceptionFlags().DisableExceptions();
+	sseVU0MXCSR.ClearExceptionFlags().DisableExceptions();
+	sseVU1MXCSR.ClearExceptionFlags().DisableExceptions();
 	AffinityControlMode = std::min<u32>(AffinityControlMode, 6);
 
 	Recompiler.ApplySanityCheck();
@@ -309,9 +335,12 @@ void Pcsx2Config::CpuOptions::LoadSave(SettingsWrapper& wrap)
 	SettingsWrapBitfieldEx(sseMXCSR.RoundingControl, "FPU.Roundmode");
 	SettingsWrapEntry(AffinityControlMode);
 
-	SettingsWrapBitBoolEx(sseVUMXCSR.DenormalsAreZero, "VU.DenormalsAreZero");
-	SettingsWrapBitBoolEx(sseVUMXCSR.FlushToZero, "VU.FlushToZero");
-	SettingsWrapBitfieldEx(sseVUMXCSR.RoundingControl, "VU.Roundmode");
+	SettingsWrapBitBoolEx(sseVU0MXCSR.DenormalsAreZero, "VU0.DenormalsAreZero");
+	SettingsWrapBitBoolEx(sseVU0MXCSR.FlushToZero, "VU0.FlushToZero");
+	SettingsWrapBitfieldEx(sseVU0MXCSR.RoundingControl, "VU0.Roundmode");
+	SettingsWrapBitBoolEx(sseVU1MXCSR.DenormalsAreZero, "VU1.DenormalsAreZero");
+	SettingsWrapBitBoolEx(sseVU1MXCSR.FlushToZero, "VU1.FlushToZero");
+	SettingsWrapBitfieldEx(sseVU1MXCSR.RoundingControl, "VU1.Roundmode");
 
 	Recompiler.LoadSave(wrap);
 }
@@ -368,7 +397,7 @@ Pcsx2Config::GSOptions::GSOptions()
 	UseBlitSwapChain = false;
 	DisableShaderCache = false;
 	DisableFramebufferFetch = false;
-	ThreadedPresentation = false;
+	DisableThreadedPresentation = false;
 	SkipDuplicateFrames = false;
 	OsdShowMessages = true;
 	OsdShowSpeed = false;
@@ -390,7 +419,6 @@ Pcsx2Config::GSOptions::GSOptions()
 	PreloadFrameWithGSData = false;
 	WrapGSMem = false;
 	Mipmap = true;
-	PointListPalette = false;
 
 	ManualUserHacks = false;
 	UserHacks_AlignSpriteX = false;
@@ -465,6 +493,8 @@ bool Pcsx2Config::GSOptions::OptionsAreEqual(const GSOptions& right) const
 		OpEqu(SWExtraThreadsHeight) &&
 		OpEqu(TriFilter) &&
 		OpEqu(TVShader) &&
+		OpEqu(GetSkipCountFunctionId) &&
+		OpEqu(BeforeDrawFunctionId) &&
 		OpEqu(SkipDrawEnd) &&
 		OpEqu(SkipDrawStart) &&
 
@@ -514,7 +544,7 @@ bool Pcsx2Config::GSOptions::RestartOptionsAreEqual(const GSOptions& right) cons
 		   OpEqu(DisableShaderCache) &&
 		   OpEqu(DisableDualSourceBlend) &&
 		   OpEqu(DisableFramebufferFetch) &&
-		   OpEqu(ThreadedPresentation) &&
+		   OpEqu(DisableThreadedPresentation) &&
 		   OpEqu(OverrideTextureBarriers) &&
 		   OpEqu(OverrideGeometryShaders);
 }
@@ -569,7 +599,7 @@ void Pcsx2Config::GSOptions::LoadSave(SettingsWrapper& wrap)
 	GSSettingBoolEx(DisableShaderCache, "disable_shader_cache");
 	GSSettingBool(DisableDualSourceBlend);
 	GSSettingBool(DisableFramebufferFetch);
-	GSSettingBool(ThreadedPresentation);
+	GSSettingBool(DisableThreadedPresentation);
 	GSSettingBool(SkipDuplicateFrames);
 	GSSettingBool(OsdShowMessages);
 	GSSettingBool(OsdShowSpeed);
@@ -748,19 +778,47 @@ Pcsx2Config::SPU2Options::SPU2Options()
 void Pcsx2Config::SPU2Options::LoadSave(SettingsWrapper& wrap)
 {
 	{
+		SettingsWrapSection("SPU2/Debug");
+
+		SettingsWrapBitBoolEx(DebugEnabled, "Global_Enable");
+		SettingsWrapBitBoolEx(MsgToConsole, "Show_Messages");
+		SettingsWrapBitBoolEx(MsgKeyOnOff, "Show_Messages_Key_On_Off");
+		SettingsWrapBitBoolEx(MsgVoiceOff, "Show_Messages_Voice_Off");
+		SettingsWrapBitBoolEx(MsgDMA, "Show_Messages_DMA_Transfer");
+		SettingsWrapBitBoolEx(MsgAutoDMA, "Show_Messages_AutoDMA");
+		SettingsWrapBitBoolEx(MsgOverruns, "Show_Messages_Overruns");
+		SettingsWrapBitBoolEx(MsgCache, "Show_Messages_CacheStats");
+
+		SettingsWrapBitBoolEx(AccessLog, "Log_Register_Access");
+		SettingsWrapBitBoolEx(DMALog, "Log_DMA_Transfers");
+		SettingsWrapBitBoolEx(WaveLog, "Log_WAVE_Output");
+
+		SettingsWrapBitBoolEx(CoresDump, "Dump_Info");
+		SettingsWrapBitBoolEx(MemDump, "Dump_Memory");
+		SettingsWrapBitBoolEx(RegDump, "Dump_Regs");
+
+		// If the global switch is off, save runtime checks.
+		if (wrap.IsLoading() && !DebugEnabled)
+		{
+			MsgToConsole = false;
+			MsgKeyOnOff = false;
+			MsgVoiceOff = false;
+			MsgDMA = false;
+			MsgAutoDMA = false;
+			MsgOverruns = false;
+			MsgCache = false;
+			AccessLog = false;
+			DMALog = false;
+			WaveLog = false;
+			CoresDump = false;
+			MemDump = false;
+			RegDump = false;
+		}
+	}
+	{
 		SettingsWrapSection("SPU2/Mixing");
 
-		Interpolation = static_cast<InterpolationMode>(wrap.EntryBitfield(CURRENT_SETTINGS_SECTION, "Interpolation", static_cast<int>(Interpolation), static_cast<int>(Interpolation)));
 		SettingsWrapEntry(FinalVolume);
-
-		SettingsWrapEntry(VolumeAdjustC);
-		SettingsWrapEntry(VolumeAdjustFL);
-		SettingsWrapEntry(VolumeAdjustFR);
-		SettingsWrapEntry(VolumeAdjustBL);
-		SettingsWrapEntry(VolumeAdjustBR);
-		SettingsWrapEntry(VolumeAdjustSL);
-		SettingsWrapEntry(VolumeAdjustSR);
-		SettingsWrapEntry(VolumeAdjustLFE);
 	}
 
 	{
@@ -768,11 +826,16 @@ void Pcsx2Config::SPU2Options::LoadSave(SettingsWrapper& wrap)
 
 		SettingsWrapEntry(OutputModule);
 		SettingsWrapEntry(BackendName);
+		SettingsWrapEntry(DeviceName);
 		SettingsWrapEntry(Latency);
+		SettingsWrapEntry(OutputLatency);
+		SettingsWrapBitBool(OutputLatencyMinimal);
 		SynchMode = static_cast<SynchronizationMode>(wrap.EntryBitfield(CURRENT_SETTINGS_SECTION, "SynchMode", static_cast<int>(SynchMode), static_cast<int>(SynchMode)));
 		SettingsWrapEntry(SpeakerConfiguration);
 		SettingsWrapEntry(DplDecodingLevel);
 	}
+
+	// clampy clamp
 }
 
 const char* Pcsx2Config::DEV9Options::NetApiNames[] = {
@@ -1415,4 +1478,13 @@ bool EmuFolders::EnsureFoldersExist()
 	result = FileSystem::CreateDirectoryPath(Textures.c_str(), false) && result;
 	result = FileSystem::CreateDirectoryPath(InputProfiles.c_str(), false) && result;
 	return result;
+}
+
+std::FILE* EmuFolders::OpenLogFile(const std::string_view& name, const char* mode)
+{
+	if (name.empty())
+		return nullptr;
+
+	const std::string path(Path::Combine(Logs, name));
+	return FileSystem::OpenCFile(path.c_str(), mode);
 }

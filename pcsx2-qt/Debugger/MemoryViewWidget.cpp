@@ -344,12 +344,18 @@ void MemoryViewWidget::paintEvent(QPaintEvent* event)
 
 void MemoryViewWidget::mousePressEvent(QMouseEvent* event)
 {
+	if (!m_cpu->isAlive())
+		return;
+
 	m_table.SelectAt(event->pos());
 	repaint();
 }
 
 void MemoryViewWidget::customMenuRequested(QPoint pos)
 {
+	if (!m_cpu->isAlive())
+		return;
+
 	if (!m_contextMenu)
 	{
 		m_contextMenu = new QMenu(this);
@@ -494,4 +500,5 @@ void MemoryViewWidget::gotoAddress(u32 address)
 	m_table.UpdateStartAddress(address & ~0xF);
 	m_table.selectedAddress = address;
 	this->repaint();
+	this->setFocus();
 }

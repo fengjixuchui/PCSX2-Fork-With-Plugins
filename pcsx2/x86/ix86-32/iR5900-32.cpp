@@ -756,15 +756,7 @@ void R5900::Dynarec::OpcodeImpl::recSYSCALL()
 	EE::Profiler.EmitOp(eeOpcode::SYSCALL);
 
 	recCall(R5900::Interpreter::OpcodeImpl::SYSCALL);
-
-	xCMP(ptr32[&cpuRegs.pc], pc);
-	j8Ptr[0] = JE8(0);
-	xADD(ptr32[&cpuRegs.cycle], scaleblockcycles());
-	// Note: technically the address is 0x8000_0180 (or 0x180)
-	// (if CPU is booted)
-	xJMP((void*)DispatcherReg);
-	x86SetJ8(j8Ptr[0]);
-	//g_branch = 2;
+	g_branch = 2; // Indirect branch with event check.
 }
 
 ////////////////////////////////////////////////////
@@ -773,13 +765,7 @@ void R5900::Dynarec::OpcodeImpl::recBREAK()
 	EE::Profiler.EmitOp(eeOpcode::BREAK);
 
 	recCall(R5900::Interpreter::OpcodeImpl::BREAK);
-
-	xCMP(ptr32[&cpuRegs.pc], pc);
-	j8Ptr[0] = JE8(0);
-	xADD(ptr32[&cpuRegs.cycle], scaleblockcycles());
-	xJMP((void*)DispatcherEvent);
-	x86SetJ8(j8Ptr[0]);
-	//g_branch = 2;
+	g_branch = 2; // Indirect branch with event check.
 }
 
 // Size is in dwords (4 bytes)
@@ -1627,11 +1613,9 @@ void recMemcheck(u32 op, u32 bits, bool store)
 	// ecx = access address
 	// edx = access address+size
 
-	auto checks = CBreakPoints::GetMemChecks();
+	auto checks = CBreakPoints::GetMemChecks(BREAKPOINT_EE);
 	for (size_t i = 0; i < checks.size(); i++)
 	{
-		if (checks[i].cpu != BREAKPOINT_EE)
-			continue;
 		if (checks[i].result == 0)
 			continue;
 		if ((checks[i].cond & MEMCHECK_WRITE) == 0 && store)
@@ -1708,6 +1692,9 @@ void recompileNextInstruction(bool delayslot, bool swapped_delay_slot)
 {
 	u32 i;
 	int count;
+
+	if (EmuConfig.EnablePatches)
+		ApplyDynamicPatches(pc);
 
 	// add breakpoint
 	if (!delayslot)
@@ -2329,6 +2316,11 @@ static void recRecompile(const u32 startpc)
 				if (_Funct_ == 8 || _Funct_ == 9) // JR, JALR
 				{
 					s_nEndBlock = i + 8;
+					goto StartRecomp;
+				}
+				else if (_Funct_ == 12 || _Funct_ == 13) // SYSCALL, BREAK
+				{
+					s_nEndBlock = i + 4; // No delay slot.
 					goto StartRecomp;
 				}
 				break;

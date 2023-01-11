@@ -10,7 +10,8 @@
   <PropertyGroup Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+    <PlatformToolset Condition="!$(Configuration.Contains(Clang))">$(DefaultPlatformToolset)</PlatformToolset>
+    <PlatformToolset Condition="$(Configuration.Contains(Clang))">ClangCL</PlatformToolset>
     <WholeProgramOptimization Condition="$(Configuration.Contains(Release))">true</WholeProgramOptimization>
     <UseDebugLibraries Condition="$(Configuration.Contains(Debug))">true</UseDebugLibraries>
     <UseDebugLibraries Condition="!$(Configuration.Contains(Debug))">false</UseDebugLibraries>
@@ -58,17 +59,18 @@
       <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>PrecompiledHeader.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
-      <AdditionalOptions>/Zc:externConstexpr %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="!$(Configuration.Contains(Clang))">/Zc:externConstexpr %(AdditionalOptions)</AdditionalOptions>
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;ZIP_STATIC;LZMA_API_STATIC;BUILD_DX=1;ENABLE_DISCORD_PRESENCE;ENABLE_RAINTEGRATION;ENABLE_ACHIEVEMENTS;ENABLE_OPENGL;ENABLE_VULKAN;SPU2X_CUBEB;SDL_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="$(Configuration.Contains(Debug))">PCSX2_DEBUG;PCSX2_DEVBUILD;_SECURE_SCL_=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="$(Configuration.Contains(Devel))">PCSX2_DEVEL;PCSX2_DEVBUILD;NDEBUG;_SECURE_SCL_=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="$(Configuration.Contains(Release))">NDEBUG;_SECURE_SCL_=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(CI)'=='true'">PCSX2_CI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <!-- MSVC automatically adds __AVX__ and __AVX2__ appropriately -->
       <PreprocessorDefinitions>__SSE4_1__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Platform)'=='x64'">ZYCORE_STATIC_DEFINE;ZYDIS_STATIC_DEFINE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <EnableEnhancedInstructionSet Condition="!$(Configuration.Contains(AVX2))">NotSet</EnableEnhancedInstructionSet>
-      <EnableEnhancedInstructionSet Condition="$(Configuration.Contains(AVX2))">AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet Condition="!$(Configuration.Contains(AVX2)) Or $(Configuration.Contains(Clang))">NotSet</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet Condition="$(Configuration.Contains(AVX2)) And !$(Configuration.Contains(Clang))">AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <AdditionalOptions Condition="$(Configuration.Contains(Clang)) And !$(Configuration.Contains(AVX2))"> -march=nehalem %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="$(Configuration.Contains(Clang)) And $(Configuration.Contains(AVX2))"> -march=haswell %(AdditionalOptions)</AdditionalOptions>
       <MinimalRebuild>false</MinimalRebuild>
       <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
       <!-- SH 2/3 flashlight, explicitly set here don't change -->
@@ -243,17 +245,13 @@
     <ClCompile Include="Recording\InputRecordingFile.cpp" />
     <ClCompile Include="Recording\PadData.cpp" />
     <ClCompile Include="Recording\Utilities\InputRecordingLogger.cpp" />
+    <ClCompile Include="SPU2\Debug.cpp" />
+    <ClCompile Include="SPU2\Dma.cpp" />
     <ClCompile Include="SPU2\DplIIdecoder.cpp" />
-    <ClCompile Include="SPU2\debug.cpp" />
-    <ClCompile Include="SPU2\Host\Config.cpp" />
-    <ClCompile Include="SPU2\Host\ConfigDebug.cpp" />
-    <ClCompile Include="SPU2\Host\ConfigSoundTouch.cpp" />
-    <ClCompile Include="SPU2\RegLog.cpp" />
     <ClCompile Include="SPU2\SndOut_Cubeb.cpp" />
+    <ClCompile Include="SPU2\SndOut_XAudio2.cpp" />
     <ClCompile Include="SPU2\wavedump_wav.cpp" />
     <ClCompile Include="SPU2\SndOut.cpp" />
-    <ClCompile Include="SPU2\Timestretcher.cpp" />
-    <ClCompile Include="SPU2\dma.cpp" />
     <ClCompile Include="SPU2\RegTable.cpp" />
     <ClCompile Include="SPU2\spu2freeze.cpp" />
     <ClCompile Include="SPU2\spu2sys.cpp" />
@@ -330,7 +328,6 @@
     <ClCompile Include="GS\Renderers\Common\GSVertexTraceFMM.cpp" />
     <ClCompile Include="GS\GSXXH.cpp" />
     <ClCompile Include="GS\MultiISA.cpp" />
-    <ClCompile Include="SPU2\Windows\SndOut_XAudio2.cpp" />
     <ClCompile Include="StateWrapper.cpp" />
     <ClCompile Include="USB\deviceproxy.cpp" />
     <ClCompile Include="USB\qemu-usb\bus.cpp" />
@@ -558,6 +555,7 @@
     <ClInclude Include="Frontend\imgui_impl_dx12.h" />
     <ClInclude Include="Frontend\imgui_impl_opengl3.h" />
     <ClInclude Include="Frontend\imgui_impl_vulkan.h" />
+    <ClInclude Include="GS\Renderers\HW\GSHwHack.h" />
     <ClInclude Include="INISettingsInterface.h" />
     <ClInclude Include="Frontend\InputManager.h" />
     <ClInclude Include="Frontend\InputSource.h" />
@@ -583,7 +581,6 @@
     <ClInclude Include="IopGte.h" />
     <ClInclude Include="MemoryCardProtocol.h" />
     <ClInclude Include="MultitapProtocol.h" />
-    <ClInclude Include="PAD\Gamepad.h" />
     <ClInclude Include="PAD\Host\Global.h" />
     <ClInclude Include="PAD\Host\KeyStatus.h" />
     <ClInclude Include="PAD\Host\PAD.h" />
@@ -600,15 +597,13 @@
     <ClInclude Include="Recording\Utilities\InputRecordingLogger.h" />
     <ClInclude Include="ShaderCacheVersion.h" />
     <ClInclude Include="SioTypes.h" />
-    <ClInclude Include="SPU2\Config.h" />
+    <ClInclude Include="SPU2\Debug.h" />
+    <ClInclude Include="SPU2\Dma.h" />
     <ClInclude Include="SPU2\Global.h" />
-    <ClInclude Include="SPU2\Host\Config.h" />
-    <ClInclude Include="SPU2\Host\Dialogs.h" />
     <ClInclude Include="SPU2\interpolate_table.h" />
     <ClInclude Include="SPU2\SndOut.h" />
     <ClInclude Include="SPU2\spdif.h" />
     <ClInclude Include="SPU2\defs.h" />
-    <ClInclude Include="SPU2\Dma.h" />
     <ClInclude Include="SPU2\regs.h" />
     <ClInclude Include="SPU2\Mixer.h" />
     <ClInclude Include="SPU2\spu2.h" />
@@ -677,7 +672,6 @@
     <ClInclude Include="GS\Renderers\Common\GSVertexTrace.h" />
     <ClInclude Include="GS\GSXXH.h" />
     <ClInclude Include="GS\MultiISA.h" />
-    <ClInclude Include="GS\resource.h" />
     <ClInclude Include="IPU\IPUdma.h" />
     <ClInclude Include="Mdec.h" />
     <ClInclude Include="Patch.h" />

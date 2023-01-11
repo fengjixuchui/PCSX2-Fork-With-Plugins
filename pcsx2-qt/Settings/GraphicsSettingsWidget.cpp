@@ -114,15 +114,6 @@ GraphicsSettingsWidget::GraphicsSettingsWidget(SettingsDialog* dialog, QWidget* 
 	SettingWidgetBinder::BindWidgetToIntSetting(sif, m_ui.cropRight, "EmuCore/GS", "CropRight", 0);
 	SettingWidgetBinder::BindWidgetToIntSetting(sif, m_ui.cropBottom, "EmuCore/GS", "CropBottom", 0);
 
-	dialog->registerWidgetHelp(m_ui.widescreenPatches, tr("Enable Widescreen Patches"), tr("Unchecked"),
-		tr("Automatically loads and applies widescreen patches on game start. Can cause issues."));
-
-	dialog->registerWidgetHelp(m_ui.noInterlacingPatches, tr("Enable No-Interlacing Patches"), tr("Unchecked"),
-		tr("Automatically loads and applies no-interlacing patches on game start. Can cause issues."));
-
-	connect(m_ui.integerScaling, &QCheckBox::stateChanged, this, &GraphicsSettingsWidget::onIntegerScalingChanged);
-	onIntegerScalingChanged();
-
 	connect(m_ui.fullscreenModes, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &GraphicsSettingsWidget::onFullscreenModeChanged);
 
 	//////////////////////////////////////////////////////////////////////////
@@ -253,6 +244,7 @@ GraphicsSettingsWidget::GraphicsSettingsWidget(SettingsDialog* dialog, QWidget* 
 	SettingWidgetBinder::BindWidgetToBoolSetting(sif, m_ui.useBlitSwapChain, "EmuCore/GS", "UseBlitSwapChain", false);
 	SettingWidgetBinder::BindWidgetToBoolSetting(sif, m_ui.useDebugDevice, "EmuCore/GS", "UseDebugDevice", false);
 	SettingWidgetBinder::BindWidgetToBoolSetting(sif, m_ui.skipPresentingDuplicateFrames, "EmuCore/GS", "SkipDuplicateFrames", false);
+	SettingWidgetBinder::BindWidgetToBoolSetting(sif, m_ui.threadedPresentation, "EmuCore/GS", "DisableThreadedPresentation", false);
 	SettingWidgetBinder::BindWidgetToIntSetting(sif, m_ui.overrideTextureBarriers, "EmuCore/GS", "OverrideTextureBarriers", -1, -1);
 	SettingWidgetBinder::BindWidgetToIntSetting(sif, m_ui.overrideGeometryShader, "EmuCore/GS", "OverrideGeometryShaders", -1, -1);
 	SettingWidgetBinder::BindWidgetToIntSetting(sif, m_ui.gsDumpCompression, "EmuCore/GS", "GSDumpCompression", static_cast<int>(GSDumpCompressionMethod::Zstandard));
@@ -339,6 +331,11 @@ GraphicsSettingsWidget::GraphicsSettingsWidget(SettingsDialog* dialog, QWidget* 
 
 	// Display tab
 	{
+		dialog->registerWidgetHelp(m_ui.widescreenPatches, tr("Enable Widescreen Patches"), tr("Unchecked"),
+			tr("Automatically loads and applies widescreen patches on game start. Can cause issues."));
+
+		dialog->registerWidgetHelp(m_ui.noInterlacingPatches, tr("Enable No-Interlacing Patches"), tr("Unchecked"),
+			tr("Automatically loads and applies no-interlacing patches on game start. Can cause issues."));
 
 		dialog->registerWidgetHelp(m_ui.DisableInterlaceOffset, tr("Disable Interlace Offset"), tr("Unchecked"),
 			tr("Disables interlacing offset which may reduce blurring in some situations."));
@@ -370,8 +367,10 @@ GraphicsSettingsWidget::GraphicsSettingsWidget(SettingsDialog* dialog, QWidget* 
 
 		dialog->registerWidgetHelp(m_ui.screenshotSize, tr("Screenshot Size"), tr("Screen Resolution"),
 			tr("Determines the resolution at which screenshots will be saved. Internal resolutions preserve more detail at the cost of file size."));
+
 		dialog->registerWidgetHelp(m_ui.screenshotFormat, tr("Screenshot Format"), tr("PNG"),
 			tr("Selects the format which will be used to save screenshots. JPEG produces smaller files, but loses detail."));
+
 		dialog->registerWidgetHelp(m_ui.screenshotQuality, tr("Screenshot Quality"), tr("50%"),
 			tr("Selects the quality at which screenshots will be compressed. Higher values preserve more detail for JPEG, and reduce file size for PNG."));
 
@@ -625,6 +624,11 @@ GraphicsSettingsWidget::GraphicsSettingsWidget(SettingsDialog* dialog, QWidget* 
 			   "the GPU has more time to complete it (this is NOT frame skipping). Can smooth our frame time fluctuations when the CPU/GPU are near maximum "
 			   "utilization, but makes frame pacing more inconsistent and can increase input lag."));
 
+		dialog->registerWidgetHelp(m_ui.threadedPresentation, tr("Disable Threaded Presentation"), tr("Unchecked"),
+			tr("Presents frames on the main GS thread instead of a worker thread. Used for debugging frametime issues. "
+			   "Could reduce chance of missing a frame or reduce tearing at the expense of more erratic frame times. "
+			   "Only applies to the Vulkan renderer."));
+
 		dialog->registerWidgetHelp(m_ui.gsDownloadMode, tr("GS Download Mode"), tr("Accurate"),
 			tr("Skips synchronizing with the GS thread and host GPU for GS downloads. "
 			   "Can result in a large speed boost on slower systems, at the cost of many broken graphical effects. "
@@ -692,11 +696,6 @@ void GraphicsSettingsWidget::onFullscreenModeChanged(int index)
 		m_dialog->setStringSettingValue("EmuCore/GS", "FullscreenMode", std::nullopt);
 
 	g_emu_thread->applySettings();
-}
-
-void GraphicsSettingsWidget::onIntegerScalingChanged()
-{
-	m_ui.bilinearFiltering->setEnabled(!m_ui.integerScaling->isChecked());
 }
 
 void GraphicsSettingsWidget::onTrilinearFilteringChanged()

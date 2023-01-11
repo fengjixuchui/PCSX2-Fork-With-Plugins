@@ -13,12 +13,6 @@ target_compile_features(PCSX2_FLAGS INTERFACE cxx_std_17)
 target_compile_definitions(PCSX2_FLAGS INTERFACE "${PCSX2_DEFS}")
 target_compile_options(PCSX2_FLAGS INTERFACE "${PCSX2_WARNINGS}")
 
-if (openSUSE)
-	# openSUSE don't install wx in a standard library system
-	# path. Let's bypass the dynamic linker and hardcode the path.
-	set(CMAKE_INSTALL_RPATH_USE_LINK_PATH ON)
-endif()
-
 # Check that people use the good file
 if(NOT TOP_CMAKE_WAS_SOURCED)
 	message(FATAL_ERROR "
@@ -39,7 +33,6 @@ else()
 		-Wno-parentheses
 		-Wno-missing-braces
 		-Wno-unknown-pragmas
-		-DWX_PRECOMP
 	)
 endif()
 
@@ -54,8 +47,8 @@ elseif("${PGO}" STREQUAL "use")
 	target_compile_options(PCSX2_FLAGS INTERFACE -fprofile-use)
 endif()
 
-if(XDG_STD)
-	target_compile_definitions(PCSX2_FLAGS INTERFACE XDG_STD)
+if(USE_LEGACY_USER_DIRECTORY)
+	target_compile_definitions(PCSX2_FLAGS INTERFACE USE_LEGACY_USER_DIRECTORY)
 endif()
 
 if(TARGET SDL2::SDL2 OR TARGET SDL2::SDL2-static)
@@ -283,25 +276,16 @@ set(pcsx2SPU2Sources
 	SPU2/Mixer.cpp
 	SPU2/spu2.cpp
 	SPU2/ReadInput.cpp
-	SPU2/RegLog.cpp
 	SPU2/RegTable.cpp
 	SPU2/Reverb.cpp
 	SPU2/SndOut.cpp
 	SPU2/spu2freeze.cpp
 	SPU2/spu2sys.cpp
-	SPU2/Timestretcher.cpp
 	SPU2/Wavedump_wav.cpp
-	)
-
-if(CUBEB_API)
-	list(APPEND pcsx2SPU2Sources SPU2/SndOut_Cubeb.cpp)
-	target_compile_definitions(PCSX2_FLAGS INTERFACE "SPU2X_CUBEB")
-	target_link_libraries(PCSX2_FLAGS INTERFACE cubeb)
-endif()
+)
 
 # SPU2 headers
 set(pcsx2SPU2Headers
-	SPU2/Config.h
 	SPU2/Debug.h
 	SPU2/defs.h
 	SPU2/Dma.h
@@ -312,8 +296,19 @@ set(pcsx2SPU2Headers
 	SPU2/regs.h
 	SPU2/SndOut.h
 	SPU2/spdif.h
-	SPU2/WavFile.h
 )
+
+if(CUBEB_API)
+	list(APPEND pcsx2SPU2Sources SPU2/SndOut_Cubeb.cpp)
+	target_compile_definitions(PCSX2_FLAGS INTERFACE "SPU2X_CUBEB")
+	target_link_libraries(PCSX2_FLAGS INTERFACE cubeb)
+endif()
+
+if(WIN32)
+	list(APPEND pcsx2SPU2Sources
+		SPU2/SndOut_XAudio2.cpp
+	)
+endif()
 
 # DEV9 sources
 set(pcsx2DEV9Sources
@@ -580,6 +575,7 @@ set(pcsx2GSHeaders
 	GS/Renderers/Null/GSDeviceNull.h
 	GS/Renderers/Null/GSRendererNull.h
 	GS/Renderers/Null/GSTextureNull.h
+	GS/Renderers/HW/GSHwHack.h
 	GS/Renderers/HW/GSRendererHW.h
 	GS/Renderers/HW/GSTextureCache.h
 	GS/Renderers/HW/GSTextureReplacements.h
@@ -636,26 +632,7 @@ set(pcsx2GSMetalShaders
 	GS/Renderers/Metal/fxaa.metal
 )
 
-list(APPEND pcsx2SPU2Headers
-	SPU2/Host/Config.cpp
-	SPU2/Host/ConfigDebug.cpp
-	SPU2/Host/ConfigSoundTouch.cpp
-)
-list(APPEND pcsx2SPU2Headers
-	SPU2/Host/Config.h
-	SPU2/Host/Dialogs.h
-)
-if(NOT WIN32)
-	list(APPEND pcsx2SPU2Headers
-		SPU2/WavFile.cpp
-	)
-endif()
-
 if(WIN32)
-	list(APPEND pcsx2SPU2Sources
-		SPU2/Windows/SndOut_XAudio2.cpp
-	)
-
 	list(APPEND pcsx2DEV9Sources
 		DEV9/Win32/pcap_io_win32.cpp
 		DEV9/Win32/tap-win32.cpp
@@ -1025,10 +1002,6 @@ set(pcsx2WindowsSources
 	windows/Optimus.cpp
 )
 
-# Windows headers
-set(pcsx2WindowsHeaders
-	windows/resource.h)
-
 # x86 sources
 set(pcsx2x86Sources
 	x86/BaseblockEx.cpp
@@ -1167,7 +1140,7 @@ endif()
 if(Windows)
 	target_sources(PCSX2 PRIVATE
 		${pcsx2WindowsSources}
-		${pcsx2WindowsHeaders})
+	)
 endif()
 
 target_sources(PCSX2 PRIVATE ${pcsx2USBSources} ${pcsx2USBHeaders})
@@ -1314,11 +1287,11 @@ function(setup_main_executable target)
 
 	if(WIN32)
 		target_sources(${target} PRIVATE
-			${PCSX2_SOURCE_DIR}/PCSX2.rc
-			${PCSX2_SOURCE_DIR}/windows/wxResources.rc
 			${PCSX2_SOURCE_DIR}/windows/PCSX2.manifest
+			${PCSX2_SOURCE_DIR}/windows/PCSX2.rc
 		)
 		set_target_properties(${target} PROPERTIES WIN32_EXECUTABLE TRUE)
+		install(TARGETS ${target} DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 		if(MSVC)
 			install(FILES $<TARGET_PDB_FILE:${target}> DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 		endif()
@@ -1390,11 +1363,17 @@ function(setup_main_executable target)
 		)
 		add_dependencies(pcsx2-postprocess-bundle ${target})
 	endif()
-endfunction()
 
-if(NOT DISABLE_SETCAP AND NOT WIN32)
-	install(CODE "execute_process(COMMAND /bin/bash -c \"echo 'Enabling networking capability on Linux...';set -x; [ -f '${CMAKE_SOURCE_DIR}/bin/pcsx2' ] && sudo setcap 'CAP_NET_RAW+eip CAP_NET_ADMIN+eip' '${CMAKE_SOURCE_DIR}/bin/pcsx2'; set +x\")")
-endif()
+	if(ENABLE_SETCAP AND UNIX AND NOT APPLE)
+		message(WARNING "Networking capabilities enabled, building will require temporary root elevation.")
+		add_custom_target(
+			pcsx2-enable-setcap
+			ALL
+			DEPENDS ${target}
+			COMMAND bash -c "set +x\; echo 'Elevating to enable networking capability on $<TARGET_FILE:${target}>...'\; sudo setcap 'CAP_NET_RAW+eip CAP_NET_ADMIN+eip' '$<TARGET_FILE:${target}>'"
+		)
+	endif()
+endfunction()
 
 source_groups_from_vcxproj_filters(pcsx2core.vcxproj.filters)
 

@@ -510,10 +510,16 @@ struct Pcsx2Config
 			EnableVU1 : 1;
 
 		bool
-			vuOverflow : 1,
-			vuExtraOverflow : 1,
-			vuSignOverflow : 1,
-			vuUnderflow : 1;
+			vu0Overflow : 1,
+			vu0ExtraOverflow : 1,
+			vu0SignOverflow : 1,
+			vu0Underflow : 1;
+
+		bool
+			vu1Overflow : 1,
+			vu1ExtraOverflow : 1,
+			vu1SignOverflow : 1,
+			vu1Underflow : 1;
 
 		bool
 			fpuOverflow : 1,
@@ -555,14 +561,7 @@ struct Pcsx2Config
 
 		u32 GetVUClampMode() const
 		{
-			return vuSignOverflow ? 3 : (vuExtraOverflow ? 2 : (vuOverflow ? 1 : 0));
-		}
-
-		void SetVUClampMode(u32 value)
-		{
-			vuOverflow = (value >= 1);
-			vuExtraOverflow = (value >= 2);
-			vuSignOverflow = (value >= 3);
+			return vu0SignOverflow ? 3 : (vu0ExtraOverflow ? 2 : (vu0Overflow ? 1 : 0));
 		}
 	};
 
@@ -572,7 +571,8 @@ struct Pcsx2Config
 		RecompilerOptions Recompiler;
 
 		SSE_MXCSR sseMXCSR;
-		SSE_MXCSR sseVUMXCSR;
+		SSE_MXCSR sseVU0MXCSR;
+		SSE_MXCSR sseVU1MXCSR;
 
 		u32 AffinityControlMode;
 
@@ -584,7 +584,7 @@ struct Pcsx2Config
 
 		bool operator==(const CpuOptions& right) const
 		{
-			return OpEqu(sseMXCSR) && OpEqu(sseVUMXCSR) && OpEqu(AffinityControlMode) && OpEqu(Recompiler);
+			return OpEqu(sseMXCSR) && OpEqu(sseVU0MXCSR) && OpEqu(sseVU1MXCSR) && OpEqu(AffinityControlMode) && OpEqu(Recompiler);
 		}
 
 		bool operator!=(const CpuOptions& right) const
@@ -626,7 +626,7 @@ struct Pcsx2Config
 					DisableShaderCache : 1,
 					DisableDualSourceBlend : 1,
 					DisableFramebufferFetch : 1,
-					ThreadedPresentation : 1,
+					DisableThreadedPresentation : 1,
 					SkipDuplicateFrames : 1,
 					OsdShowMessages : 1,
 					OsdShowSpeed : 1,
@@ -648,7 +648,6 @@ struct Pcsx2Config
 					PreloadFrameWithGSData : 1,
 					WrapGSMem : 1,
 					Mipmap : 1,
-					PointListPalette : 1,
 					ManualUserHacks : 1,
 					UserHacks_AlignSpriteX : 1,
 					UserHacks_AutoFlush : 1,
@@ -717,6 +716,8 @@ struct Pcsx2Config
 		int SWExtraThreads{2};
 		int SWExtraThreadsHeight{4};
 		int TVShader{0};
+		s16 GetSkipCountFunctionId{-1};
+		s16 BeforeDrawFunctionId{-1};
 		int SkipDrawStart{0};
 		int SkipDrawEnd{0};
 
@@ -778,16 +779,6 @@ struct Pcsx2Config
 
 	struct SPU2Options
 	{
-		enum class InterpolationMode
-		{
-			Nearest,
-			Linear,
-			Cubic,
-			Hermite,
-			CatmullRom,
-			Gaussian
-		};
-
 		enum class SynchronizationMode
 		{
 			TimeStretch,
@@ -795,30 +786,54 @@ struct Pcsx2Config
 			NoSync,
 		};
 
+		static constexpr s32 MAX_VOLUME = 200;
+		
+		static constexpr s32 MIN_LATENCY = 3;
+		static constexpr s32 MIN_LATENCY_TIMESTRETCH = 15;
+		static constexpr s32 MAX_LATENCY = 750;
+
+		static constexpr s32 MIN_SEQUENCE_LEN = 20;
+		static constexpr s32 MAX_SEQUENCE_LEN = 100;
+		static constexpr s32 MIN_SEEKWINDOW = 10;
+		static constexpr s32 MAX_SEEKWINDOW = 30;
+		static constexpr s32 MIN_OVERLAP = 5;
+		static constexpr s32 MAX_OVERLAP = 15;
+
 		BITFIELD32()
+		bool OutputLatencyMinimal : 1;
 		bool
-			AdvancedVolumeControl : 1;
+			DebugEnabled : 1,
+			MsgToConsole : 1,
+			MsgKeyOnOff : 1,
+			MsgVoiceOff : 1,
+			MsgDMA : 1,
+			MsgAutoDMA : 1,
+			MsgOverruns : 1,
+			MsgCache : 1,
+			AccessLog : 1,
+			DMALog : 1,
+			WaveLog : 1,
+			CoresDump : 1,
+			MemDump : 1,
+			RegDump : 1,
+			VisualDebugEnabled : 1;
 		BITFIELD_END
 
-		InterpolationMode Interpolation = InterpolationMode::Gaussian;
 		SynchronizationMode SynchMode = SynchronizationMode::TimeStretch;
 
 		s32 FinalVolume = 100;
-		s32 Latency{100};
-		s32 SpeakerConfiguration{0};
-		s32 DplDecodingLevel{0};
+		s32 Latency = 100;
+		s32 OutputLatency = 20;
+		s32 SpeakerConfiguration = 0;
+		s32 DplDecodingLevel = 0;
 
-		float VolumeAdjustC{ 0.0f };
-		float VolumeAdjustFL{ 0.0f };
-		float VolumeAdjustFR{ 0.0f };
-		float VolumeAdjustBL{ 0.0f };
-		float VolumeAdjustBR{ 0.0f };
-		float VolumeAdjustSL{ 0.0f };
-		float VolumeAdjustSR{ 0.0f };
-		float VolumeAdjustLFE{ 0.0f };
+		s32 SequenceLenMS = 30;
+		s32 SeekWindowMS = 20;
+		s32 OverlapMS = 10;
 
 		std::string OutputModule;
 		std::string BackendName;
+		std::string DeviceName;
 
 		SPU2Options();
 
@@ -828,25 +843,21 @@ struct Pcsx2Config
 		{
 			return OpEqu(bitset) &&
 
-				OpEqu(Interpolation) &&
 				OpEqu(SynchMode) &&
 
 				OpEqu(FinalVolume) &&
 				OpEqu(Latency) &&
+				OpEqu(OutputLatency) &&
 				OpEqu(SpeakerConfiguration) &&
 				OpEqu(DplDecodingLevel) &&
 
-				OpEqu(VolumeAdjustC) &&
-				OpEqu(VolumeAdjustFL) &&
-				OpEqu(VolumeAdjustFR) &&
-				OpEqu(VolumeAdjustBL) &&
-				OpEqu(VolumeAdjustBR) &&
-				OpEqu(VolumeAdjustSL) &&
-				OpEqu(VolumeAdjustSR) &&
-				OpEqu(VolumeAdjustLFE) &&
+				OpEqu(SequenceLenMS) &&
+				OpEqu(SeekWindowMS) &&
+				OpEqu(OverlapMS) &&
 
 				OpEqu(OutputModule) &&
-				OpEqu(BackendName);
+				OpEqu(BackendName) &&
+				OpEqu(DeviceName);
 		}
 
 		bool operator!=(const SPU2Options& right) const
@@ -1296,6 +1307,9 @@ namespace EmuFolders
 	void SetDefaults(SettingsInterface& si);
 	void LoadConfig(SettingsInterface& si);
 	bool EnsureFoldersExist();
+
+	/// Opens the specified log file for writing.
+	std::FILE* OpenLogFile(const std::string_view& name, const char* mode);
 } // namespace EmuFolders
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -1328,10 +1342,10 @@ namespace EmuFolders
 #define CHECK_FULLVU0SYNCHACK (EmuConfig.Gamefixes.FullVU0SyncHack)
 
 //------------ Advanced Options!!! ---------------
-#define CHECK_VU_OVERFLOW (EmuConfig.Cpu.Recompiler.vuOverflow)
-#define CHECK_VU_EXTRA_OVERFLOW (EmuConfig.Cpu.Recompiler.vuExtraOverflow) // If enabled, Operands are clamped before being used in the VU recs
-#define CHECK_VU_SIGN_OVERFLOW (EmuConfig.Cpu.Recompiler.vuSignOverflow)
-#define CHECK_VU_UNDERFLOW (EmuConfig.Cpu.Recompiler.vuUnderflow)
+#define CHECK_VU_OVERFLOW(vunum) (((vunum) == 0) ? EmuConfig.Cpu.Recompiler.vu0Overflow : EmuConfig.Cpu.Recompiler.vu1Overflow)
+#define CHECK_VU_EXTRA_OVERFLOW(vunum) (((vunum) == 0) ? EmuConfig.Cpu.Recompiler.vu0ExtraOverflow : EmuConfig.Cpu.Recompiler.vu1ExtraOverflow) // If enabled, Operands are clamped before being used in the VU recs
+#define CHECK_VU_SIGN_OVERFLOW(vunum) (((vunum) == 0) ? EmuConfig.Cpu.Recompiler.vu0SignOverflow : EmuConfig.Cpu.Recompiler.vu1SignOverflow)
+#define CHECK_VU_UNDERFLOW(vunum) (((vunum) == 0) ? EmuConfig.Cpu.Recompiler.vu0Underflow : EmuConfig.Cpu.Recompiler.vu1Underflow)
 
 #define CHECK_FPU_OVERFLOW (EmuConfig.Cpu.Recompiler.fpuOverflow)
 #define CHECK_FPU_EXTRA_OVERFLOW (EmuConfig.Cpu.Recompiler.fpuExtraOverflow) // If enabled, Operands are checked for infinities before being used in the FPU recs

@@ -65,7 +65,7 @@ std::string DInputSource::GetDeviceIdentifier(u32 index)
 	return fmt::format("DInput-{}", index);
 }
 
-static constexpr std::array<const char*, DInputSource::NUM_HAT_DIRECTIONS> s_hat_directions = {{"Up", "Right", "Down", "Left"}};
+static constexpr std::array<const char*, DInputSource::NUM_HAT_DIRECTIONS> s_hat_directions = {{"Up", "Down", "Left", "Right"}};
 
 bool DInputSource::Initialize(SettingsInterface& si, std::unique_lock<std::mutex>& settings_lock)
 {
@@ -96,12 +96,13 @@ bool DInputSource::Initialize(SettingsInterface& si, std::unique_lock<std::mutex
 	// need to release the lock while we're enumerating, because we call winId().
 	settings_lock.unlock();
 	const std::optional<WindowInfo> toplevel_wi(Host::GetTopLevelWindowInfo());
+	settings_lock.lock();
+
 	if (!toplevel_wi.has_value() || toplevel_wi->type != WindowInfo::Type::Win32)
 	{
 		Console.Error("Missing top level window, cannot add DInput devices.");
 		return false;
 	}
-	settings_lock.lock();
 
 	m_toplevel_window = static_cast<HWND>(toplevel_wi->window_handle);
 	ReloadDevices();
