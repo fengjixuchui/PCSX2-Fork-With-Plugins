@@ -21123,6 +21123,8 @@ SLES-54946:
   region: "PAL-M5"
   gameFixes:
     - VUSyncHack # Fixes SPS.
+  gsHWFixes:
+    halfPixelOffset: 1 # Fixes post bloom alignment.
 SLES-54947:
   name: "Dogz"
   region: "PAL-M6"
@@ -35566,6 +35568,9 @@ SLPS-20199:
   region: "NTSC-J"
   gsHWFixes:
     halfPixelOffset: 1 # Fixes black void when upscaling.
+SLPS-20200:
+  name: "Final Fantasy XI [Disc 2 of 2]"
+  region: "NTSC-J"
 SLPS-20202:
   name: "Coloball 2002"
   region: "NTSC-J"
@@ -48747,6 +48752,8 @@ SLUS-21733:
   region: "NTSC-U"
   gameFixes:
     - VUSyncHack # Fixes SPS.
+  gsHWFixes:
+    halfPixelOffset: 1 # Fixes post bloom alignment.
 SLUS-21734:
   name: "Falling Stars"
   region: "NTSC-U"
