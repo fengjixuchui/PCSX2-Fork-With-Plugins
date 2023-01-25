@@ -1,5 +1,5 @@
 /*  PCSX2 - PS2 Emulator for PCs
- *  Copyright (C) 2002-2021 PCSX2 Dev Team
+ *  Copyright (C) 2002-2023  PCSX2 Dev Team
  *
  *  PCSX2 is free software: you can redistribute it and/or modify it under the terms
  *  of the GNU Lesser General Public License as published by the Free Software Found-
@@ -15,17 +15,28 @@
 
 #pragma once
 
-class GSCodeBuffer
+#include "common/Pcsx2Defs.h"
+#include <QtWidgets/QPushButton>
+
+class ColorPickerButton : public QPushButton
 {
-	std::vector<void*> m_buffers;
-	size_t m_blocksize;
-	size_t m_pos, m_reserved;
-	u8* m_ptr;
+	Q_OBJECT
 
 public:
-	GSCodeBuffer(size_t blocksize = 4096 * 64); // 256k
-	virtual ~GSCodeBuffer();
+	ColorPickerButton(QWidget* parent);
 
-	void* GetBuffer(size_t size);
-	void ReleaseBuffer(size_t size);
+Q_SIGNALS:
+	void colorChanged(quint32 new_color);
+
+public Q_SLOTS:
+	quint32 color();
+	void setColor(quint32 rgb);
+
+private Q_SLOTS:
+	void onClicked();
+
+private:
+	void updateBackgroundColor();
+
+	u32 m_color = 0;
 };

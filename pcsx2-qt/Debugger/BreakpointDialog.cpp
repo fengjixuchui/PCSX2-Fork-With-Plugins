@@ -112,11 +112,14 @@ void BreakpointDialog::accept()
 			return;
 		}
 
+		bp->addr = address;
+
 		bp->enabled = m_ui.chkEnable->isChecked();
 
 		if (!m_ui.txtCondition->text().isEmpty())
 		{
 			bp->hasCond = true;
+			bp->cond.debug = m_cpu;
 
 			if (!m_cpu->initExpression(m_ui.txtCondition->text().toLocal8Bit().constData(), expr))
 			{
@@ -177,7 +180,7 @@ void BreakpointDialog::accept()
 		m_bpModel.removeRows(m_rowIndex, 1);
 	}
 
-	m_bpModel.insertRows(0, 1, {m_bp_mc});
+	m_bpModel.insertBreakpointRows(0, 1, {m_bp_mc});
 
 	QDialog::accept();
 }

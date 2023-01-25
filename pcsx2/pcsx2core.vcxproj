@@ -177,7 +177,6 @@
     <ClCompile Include="DEV9\PacketReader\IP\UDP\UDP_Packet.cpp" />
     <ClCompile Include="DEV9\PacketReader\IP\IP_Options.cpp" />
     <ClCompile Include="DEV9\PacketReader\IP\IP_Packet.cpp" />
-    <ClCompile Include="DEV9\PacketReader\NetLib.cpp" />
     <ClCompile Include="DEV9\pcap_io.cpp" />
     <ClCompile Include="DEV9\Sessions\ICMP_Session\ICMP_Session.cpp" />
     <ClCompile Include="DEV9\Sessions\TCP_Session\TCP_Session.cpp" />
@@ -281,7 +280,6 @@
     <ClCompile Include="GS\GSBlock.cpp" />
     <ClCompile Include="GS\GSCapture.cpp" />
     <ClCompile Include="GS\GSClut.cpp" />
-    <ClCompile Include="GS\GSCodeBuffer.cpp" />
     <ClCompile Include="GS\GSCrc.cpp" />
     <ClCompile Include="GS\Renderers\Common\GSDevice.cpp" />
     <ClCompile Include="GS\Renderers\DX11\GSDevice11.cpp" />
@@ -450,8 +448,6 @@
     <ClCompile Include="Ipu\IPU_Fifo.cpp" />
     <ClCompile Include="Ipu\IPU_MultiISA.cpp" />
     <ClCompile Include="Ipu\yuv2rgb.cpp" />
-    <ClCompile Include="Ipu\mpeg2lib\Idct.cpp" />
-    <ClCompile Include="Ipu\mpeg2lib\Mpeg.cpp" />
     <ClCompile Include="GS.cpp" />
     <ClCompile Include="MTGS.cpp" />
     <ClCompile Include="DebugTools\DisR3000A.cpp" />
@@ -514,6 +510,7 @@
     <ClInclude Include="DEV9\net.h" />
     <ClInclude Include="DEV9\PacketReader\ARP\ARP_Packet.h" />
     <ClInclude Include="DEV9\PacketReader\EthernetFrame.h" />
+    <ClInclude Include="DEV9\PacketReader\MAC_Address.h" />
     <ClInclude Include="DEV9\PacketReader\IP\ICMP\ICMP_Packet.h" />
     <ClInclude Include="DEV9\PacketReader\IP\TCP\TCP_Options.h" />
     <ClInclude Include="DEV9\PacketReader\IP\TCP\TCP_Packet.h" />
@@ -579,6 +576,7 @@
     <ClInclude Include="HostDisplay.h" />
     <ClInclude Include="HostSettings.h" />
     <ClInclude Include="IopGte.h" />
+    <ClInclude Include="IPU\mpeg2_vlc.h" />
     <ClInclude Include="MemoryCardProtocol.h" />
     <ClInclude Include="MultitapProtocol.h" />
     <ClInclude Include="PAD\Host\Global.h" />
@@ -607,7 +605,6 @@
     <ClInclude Include="SPU2\regs.h" />
     <ClInclude Include="SPU2\Mixer.h" />
     <ClInclude Include="SPU2\spu2.h" />
-    <ClInclude Include="GS\config.h" />
     <ClInclude Include="GS\Renderers\OpenGL\GLLoader.h" />
     <ClInclude Include="GS\Renderers\OpenGL\GLState.h" />
     <ClInclude Include="GS\GS.h" />
@@ -619,7 +616,6 @@
     <ClInclude Include="GS\GSBlock.h" />
     <ClInclude Include="GS\GSCapture.h" />
     <ClInclude Include="GS\GSClut.h" />
-    <ClInclude Include="GS\GSCodeBuffer.h" />
     <ClInclude Include="GS\GSCrc.h" />
     <ClInclude Include="GS\Renderers\Common\GSDevice.h" />
     <ClInclude Include="GS\Renderers\DX11\GSDevice11.h" />
@@ -686,8 +682,6 @@
     <ClInclude Include="USB\qemu-usb\queue.h" />
     <ClInclude Include="USB\qemu-usb\qusb.h" />
     <ClInclude Include="USB\qemu-usb\USBinternal.h" />
-    <ClInclude Include="USB\readerwriterqueue\atomicops.h" />
-    <ClInclude Include="USB\readerwriterqueue\readerwriterqueue.h" />
     <ClInclude Include="USB\shared\ringbuffer.h" />
     <ClInclude Include="USB\usb-eyetoy\cam-windows.h" />
     <ClInclude Include="USB\usb-eyetoy\jo_mpeg.h" />
@@ -718,7 +712,6 @@
     <ClInclude Include="SingleRegisterTypes.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="System\SysThreads.h" />
-    <ClInclude Include="System\RecTypes.h" />
     <ClInclude Include="Counters.h" />
     <ClInclude Include="Dmac.h" />
     <ClInclude Include="Hardware.h" />
@@ -782,8 +775,6 @@
     <ClInclude Include="Ipu\IPU_Fifo.h" />
     <ClInclude Include="Ipu\IPU_MultiISA.h" />
     <ClInclude Include="Ipu\yuv2rgb.h" />
-    <ClInclude Include="Ipu\mpeg2lib\Mpeg.h" />
-    <ClInclude Include="Ipu\mpeg2lib\Vlc.h" />
     <ClInclude Include="GS.h" />
     <ClInclude Include="DebugTools\Debug.h" />
     <ClInclude Include="DebugTools\DisASM.h" />

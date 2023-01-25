@@ -1,5 +1,5 @@
 /*  PCSX2 - PS2 Emulator for PCs
- *  Copyright (C) 2002-2021 PCSX2 Dev Team
+ *  Copyright (C) 2002-2023  PCSX2 Dev Team
  *
  *  PCSX2 is free software: you can redistribute it and/or modify it under the terms
  *  of the GNU Lesser General Public License as published by the Free Software Found-
@@ -15,8 +15,23 @@
 
 #pragma once
 
-//#define ENABLE_VTUNE
+namespace PacketReader
+{
+#pragma pack(push, 1)
+	struct MAC_Address
+	{
+		union
+		{
+			u8 bytes[6];
+			struct
+			{
+				u32 integer03;
+				u16 short45;
+			} u;
+		};
 
-#define ENABLE_JIT_RASTERIZER
-
-//#define DISABLE_HW_TEXTURE_CACHE // Slow but fixes a lot of bugs
+		bool operator==(const MAC_Address& other) const { return (this->u.integer03 == other.u.integer03) && (this->u.short45 == other.u.short45); }
+		bool operator!=(const MAC_Address& other) const { return (this->u.integer03 != other.u.integer03) || (this->u.short45 != other.u.short45); }
+	};
+#pragma pack(pop)
+} // namespace PacketReader

@@ -339,7 +339,6 @@ set(pcsx2DEV9Sources
 	DEV9/PacketReader/IP/IP_Options.cpp
 	DEV9/PacketReader/IP/IP_Packet.cpp
 	DEV9/PacketReader/EthernetFrame.cpp
-	DEV9/PacketReader/NetLib.cpp
 	DEV9/Sessions/BaseSession.cpp
 	DEV9/Sessions/ICMP_Session/ICMP_Session.cpp
 	DEV9/Sessions/TCP_Session/TCP_Session.cpp
@@ -380,6 +379,7 @@ set(pcsx2DEV9Headers
 	DEV9/PacketReader/IP/IP_Packet.h
 	DEV9/PacketReader/IP/IP_Payload.h
 	DEV9/PacketReader/EthernetFrame.h
+	DEV9/PacketReader/MAC_Address.h
 	DEV9/PacketReader/NetLib.h
 	DEV9/PacketReader/Payload.h
 	DEV9/pcap_io.h
@@ -431,8 +431,6 @@ set(pcsx2USBHeaders
 	USB/qemu-usb/input-keymap.h
 	USB/qemu-usb/queue.h
 	USB/qemu-usb/qusb.h
-	USB/readerwriterqueue/atomicops.h
-	USB/readerwriterqueue/readerwriterqueue.h
 	USB/shared/ringbuffer.h
 	USB/usb-eyetoy/jo_mpeg.h
 	USB/usb-eyetoy/ov519.h
@@ -496,7 +494,6 @@ set(pcsx2GSSources
 	GS/GSAlignedClass.cpp
 	GS/GSCapture.cpp
 	GS/GSClut.cpp
-	GS/GSCodeBuffer.cpp
 	GS/GSCrc.cpp
 	GS/GSDrawingContext.cpp
 	GS/GSDump.cpp
@@ -531,12 +528,10 @@ set(pcsx2GSSources
 
 # GS headers
 set(pcsx2GSHeaders
-	GS/config.h
 	GS/GSAlignedClass.h
 	GS/GSBlock.h
 	GS/GSCapture.h
 	GS/GSClut.h
-	GS/GSCodeBuffer.h
 	GS/GSCrc.h
 	GS/GSDrawingContext.h
 	GS/GSDrawingEnvironment.h
@@ -687,8 +682,6 @@ set(pcsx2IPUSources
 set(pcsx2IPUSourcesUnshared
 	IPU/IPU_MultiISA.cpp
 	IPU/IPUdither.cpp
-	IPU/mpeg2lib/Idct.cpp
-	IPU/mpeg2lib/Mpeg.cpp
 	IPU/yuv2rgb.cpp
 )
 
@@ -698,8 +691,7 @@ set(pcsx2IPUHeaders
 	IPU/IPU_Fifo.h
 	IPU/IPU_MultiISA.h
 	IPU/IPUdma.h
-	IPU/mpeg2lib/Mpeg.h
-	IPU/mpeg2lib/Vlc.h
+	IPU/mpeg2_vlc.h
 	IPU/yuv2rgb.h
 )
 
@@ -990,10 +982,6 @@ set(pcsx2RecordingHeaders
 	${rec_src}/Utilities/InputRecordingLogger.h
 )
 
-# System headers
-set(pcsx2SystemHeaders
-	System/RecTypes.h)
-
 # Windows sources
 set(pcsx2WindowsSources
 	CDVD/Windows/DriveUtility.cpp
@@ -1119,7 +1107,6 @@ target_sources(PCSX2 PRIVATE
 	${pcsx2FrontendHeaders}
 	${pcsx2ps2Sources}
 	${pcsx2ps2Headers}
-	${pcsx2SystemHeaders}
 )
 
 # platform sources
