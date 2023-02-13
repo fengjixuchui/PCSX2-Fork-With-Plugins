@@ -543,54 +543,27 @@ static __fi void DoFMVSwitch()
 		RendererSwitched = false;
 }
 
-// Convenience function to update UI thread and set patches.
-static __fi void frameLimitUpdateCore()
+// Convenience function to update UI thread and set patches. 
+static __fi void VSyncUpdateCore()
 {
 	DoFMVSwitch();
 
 	VMManager::Internal::VSyncOnCPUThread();
+}
+
+static __fi void VSyncCheckExit()
+{
 	if (VMManager::Internal::IsExecutionInterrupted())
 		Cpu->ExitExecution();
 }
 
 // Framelimiter - Measures the delta time between calls and stalls until a
 // certain amount of time passes if such time hasn't passed yet.
-#ifndef PCSX2_CORE
-std::optional<VsyncMode> s_vsync_mode_prior_to_unthrottle;
-#endif
-std::optional<LimiterModeType> s_limiter_mode_prior_to_unthrottle;
 static __fi void frameLimit()
 {
-#ifndef PCSX2_CORE
-	if (EmuConfig.GS.FrameLimitUnthrottle && !s_vsync_mode_prior_to_unthrottle.has_value())
-	{
-		s_vsync_mode_prior_to_unthrottle = Host::GetEffectiveVSyncMode();
-		GetMTGS().SetVSyncMode(VsyncMode::Off);
-	}
-	else if (!EmuConfig.GS.FrameLimitUnthrottle && s_vsync_mode_prior_to_unthrottle.has_value())
-	{
-		GetMTGS().SetVSyncMode(s_vsync_mode_prior_to_unthrottle.value());
-		s_vsync_mode_prior_to_unthrottle.reset();
-	}
-#else
-	if (EmuConfig.GS.FrameLimitUnthrottle && !s_limiter_mode_prior_to_unthrottle.has_value())
-	{
-		s_limiter_mode_prior_to_unthrottle = VMManager::GetLimiterMode();
-		VMManager::SetLimiterMode(LimiterModeType::Unlimited);
-	}
-	else if (!EmuConfig.GS.FrameLimitUnthrottle && s_limiter_mode_prior_to_unthrottle.has_value())
-	{
-		VMManager::SetLimiterMode(s_limiter_mode_prior_to_unthrottle.value());
-		s_limiter_mode_prior_to_unthrottle.reset();
-	}
-#endif
-
 	// Framelimiter off in settings? Framelimiter go brrr.
 	if (EmuConfig.GS.LimitScalar == 0.0f || s_use_vsync_for_timing || EmuConfig.GS.FrameLimitUnthrottle)
-	{
-		frameLimitUpdateCore();
 		return;
-	}
 
 	const u64 uExpectedEnd = m_iStart + m_iTicks;  // Compute when we would expect this frame to end, assuming everything goes perfectly perfect.
 	const u64 iEnd = GetCPUTicks();                // The current tick we actually stopped on.
@@ -601,7 +574,6 @@ static __fi void frameLimit()
 	{
 		// ... Fudge the next frame start over a bit. Prevents fast forward zoomies.
 		m_iStart += (sDeltaTime / m_iTicks) * m_iTicks;
-		frameLimitUpdateCore();
 		return;
 	}
 
@@ -625,7 +597,6 @@ static __fi void frameLimit()
 
 	// Finally, set our next frame start to when this one ends
 	m_iStart = uExpectedEnd;
-	frameLimitUpdateCore();
 }
 
 static __fi void VSyncStart(u32 sCycle)
@@ -633,8 +604,7 @@ static __fi void VSyncStart(u32 sCycle)
 	// Update vibration at the end of a frame.
 	PAD::Update();
 
-	frameLimit(); // limit FPS
-	gsPostVsyncStart(); // MUST be after framelimit; doing so before causes funk with frame times!
+	VSyncUpdateCore();
 
 	if(EmuConfig.Trace.Enabled && EmuConfig.Trace.EE.m_EnableAll)
 		SysTrace.EE.Counters.Write( "    ================  EE COUNTER VSYNC START (frame: %d)  ================", g_FrameCount );
@@ -701,6 +671,9 @@ static __fi void VSyncEnd(u32 sCycle)
 	if (!(g_FrameCount % 60))
 		sioNextFrame();
 
+	frameLimit(); // limit FPS
+	gsPostVsyncStart(); // MUST be after framelimit; doing so before causes funk with frame times!
+	VSyncCheckExit();
 	// This doesn't seem to be needed here.  Games only seem to break with regard to the
 	// vsyncstart irq.
 	//cpuRegs.eCycle[30] = 2;
