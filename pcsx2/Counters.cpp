@@ -557,10 +557,23 @@ static __fi void VSyncCheckExit()
 		Cpu->ExitExecution();
 }
 
+std::optional<LimiterModeType> s_limiter_mode_prior_to_unthrottle;
+
 // Framelimiter - Measures the delta time between calls and stalls until a
 // certain amount of time passes if such time hasn't passed yet.
 static __fi void frameLimit()
 {
+	if (EmuConfig.GS.FrameLimitUnthrottle && !s_limiter_mode_prior_to_unthrottle.has_value())
+	{
+		s_limiter_mode_prior_to_unthrottle = VMManager::GetLimiterMode();
+		VMManager::SetLimiterMode(LimiterModeType::Unlimited);
+	}
+	else if (!EmuConfig.GS.FrameLimitUnthrottle && s_limiter_mode_prior_to_unthrottle.has_value())
+	{
+		VMManager::SetLimiterMode(s_limiter_mode_prior_to_unthrottle.value());
+		s_limiter_mode_prior_to_unthrottle.reset();
+	}
+
 	// Framelimiter off in settings? Framelimiter go brrr.
 	if (EmuConfig.GS.LimitScalar == 0.0f || s_use_vsync_for_timing || EmuConfig.GS.FrameLimitUnthrottle)
 		return;
