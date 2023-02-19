@@ -781,8 +781,6 @@ SCAJ-20075:
 SCAJ-20076:
   name: "Armored Core - Nexus [Disc 1]"
   region: "NTSC-Unk"
-  roundModes:
-    eeRoundMode: 0 # Fixes Z-Fighting.
   memcardFilters:
     - "SCAJ-20076"
     - "SCAJ-20077"
@@ -793,8 +791,6 @@ SCAJ-20076:
 SCAJ-20077:
   name: "Armored Core - Nexus [Disc 2]"
   region: "NTSC-Unk"
-  roundModes:
-    eeRoundMode: 0 # Fixes Z-Fighting.
   memcardFilters:
     - "SCAJ-20076"
     - "SCAJ-20077"
@@ -11274,6 +11270,13 @@ SLES-50821:
   gsHWFixes:
     halfPixelOffset: 2 # Fixes blurriness.
     disablePartialInvalidation: 1 # Fixes ghost rendering.
+  patches:
+    "22E91837":
+      content: |-
+        author=WeirdBeardGame, TellowKrinkle, CheeseyBurrito.
+        // Wraps sceVu0ScaleVector in if statement to prevent bad divide by zero behaviour.
+        patch=1,EE,0011f3b4,word,46156032
+        patch=1,EE,0011f3b8,word,45010002
 SLES-50822:
   name: "Shadow Hearts"
   region: "PAL-M3"
@@ -23103,16 +23106,12 @@ SLES-82035:
 SLES-82036:
   name: "Armored Core - Nexus [Disc 1 of 2 - Evolution Disc]"
   region: "PAL-M5"
-  roundModes:
-    eeRoundMode: 0 # Fixes Z-Fighting.
   memcardFilters:
     - "SLES-82036"
     - "SLES-82037"
 SLES-82037:
   name: "Armored Core - Nexus [Disc 2 of 2 - Revolution Disc]"
   region: "PAL-M5"
-  roundModes:
-    eeRoundMode: 0 # Fixes Z-Fighting.
   memcardFilters:
     - "SLES-82036"
     - "SLES-82037"
@@ -23904,16 +23903,12 @@ SLKA-25200:
 SLKA-25201:
   name: "Armored Core Nexus Evolution [Disc 1]"
   region: "NTSC-K"
-  roundModes:
-    eeRoundMode: 0 # Fixes Z-Fighting.
   memcardFilters:
     - "SLKA-25201"
     - "SLKA-25202"
 SLKA-25202:
   name: "Armored Core Nexus Revolution [Disc 2]"
   region: "NTSC-K"
-  roundModes:
-    eeRoundMode: 0 # Fixes Z-Fighting.
   memcardFilters:
     - "SLKA-25201"
     - "SLKA-25202"
@@ -37122,6 +37117,13 @@ SLPS-25074:
   gsHWFixes:
     halfPixelOffset: 2 # Fixes blurriness.
     disablePartialInvalidation: 1 # Fixes ghost rendering.
+  patches:
+    9883194E:
+      content: |-
+        author=WeirdBeardGame, TellowKrinkle, CheeseyBurrito.
+        // Wraps sceVu0ScaleVector in if statement to prevent bad divide by zero behaviour.
+        patch=1,EE,0011de3c,word,46156032
+        patch=1,EE,0011de40,word,45010002
 SLPS-25075:
   name: "Sidewinder F"
   region: "NTSC-J"
@@ -37989,8 +37991,6 @@ SLPS-25337:
 SLPS-25338:
   name: "Armored Core - Nexus [Disc 1]"
   region: "NTSC-J"
-  roundModes:
-    eeRoundMode: 0 # Fixes Z-Fighting.
   memcardFilters:
     - "SCAJ-20076"
     - "SCAJ-20077"
@@ -38001,8 +38001,6 @@ SLPS-25338:
 SLPS-25339:
   name: "Armored Core - Nexus [Disc 2]"
   region: "NTSC-J"
-  roundModes:
-    eeRoundMode: 0 # Fixes Z-Fighting.
   memcardFilters:
     - "SCAJ-20076"
     - "SCAJ-20077"
@@ -40345,8 +40343,6 @@ SLPS-73201:
 SLPS-73202:
   name: "Armored Core - Nexus [PlayStation 2 The Best] [Disc 1]"
   region: "NTSC-J"
-  roundModes:
-    eeRoundMode: 0 # Fixes Z-Fighting.
   memcardFilters:
     - "SCAJ-20076"
     - "SCAJ-20077"
@@ -40357,8 +40353,6 @@ SLPS-73202:
 SLPS-73203:
   name: "Armored Core - Nexus [PlayStation 2 The Best] [Disc 2]"
   region: "NTSC-J"
-  roundModes:
-    eeRoundMode: 0 # Fixes Z-Fighting.
   memcardFilters:
     - "SCAJ-20076"
     - "SCAJ-20077"
@@ -42458,6 +42452,13 @@ SLUS-20388:
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
     disablePartialInvalidation: 1 # Fixes ghost rendering.
+  patches:
+    339A0B8C:
+      content: |-
+        author=WeirdBeardGame, TellowKrinkle, CheeseyBurrito.
+        // Wraps sceVu0ScaleVector in if statement to prevent bad divide by zero behaviour.
+        patch=1,EE,0011f0cc,word,46156032
+        patch=1,EE,0011f0d0,word,45010002
 SLUS-20389:
   name: "Endgame"
   region: "NTSC-U"
@@ -45393,8 +45394,6 @@ SLUS-20985:
 SLUS-20986:
   name: "Armored Core Nexus [Evolution Disc]"
   region: "NTSC-U"
-  roundModes:
-    eeRoundMode: 0 # Fixes Z-Fighting.
   compat: 5
   memcardFilters:
     - "SLUS-20986"
@@ -45906,8 +45905,6 @@ SLUS-21078:
 SLUS-21079:
   name: "Armored Core Nexus [Revolution Disc]"
   region: "NTSC-U"
-  roundModes:
-    eeRoundMode: 0 # Fixes Z-Fighting.
   memcardFilters:
     - "SLUS-20986"
     - "SLUS-21079"
