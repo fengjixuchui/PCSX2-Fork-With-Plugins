@@ -528,6 +528,7 @@ SCAJ-20011:
   gsHWFixes:
     halfPixelOffset: 2 # Corrects positioning of reflections on suit's surfaces.
     roundSprite: 2 # Reduces garbage on the UI whilst upscaling.
+    partialTargetInvalidation: 1 # Fixes corrupted textures.
   memcardFilters:
     - "SCAJ-20011"
     - "SCPS-55014"
@@ -5594,6 +5595,8 @@ SCPS-15012:
 SCPS-15013:
   name: "Poinie's Poin"
   region: "NTSC-J"
+  gsHWFixes:
+    textureInsideRT: 1 # Fixes text corruption.
 SCPS-15014:
   name: "Genshi no Kotoba"
   region: "NTSC-J"
@@ -6670,7 +6673,6 @@ SCPS-55002:
   region: "NTSC-J"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    disablePartialInvalidation: 1 # Fixes ghost rendering.
 SCPS-55003:
   name: "Vampire Night"
   region: "NTSC-J"
@@ -6720,6 +6722,7 @@ SCPS-55014:
   gsHWFixes:
     halfPixelOffset: 2 # Corrects positioning of reflections on suit's surfaces.
     roundSprite: 2 # Reduces garbage on the UI whilst upscaling.
+    partialTargetInvalidation: 1 # Fixes corrupted textures.
 SCPS-55015:
   name: "Zettai Zetsumei Toshi"
   region: "NTSC-J"
@@ -6846,13 +6849,14 @@ SCPS-55043:
   region: "NTSC-J"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    disablePartialInvalidation: 1 # Fixes ghost rendering.
 SCPS-55044:
   name: "Energy Airforce"
   region: "NTSC-J"
 SCPS-55045:
-  name: "Poinie's Poin 3"
+  name: "Poinie's Poin"
   region: "NTSC-J"
+  gsHWFixes:
+    textureInsideRT: 1 # Fixes text corruption.
 SCPS-55046:
   name: "Ultraman Fighting Evolution 2"
   region: "NTSC-J"
@@ -6946,7 +6950,6 @@ SCPS-56008:
   compat: 5
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    disablePartialInvalidation: 1 # Fixes ghost rendering.
 SCPS-56009:
   name: "Smash Court Pro Tournament"
   region: "NTSC-K"
@@ -9107,7 +9110,7 @@ SLAJ-25080:
   name: "Godfather, The"
   region: "NTSC-Unk"
   gsHWFixes:
-    cpuCLUTRender: 1 # Fixes light occlusion.
+    gpuTargetCLUT: 1 # Fixes light occlusion.
     skipDrawStart: 1 # Removes mono-colored sepia bottom and vertical sepia bars on top.
     skipDrawEnd: 1 # Removes mono-colored sepia bottom and vertical sepia bars on top.
 SLAJ-25081:
@@ -9223,7 +9226,7 @@ SLED-50884:
   name: "TimeSplitters 2 [Demo]"
   region: "PAL-E"
   gsHWFixes:
-    halfPixelOffset: 1 # Fixes texture slight misalignment.
+    halfPixelOffset: 2 # Fixes texture slight misalignment.
 SLED-50895:
   name: "Medal of Honor - Frontline [Demo]"
   region: "PAL-E"
@@ -9271,6 +9274,8 @@ SLED-52326:
   region: "PAL-E"
   gsHWFixes:
     halfPixelOffset: 2 # Fixes lines in cutscenes.
+    mipmap: 2 # Cleans up texture detail.
+    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLED-52375:
   name: "Fight Night 2004 [Demo]"
   region: "PAL-E"
@@ -9339,8 +9344,6 @@ SLED-52890:
   region: "PAL-M7"
   gameFixes:
     - GIFFIFOHack # Partially fixes graphical issues also needs EE cycle rate + 3.
-  gsHWFixes:
-    mipmap: 1
 SLED-52899:
   name: "Killzone [Bonus Disc]"
   region: "PAL-M5"
@@ -9631,6 +9634,8 @@ SLES-50050:
   name: "Evergrace"
   region: "PAL-M5"
   compat: 5
+  gsHWFixes:
+    partialTargetInvalidation: 1 # Fixes corrupted textures.
 SLES-50051:
   name: "Eternal Ring"
   region: "PAL-E"
@@ -9638,6 +9643,7 @@ SLES-50051:
     eeRoundMode: 0 # Fixes FPU errors causing instant death in Limestone Cave.
   gsHWFixes:
     disablePartialInvalidation: 1 # Fixes graphics issues.
+    partialTargetInvalidation: 1 # Fixes corrupted textures.
 SLES-50052:
   name: "Pool Master"
   region: "PAL-M3"
@@ -11262,7 +11268,6 @@ SLES-50821:
   compat: 5
   gsHWFixes:
     halfPixelOffset: 2 # Fixes blurriness.
-    disablePartialInvalidation: 1 # Fixes ghost rendering.
   patches:
     "22E91837":
       content: |-
@@ -11470,7 +11475,7 @@ SLES-50877:
   region: "PAL-M5"
   compat: 5
   gsHWFixes:
-    halfPixelOffset: 1 # Fixes texture slight misalignment.
+    halfPixelOffset: 2 # Fixes texture slight misalignment.
 SLES-50879:
   name: "Paris-Dakar 2"
   region: "PAL-M5"
@@ -12688,6 +12693,7 @@ SLES-51399:
   gsHWFixes:
     halfPixelOffset: 2 # Corrects positioning of reflections on suit's surfaces.
     roundSprite: 2 # Reduces garbage on the UI whilst upscaling.
+    partialTargetInvalidation: 1 # Fixes corrupted textures.
 SLES-51400:
   name: "Tenchu - Wrath of Heaven"
   region: "PAL-S"
@@ -13788,8 +13794,6 @@ SLES-51953:
   region: "PAL-M4"
   clampModes:
     vuClampMode: 2 # Missing geometry with microVU.
-  gsHWFixes:
-    mipmap: 1
 SLES-51954:
   name: "Max Payne 2 - The Fall of Max Payne"
   region: "PAL-E"
@@ -13827,15 +13831,11 @@ SLES-51963:
   region: "PAL-F-G"
   clampModes:
     vuClampMode: 2 # Missing geometry with microVU.
-  gsHWFixes:
-    mipmap: 1 # Improves field textures.
 SLES-51964:
   name: "FIFA 2004"
   region: "PAL-P-S"
   clampModes:
     vuClampMode: 2 # Missing geometry with microVU.
-  gsHWFixes:
-    mipmap: 1 # Improves field textures.
 SLES-51966:
   name: "Bombastic"
   region: "PAL-E"
@@ -13928,6 +13928,8 @@ SLES-52005:
   compat: 5
   gsHWFixes:
     halfPixelOffset: 2 # Fixes lines in cutscenes.
+    mipmap: 2 # Cleans up texture detail.
+    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-52008:
   name: "NBA Live 2004"
   region: "PAL-M5"
@@ -14022,6 +14024,8 @@ SLES-52046:
   compat: 5
   gsHWFixes:
     halfPixelOffset: 2 # Fixes lines in cutscenes.
+    mipmap: 2 # Cleans up texture detail.
+    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-52047:
   name: "Sims, The - Bustin' Out"
   region: "PAL-M6"
@@ -15065,36 +15069,26 @@ SLES-52559:
   region: "PAL-E"
   gameFixes:
     - GIFFIFOHack # Partially fixes graphical issues also needs EE cycle rate + 3.
-  gsHWFixes:
-    mipmap: 1 # Improves field textures.
 SLES-52560:
   name: "FIFA 2005"
   region: "PAL-G"
   gameFixes:
     - GIFFIFOHack # Partially fixes graphical issues also needs EE cycle rate + 3.
-  gsHWFixes:
-    mipmap: 1 # Improves field textures.
 SLES-52561:
   name: "FIFA 2005"
   region: "PAL-P-S"
   gameFixes:
     - GIFFIFOHack # Partially fixes graphical issues also needs EE cycle rate + 3.
-  gsHWFixes:
-    mipmap: 1 # Improves field textures.
 SLES-52562:
   name: "FIFA 2005"
   region: "PAL-I"
   gameFixes:
     - GIFFIFOHack # Partially fixes graphical issues also needs EE cycle rate + 3.
-  gsHWFixes:
-    mipmap: 1 # Improves field textures.
 SLES-52563:
   name: "FIFA Football 2005"
   region: "PAL-M6"
   gameFixes:
     - GIFFIFOHack # Partially fixes graphical issues also needs EE cycle rate + 3.
-  gsHWFixes:
-    mipmap: 1 # Improves field textures.
 SLES-52567:
   name: "Catwoman"
   region: "PAL-M7"
@@ -16193,7 +16187,7 @@ SLES-52993:
   name: "TimeSplitters - Future Perfect"
   region: "PAL-M5"
   gsHWFixes:
-    halfPixelOffset: 3 # Removes ghosting of distant objects.
+    halfPixelOffset: 2 # Removes ghosting of distant objects.
 SLES-52998:
   name: "Sonic Mega Collection Plus"
   region: "PAL-M5"
@@ -17498,36 +17492,26 @@ SLES-53529:
   region: "PAL-E"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-53530:
   name: "FIFA '06"
   region: "PAL-I"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-53531:
   name: "FIFA '06"
   region: "PAL-F-G"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-53532:
   name: "FIFA '06"
   region: "PAL-P-S"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-53533:
   name: "FIFA '06"
   region: "PAL-M8"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-53534:
   name: "Tony Hawk's American Wasteland"
   region: "PAL-E"
@@ -17799,9 +17783,12 @@ SLES-53616:
     eeRoundMode: 0 # Fixes scene switching in intro.
   gsHWFixes:
     cpuSpriteRenderBW: 1 # Fixes textures.
-    preloadFrameData: 1 # Fixes static text screens.
+    partialTargetInvalidation: 1 # Needed due to procedural textures overlapping EE writes.
+    preloadFrameData: 1 # Fixes numberplates and ensures above targets are valid.
     roundSprite: 1 # Fixes lines in some post-effects.
-    cpuCLUTRender: 1 # Fixes light occlusion.
+    gpuTargetCLUT: 1 # Fixes light occlusion.
+    mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
+    trilinearFiltering: 1
 SLES-53617:
   name: "True Crime - New York City"
   region: "PAL-G"
@@ -17811,9 +17798,12 @@ SLES-53617:
     eeRoundMode: 0 # Fixes scene switching in intro.
   gsHWFixes:
     cpuSpriteRenderBW: 1 # Fixes textures.
-    preloadFrameData: 1 # Fixes static text screens.
+    partialTargetInvalidation: 1 # Needed due to procedural textures overlapping EE writes.
+    preloadFrameData: 1 # Fixes numberplates and ensures above targets are valid.
     roundSprite: 1 # Fixes lines in some post-effects.
-    cpuCLUTRender: 1 # Fixes light occlusion.
+    gpuTargetCLUT: 1 # Fixes light occlusion.
+    mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
+    trilinearFiltering: 1
 SLES-53618:
   name: "True Crime - New York City"
   region: "PAL-S"
@@ -17823,9 +17813,12 @@ SLES-53618:
     eeRoundMode: 0 # Fixes scene switching in intro.
   gsHWFixes:
     cpuSpriteRenderBW: 1 # Fixes textures.
-    preloadFrameData: 1 # Fixes static text screens.
+    partialTargetInvalidation: 1 # Needed due to procedural textures overlapping EE writes.
+    preloadFrameData: 1 # Fixes numberplates and ensures above targets are valid.
     roundSprite: 1 # Fixes lines in some post-effects.
-    cpuCLUTRender: 1 # Fixes light occlusion.
+    gpuTargetCLUT: 1 # Fixes light occlusion.
+    mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
+    trilinearFiltering: 1
 SLES-53621:
   name: "Wallace & Gromit - The Curse of the Were-Rabbit"
   region: "PAL-M5"
@@ -18714,7 +18707,7 @@ SLES-53967:
   name: "Godfather, The"
   region: "PAL-M6"
   gsHWFixes:
-    cpuCLUTRender: 1 # Fixes light occlusion.
+    gpuTargetCLUT: 1 # Fixes light occlusion.
     skipDrawStart: 1 # Removes mono-colored sepia bottom and vertical sepia bars on top.
     skipDrawEnd: 1 # Removes mono-colored sepia bottom and vertical sepia bars on top.
 SLES-53968:
@@ -19449,43 +19442,31 @@ SLES-54240:
   compat: 5
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-54241:
   name: "FIFA '07"
   region: "PAL-M3"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-54243:
   name: "FIFA '07"
   region: "PAL-P-S"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-54244:
   name: "FIFA '07"
   region: "PAL-M5"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-54245:
   name: "NHL '07"
   region: "PAL-M6"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-54246:
   name: "FIFA '07"
   region: "PAL-R"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-54248:
   name: "Madden NFL '07"
   region: "PAL-E"
@@ -21056,36 +21037,26 @@ SLES-54870:
   region: "PAL-E"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-54871:
   name: "FIFA '08"
   region: "PAL-F-G-I"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-54872:
   name: "FIFA '08"
   region: "PAL-P-S"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-54873:
   name: "FIFA '08"
   region: "PAL-M5"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-54874:
   name: "FIFA '08"
   region: "PAL-M5"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-54875:
   name: "Warriors Orochi"
   region: "PAL-E"
@@ -22004,8 +21975,8 @@ SLES-55215:
   name: "Growlanser - Heritage of War"
   region: "PAL-E"
   compat: 5
-  # gsHWFixes: Disabled because of GitHub Issue #6797
-  #   preloadFrameData: 1 # Fixes layers where characters should be visually behind an object.
+  gsHWFixes:
+    textureInsideRT: 1 # Fixes character layering issue.
 SLES-55216:
   name: "Baroque"
   region: "PAL-E"
@@ -22082,37 +22053,27 @@ SLES-55243:
   region: "PAL-E"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-55244:
   name: "FIFA 09"
   region: "PAL-F-G"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-55245:
   name: "FIFA 09"
   region: "PAL-M5"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-55246:
   name: "FIFA 09"
   region: "PAL-M4"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-55247:
   name: "FIFA 09"
   region: "PAL-M5"
   compat: 5
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-55248:
   name: "Harry Potter and the Half-Blood Prince"
   region: "PAL-M6"
@@ -22775,37 +22736,27 @@ SLES-55581:
   region: "PAL-M5"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-55582:
   name: "FIFA 10"
   region: "PAL-F-G"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-55583:
   name: "FIFA 10"
   region: "PAL-SC"
   compat: 5
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-55584:
   name: "FIFA 10"
   region: "PAL-M5"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-55585:
   name: "FIFA 10"
   region: "PAL-E"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLES-55587:
   name: "Pro Evolution Soccer 2010"
   region: "PAL-M5"
@@ -23461,6 +23412,7 @@ SLKA-25041:
   gsHWFixes:
     halfPixelOffset: 2 # Corrects positioning of reflections on suit's surfaces.
     roundSprite: 2 # Reduces garbage on the UI whilst upscaling.
+    partialTargetInvalidation: 1 # Fixes corrupted textures.
   memcardFilters:
     - "SLKA-25041"
     - "SLPM-67524"
@@ -24335,7 +24287,7 @@ SLKA-25338:
   name: "Godfather, The"
   region: "NTSC-K"
   gsHWFixes:
-    cpuCLUTRender: 1 # Fixes light occlusion.
+    gpuTargetCLUT: 1 # Fixes light occlusion.
     skipDrawStart: 1 # Removes mono-colored sepia bottom and vertical sepia bars on top.
     skipDrawEnd: 1 # Removes mono-colored sepia bottom and vertical sepia bars on top.
 SLKA-25341:
@@ -24472,8 +24424,6 @@ SLKA-25396:
   region: "NTSC-K"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLKA-25397:
   name: "Dragon Ball Z Sparking NEO"
   region: "NTSC-K"
@@ -25141,7 +25091,6 @@ SLPM-60167:
   region: "NTSC-J"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    disablePartialInvalidation: 1 # Fixes ghost rendering.
 SLPM-60149:
   name: "Ace Combat 04 - Shattered Skies [Trial]"
   region: "NTSC-J"
@@ -25390,6 +25339,11 @@ SLPM-61147:
     halfPixelOffset: 1 # Fixes lighting misalignment and reduces ground shadows (probably texture cache issue).
     roundSprite: 2 # Fixes font artifacts.
     getSkipCount: "GSC_XenosagaE3"
+SLPM-61148:
+  name: "Growlanser V - Generations [Taikenban Demo]"
+  region: "NTSC-J"
+  gsHWFixes:
+    textureInsideRT: 1 # Fixes character layering issue.
 SLPM-61157:
   name: "Naruto Shippuuden - Narutimate Accel [Trial]"
   region: "NTSC-J"
@@ -29196,6 +29150,8 @@ SLPM-65446:
   region: "NTSC-J"
   gsHWFixes:
     halfPixelOffset: 2 # Fixes lines in cutscenes.
+    mipmap: 2 # Cleans up texture detail.
+    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLPM-65447:
   name: "Kunoichi"
   region: "NTSC-J"
@@ -30107,6 +30063,8 @@ SLPM-65725:
   region: "NTSC-J"
   gsHWFixes:
     halfPixelOffset: 2 # Fixes lines in cutscenes.
+    mipmap: 2 # Cleans up texture detail.
+    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLPM-65726:
   name: "Star Wars - Jango Fett [EA Best Hits]"
   region: "NTSC-J"
@@ -32077,8 +32035,8 @@ SLPM-66249:
   name: "Growlanser V - Generations [Limited Edition]"
   region: "NTSC-J"
   compat: 5
-  # gsHWFixes: Disabled because of GitHub Issue #6797
-  #   preloadFrameData: 1 # Fixes layers where characters should be visually behind an object.
+  gsHWFixes:
+    textureInsideRT: 1 # Fixes character layering issue.
 SLPM-66250:
   name: "Choro Q HG 4 [Takara Best]"
   region: "NTSC-J"
@@ -32685,8 +32643,8 @@ SLPM-66418:
   name: "Growlanser V - Generations"
   region: "NTSC-J"
   compat: 5
-  # gsHWFixes: Disabled because of GitHub Issue #6797
-  #   preloadFrameData: 1 # Fixes layers where characters should be visually behind an object.
+  gsHWFixes:
+    textureInsideRT: 1 # Fixes character layering issue.
 SLPM-66419:
   name: "Valkyrie Profile 2 - Silmeria"
   region: "NTSC-J"
@@ -32922,9 +32880,12 @@ SLPM-66473:
     eeRoundMode: 0 # Fixes scene switching in intro.
   gsHWFixes:
     cpuSpriteRenderBW: 1 # Fixes textures.
-    preloadFrameData: 1 # Fixes static text screens.
+    partialTargetInvalidation: 1 # Needed due to procedural textures overlapping EE writes.
+    preloadFrameData: 1 # Fixes numberplates and ensures above targets are valid.
     roundSprite: 1 # Fixes lines in some post-effects.
-    cpuCLUTRender: 1 # Fixes light occlusion.
+    gpuTargetCLUT: 1 # Fixes light occlusion.
+    mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
+    trilinearFiltering: 1
 SLPM-66474:
   name: "Odin Sphere"
   region: "NTSC-J"
@@ -33851,7 +33812,7 @@ SLPM-66710:
   name: "Godfather, The"
   region: "NTSC-J"
   gsHWFixes:
-    cpuCLUTRender: 1 # Fixes light occlusion.
+    gpuTargetCLUT: 1 # Fixes light occlusion.
     skipDrawStart: 1 # Removes mono-colored sepia bottom and vertical sepia bars on top.
     skipDrawEnd: 1 # Removes mono-colored sepia bottom and vertical sepia bars on top.
 SLPM-66712:
@@ -33877,8 +33838,8 @@ SLPM-66716:
   name: "Growlanser VI"
   region: "NTSC-J"
   compat: 5
-  # gsHWFixes: Disabled because of GitHub Issue #6797
-  #   preloadFrameData: 1 # Fixes layers where characters should be visually behind an object.
+  gsHWFixes:
+    textureInsideRT: 1 # Fixes character layering issue.
 SLPM-66717:
   name: "Standard Daisenryaku - Dengekisen [Sega the Best]"
   region: "NTSC-J"
@@ -34729,7 +34690,7 @@ SLPM-66966:
   name: "Godfather, The [EA-SY! 1980]"
   region: "NTSC-J"
   gsHWFixes:
-    cpuCLUTRender: 1 # Fixes light occlusion.
+    gpuTargetCLUT: 1 # Fixes light occlusion.
     skipDrawStart: 1 # Removes mono-colored sepia bottom and vertical sepia bars on top.
     skipDrawEnd: 1 # Removes mono-colored sepia bottom and vertical sepia bars on top.
 SLPM-66967:
@@ -34968,6 +34929,7 @@ SLPM-67524:
   gsHWFixes:
     halfPixelOffset: 2 # Corrects positioning of reflections on suit's surfaces.
     roundSprite: 2 # Reduces garbage on the UI whilst upscaling.
+    partialTargetInvalidation: 1 # Fixes corrupted textures.
 SLPM-67526:
   name: "Ghost Vibration"
   region: "NTSC-K"
@@ -35287,9 +35249,12 @@ SLPM-74243:
     eeRoundMode: 0 # Fixes scene switching in intro.
   gsHWFixes:
     cpuSpriteRenderBW: 1 # Fixes textures.
-    preloadFrameData: 1 # Fixes static text screens.
+    partialTargetInvalidation: 1 # Needed due to procedural textures overlapping EE writes.
+    preloadFrameData: 1 # Fixes numberplates and ensures above targets are valid.
     roundSprite: 1 # Fixes lines in some post-effects.
-    cpuCLUTRender: 1 # Fixes light occlusion.
+    gpuTargetCLUT: 1 # Fixes light occlusion.
+    mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
+    trilinearFiltering: 1
 SLPM-74244:
   name: "Phantasy Star Universe [PlayStation 2 The Best]"
   region: "NTSC-J"
@@ -36776,6 +36741,7 @@ SLPS-25001:
     eeRoundMode: 0 # Fixes FPU errors causing instant death in Limestone Cave.
   gsHWFixes:
     disablePartialInvalidation: 1 # Fixes raphics issues.
+    partialTargetInvalidation: 1 # Fixes corrupted textures.
 SLPS-25002:
   name: "Dead or Alive 2"
   region: "NTSC-J"
@@ -36805,6 +36771,8 @@ SLPS-25003:
   region: "NTSC-J"
   clampModes:
     eeClampMode: 3 # Fixes hanging before going in-game.
+  gsHWFixes:
+    partialTargetInvalidation: 1 # Fixes corrupted textures.
 SLPS-25004:
   name: "Kensetsu Juuki Kenka Battle - Buchigire Kongou!!"
   region: "NTSC-J"
@@ -37096,7 +37064,6 @@ SLPS-25074:
   compat: 5
   gsHWFixes:
     halfPixelOffset: 2 # Fixes blurriness.
-    disablePartialInvalidation: 1 # Fixes ghost rendering.
   patches:
     9883194E:
       content: |-
@@ -37221,6 +37188,7 @@ SLPS-25112:
   gsHWFixes:
     halfPixelOffset: 2 # Corrects positioning of reflections on suit's surfaces.
     roundSprite: 2 # Reduces garbage on the UI whilst upscaling.
+    partialTargetInvalidation: 1 # Fixes corrupted textures.
 SLPS-25113:
   name: "Zettai Zetsumei Toshi"
   region: "NTSC-J"
@@ -37416,6 +37384,7 @@ SLPS-25169:
   gsHWFixes:
     halfPixelOffset: 2 # Corrects positioning of reflections on suit's surfaces.
     roundSprite: 2 # Reduces garbage on the UI whilst upscaling.
+    partialTargetInvalidation: 1 # Fixes corrupted textures.
   memcardFilters:
     - "SCAJ-20011"
     - "SCPS-55014"
@@ -40663,7 +40632,6 @@ SLPS-73255:
   region: "NTSC-J"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    disablePartialInvalidation: 1 # Fixes ghost rendering.
 SLPS-73256:
   name: "Fatal Frame II - Crimson Butterfly [PlayStation 2 the Best - Reprint]"
   region: "NTSC-J"
@@ -40718,7 +40686,6 @@ SLPS-73405:
   region: "NTSC-J"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    disablePartialInvalidation: 1 # Fixes ghost rendering.
 SLPS-73406:
   name: "DOA 2 - Hardcore [PlayStation 2 The Best]"
   region: "NTSC-J"
@@ -40766,6 +40733,7 @@ SLPS-73417:
   gsHWFixes:
     halfPixelOffset: 2 # Corrects positioning of reflections on suit's surfaces.
     roundSprite: 2 # Reduces garbage on the UI whilst upscaling.
+    partialTargetInvalidation: 1 # Fixes corrupted textures.
 SLPS-73418:
   name: "Shadow Hearts [PlayStation 2 The Best]"
   region: "NTSC-J"
@@ -40782,6 +40750,7 @@ SLPS-73420:
   gsHWFixes:
     halfPixelOffset: 2 # Corrects positioning of reflections on suit's surfaces.
     roundSprite: 2 # Reduces garbage on the UI whilst upscaling.
+    partialTargetInvalidation: 1 # Fixes corrupted textures.
   memcardFilters:
     - "SCAJ-20011"
     - "SCPS-55014"
@@ -40898,10 +40867,13 @@ SLUS-20015:
     eeRoundMode: 0 # Fixes FPU errors causing instant death in Limestone Cave.
   gsHWFixes:
     disablePartialInvalidation: 1 # Fixes graphics issues.
+    partialTargetInvalidation: 1 # Fixes corrupted textures.
 SLUS-20016:
   name: "Evergrace"
   region: "NTSC-U"
   compat: 5
+  gsHWFixes:
+    partialTargetInvalidation: 1 # Fixes corrupted textures.
 SLUS-20017:
   name: "Maximo - Ghosts to Glory"
   region: "NTSC-U"
@@ -42068,7 +42040,7 @@ SLUS-20314:
   region: "NTSC-U"
   compat: 5
   gsHWFixes:
-    halfPixelOffset: 1 # Fixes texture slight misalignment.
+    halfPixelOffset: 2 # Fixes texture slight misalignment.
 SLUS-20315:
   name: "Spyro the Dragon - Enter the Dragonfly"
   region: "NTSC-U"
@@ -42412,7 +42384,6 @@ SLUS-20388:
   compat: 5
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    disablePartialInvalidation: 1 # Fixes ghost rendering.
   patches:
     339A0B8C:
       content: |-
@@ -42654,6 +42625,7 @@ SLUS-20435:
   gsHWFixes:
     halfPixelOffset: 2 # Corrects positioning of reflections on suit's surfaces.
     roundSprite: 2 # Reduces garbage on the UI whilst upscaling.
+    partialTargetInvalidation: 1 # Fixes corrupted textures.
 SLUS-20436:
   name: "Guilty Gear X2"
   region: "NTSC-U"
@@ -44165,6 +44137,8 @@ SLUS-20751:
   compat: 5
   gsHWFixes:
     halfPixelOffset: 2 # Fixes lines in cutscenes.
+    mipmap: 2 # Cleans up texture detail.
+    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLUS-20752:
   name: "Madden NFL 2004"
   region: "NTSC-U"
@@ -45742,8 +45716,6 @@ SLUS-21051:
   compat: 5
   gameFixes:
     - GIFFIFOHack # Partially fixes graphical issues also needs EE cycle rate + 3.
-  gsHWFixes:
-    mipmap: 1
 SLUS-21052:
   name: "Disney's Monsters Inc."
   region: "NTSC-U"
@@ -45988,9 +45960,12 @@ SLUS-21106:
     eeRoundMode: 0 # Fixes scene switching in intro.
   gsHWFixes:
     cpuSpriteRenderBW: 1 # Fixes textures.
-    preloadFrameData: 1 # Fixes static text screens.
+    partialTargetInvalidation: 1 # Needed due to procedural textures overlapping EE writes.
+    preloadFrameData: 1 # Fixes numberplates and ensures above targets are valid.
     roundSprite: 1 # Fixes lines in some post-effects.
-    cpuCLUTRender: 1 # Fixes light occlusion.
+    gpuTargetCLUT: 1 # Fixes light occlusion.
+    mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
+    trilinearFiltering: 1
 SLUS-21107:
   name: "X-Men - The Official Game"
   region: "NTSC-U"
@@ -46193,7 +46168,7 @@ SLUS-21148:
   region: "NTSC-U"
   compat: 5
   gsHWFixes:
-    halfPixelOffset: 3 # Removes ghosting of distant objects.
+    halfPixelOffset: 2 # Removes ghosting of distant objects.
 SLUS-21149:
   name: "Yourself! Fitness"
   region: "NTSC-U"
@@ -46950,8 +46925,6 @@ SLUS-21280:
   region: "NTSC-U"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLUS-21281:
   name: "Marvel Nemesis - Rise of the Imperfects"
   region: "NTSC-U"
@@ -47589,7 +47562,7 @@ SLUS-21385:
   region: "NTSC-U"
   compat: 5
   gsHWFixes:
-    cpuCLUTRender: 1 # Fixes light occlusion.
+    gpuTargetCLUT: 1 # Fixes light occlusion.
     skipDrawStart: 1 # Removes mono-colored sepia bottom and vertical sepia bars on top.
     skipDrawEnd: 1 # Removes mono-colored sepia bottom and vertical sepia bars on top.
 SLUS-21386:
@@ -47701,7 +47674,7 @@ SLUS-21406:
   name: "Godfather, The - Collector's Edition"
   region: "NTSC-U"
   gsHWFixes:
-    cpuCLUTRender: 1 # Fixes light occlusion.
+    gpuTargetCLUT: 1 # Fixes light occlusion.
     skipDrawStart: 1 # Removes mono-colored sepia bottom and vertical sepia bars on top.
     skipDrawEnd: 1 # Removes mono-colored sepia bottom and vertical sepia bars on top.
 SLUS-21407:
@@ -47868,8 +47841,6 @@ SLUS-21433:
   region: "NTSC-U"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLUS-21434:
   name: "Superman Returns - The Video Game"
   region: "NTSC-U"
@@ -48413,8 +48384,8 @@ SLUS-21571:
   name: "Growlanser - Heritage of War"
   region: "NTSC-U"
   compat: 5
-  # gsHWFixes: Disabled because of GitHub Issue #6797
-  #   preloadFrameData: 1 # Fixes layers where characters should be visually behind an object.
+  gsHWFixes:
+    textureInsideRT: 1 # Fixes character layering issue.
 SLUS-21572:
   name: "Surf's Up"
   region: "NTSC-U"
@@ -48828,8 +48799,6 @@ SLUS-21648:
   compat: 5
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLUS-21649:
   name: "NBA Live '08"
   region: "NTSC-U"
@@ -49436,8 +49405,6 @@ SLUS-21776:
   compat: 5
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLUS-21777:
   name: "NBA Live '09"
   region: "NTSC-U"
@@ -49702,7 +49669,7 @@ SLUS-21841:
   region: "NTSC-U"
   compat: 5
 SLUS-21842:
-  name: "Dragon Ball Z Infinite World"
+  name: "Dragon Ball Z - Infinite World"
   region: "NTSC-U"
   compat: 5
 SLUS-21843:
@@ -49990,8 +49957,6 @@ SLUS-21905:
   region: "NTSC-U"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLUS-21906:
   name: "Cabela's Outdoor Adventures 2010"
   region: "NTSC-U"
@@ -50664,6 +50629,8 @@ SLUS-29095:
   region: "NTSC-U"
   gsHWFixes:
     halfPixelOffset: 2 # Fixes lines in cutscenes.
+    mipmap: 2 # Cleans up texture detail.
+    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLUS-29096:
   name: "Final Night 2004 [Demo]"
   region: "NTSC-U"
@@ -50873,8 +50840,6 @@ SLUS-29160:
   region: "NTSC-U"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLUS-29161:
   name: "SSX On Tour [Demo]"
   region: "NTSC-U"
@@ -51001,8 +50966,6 @@ SLUS-29194:
   region: "NTSC-U"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
-    mipmap: 2 # Cleans up texture detail.
-    trilinearFiltering: 1 # Smoothes out mipmapping.
 SLUS-29195:
   name: "Yakuza [Demo]"
   region: "NTSC-U"
