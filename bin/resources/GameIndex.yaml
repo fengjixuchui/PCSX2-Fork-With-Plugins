@@ -8625,6 +8625,8 @@ SCUS-97540:
 SCUS-97544:
   name: "NBA '07 featuring The Life Vol.2"
   region: "NTSC-U"
+  gsHWFixes:
+    textureInsideRT: 1 # Fixes glitching crowd.
 SCUS-97545:
   name: "SOCOM - U.S. Navy SEALs - Combined Assault"
   region: "NTSC-U"
@@ -8649,6 +8651,8 @@ SCUS-97548:
 SCUS-97554:
   name: "NBA '07 featuring The Life Vol.2 [Demo]"
   region: "NTSC-U"
+  gsHWFixes:
+    textureInsideRT: 1 # Fixes glitching crowd.
 SCUS-97555:
   name: "Jak and Daxter Complete Trilogy [Demo]"
   region: "NTSC-U"
@@ -16718,12 +16722,16 @@ SLES-53196:
   name: "Destroy All Humans!"
   region: "PAL-M4"
   gsHWFixes:
-    mipmap: 1
+    mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
+    trilinearFiltering: 1
+    textureInsideRT: 2 # Fixes shadow maps.
 SLES-53197:
   name: "Destroy All Humans!"
   region: "PAL-G"
   gsHWFixes:
-    mipmap: 1
+    mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
+    trilinearFiltering: 1
+    textureInsideRT: 2 # Fixes shadow maps.
 SLES-53199:
   name: "25 to Life"
   region: "PAL-E"
@@ -17886,7 +17894,9 @@ SLES-53641:
   name: "Destroy All Humans!"
   region: "PAL-R"
   gsHWFixes:
-    mipmap: 1
+    mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
+    trilinearFiltering: 1
+    textureInsideRT: 2 # Fixes shadow maps.
 SLES-53644:
   name: "Gene Troopers"
   region: "PAL-M5"
@@ -19797,7 +19807,9 @@ SLES-54384:
   name: "Destroy All Humans 2 - Make War not Love"
   region: "PAL-M5"
   gsHWFixes:
-    mipmap: 1
+    mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
+    trilinearFiltering: 1
+    textureInsideRT: 2 # Fixes shadow maps.
 SLES-54385:
   name: "Atelier Iris 2 - The Azoth of Destiny"
   region: "PAL-E"
@@ -19863,8 +19875,7 @@ SLES-54423:
   name: "Justice League Heroes"
   region: "PAL-M5"
   gsHWFixes:
-    texturePreloading: 1 # Performs much better with partial preload.
-    disablePartialInvalidation: 1 # Fixes performamce issues.
+    estimateTextureRegion: 1 # Improves performance.
   clampModes:
     vuClampMode: 2 # Fixes ingame SPS for the capes.
 SLES-54424:
@@ -20856,6 +20867,8 @@ SLES-54786:
 SLES-54788:
   name: "Aqua Teen Hunger Force - Zombie Ninja Pro-Am"
   region: "PAL-E"
+  gsHWFixes:
+    textureInsideRT: 2 # Fixes shadows.
 SLES-54789:
   name: "Beta Bloc"
   region: "PAL-E"
@@ -32694,7 +32707,9 @@ SLPM-66430:
   name: "Destroy All Humans!"
   region: "NTSC-J"
   gsHWFixes:
-    mipmap: 1
+    mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
+    trilinearFiltering: 1
+    textureInsideRT: 2 # Fixes shadow maps.
 SLPM-66431:
   name: "WinBack 2 - Project Poseidon"
   region: "NTSC-J"
@@ -45112,7 +45127,9 @@ SLUS-20945:
   region: "NTSC-U"
   compat: 5
   gsHWFixes:
-    mipmap: 1
+    mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
+    trilinearFiltering: 1
+    textureInsideRT: 2 # Fixes shadow maps.
 SLUS-20946:
   name: "Grand Theft Auto - San Andreas"
   region: "NTSC-U"
@@ -47053,8 +47070,7 @@ SLUS-21304:
   region: "NTSC-U"
   compat: 5
   gsHWFixes:
-    texturePreloading: 1 # Performs much better with partial preload.
-    disablePartialInvalidation: 1 # Fixes performance issues.
+    estimateTextureRegion: 1 # Improves performance.
   clampModes:
     vuClampMode: 2 # Ingame capes become SPS mess with lower than extra VU clamp.
 SLUS-21305:
@@ -47881,7 +47897,9 @@ SLUS-21439:
   clampModes:
     eeClampMode: 3 # Fixes material stretching across screen that appears for a split second.
   gsHWFixes:
-    mipmap: 1
+    mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
+    trilinearFiltering: 1
+    textureInsideRT: 2 # Fixes shadow maps.
 SLUS-21440:
   name: "Big Idea's VeggieTales - LarryBoy and the Bad Apple"
   region: "NTSC-U"
@@ -48730,6 +48748,8 @@ SLUS-21633:
   name: "Aqua Teen Hunger Force - Zombie Ninja Pro-Am"
   region: "NTSC-U"
   compat: 5
+  gsHWFixes:
+    textureInsideRT: 2 # Fixes shadows.
 SLUS-21634:
   name: "Crazy Frog Racer 2"
   region: "NTSC-U"
@@ -50792,7 +50812,9 @@ SLUS-29150:
   name: "Destroy All Humans! [Demo]"
   region: "NTSC-U"
   gsHWFixes:
-    mipmap: 1
+    mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
+    trilinearFiltering: 1
+    textureInsideRT: 2 # Fixes shadow maps.
 SLUS-29152:
   name: "Battlefield 2 - Modern Combat [Regular Demo]"
   region: "NTSC-U"
@@ -50982,7 +51004,9 @@ SLUS-29196:
   name: "Destroy All Humans! 2 [Demo]"
   region: "NTSC-U"
   gsHWFixes:
-    mipmap: 1
+    mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
+    trilinearFiltering: 1
+    textureInsideRT: 2 # Fixes shadow maps.
 SLUS-29197:
   name: "Flushed Away [Demo]"
   region: "NTSC-U"
