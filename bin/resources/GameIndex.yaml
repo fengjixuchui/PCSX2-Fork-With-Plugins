@@ -9482,6 +9482,17 @@ SLED-54312:
   gsHWFixes:
     halfPixelOffset: 2 # Fixes blurriness.
     roundSprite: 2 # Fixes blurriness.
+SLED-54401:
+  name: "Destroy All Humans 2 [Demo]"
+  region: "PAL-E"
+  gsHWFixes:
+    mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
+    trilinearFiltering: 1
+    textureInsideRT: 2 # Fixes shadow maps.
+    roundSprite: 2 # Fixes misalgined bloom.
+    mergeSprite: 1 # Fixes misalgined bloom.
+    halfPixelOffset: 2 # Fixes misalgined bloom.
+    autoFlush: 1 # Fixes sun occlusion and brightness.
 SLES-50003:
   name: "Swap Magic DVD Disc v2.0"
   region: "PAL-Unk"
@@ -9748,6 +9759,8 @@ SLES-50079:
   region: "PAL-E"
   clampModes:
     eeClampMode: 2 # Fixes Abnormal AI behavior.
+  gsHWFixes:
+    textureInsideRT: 1 # Fixes texture corruption.
 SLES-50080:
   name: "NBA Hoopz"
   region: "PAL-M3"
@@ -11705,6 +11718,9 @@ SLES-51011:
   name: "Knight Rider - The Game"
   region: "PAL-M4"
   compat: 5
+  gsHWFixes:
+    autoFlush: 1 # Fixes brake lights.
+    preloadFrameData: 1 # Fixes graphical issues.
 SLES-51013:
   name: "Blade II"
   region: "PAL-E"
@@ -16725,6 +16741,10 @@ SLES-53196:
     mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
     trilinearFiltering: 1
     textureInsideRT: 2 # Fixes shadow maps.
+    roundSprite: 2 # Fixes misalgined bloom.
+    mergeSprite: 1 # Fixes misalgined bloom.
+    halfPixelOffset: 2 # Fixes misalgined bloom.
+    autoFlush: 1 # Fixes sun occlusion and brightness.
 SLES-53197:
   name: "Destroy All Humans!"
   region: "PAL-G"
@@ -16732,6 +16752,10 @@ SLES-53197:
     mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
     trilinearFiltering: 1
     textureInsideRT: 2 # Fixes shadow maps.
+    roundSprite: 2 # Fixes misalgined bloom.
+    mergeSprite: 1 # Fixes misalgined bloom.
+    halfPixelOffset: 2 # Fixes misalgined bloom.
+    autoFlush: 1 # Fixes sun occlusion and brightness.
 SLES-53199:
   name: "25 to Life"
   region: "PAL-E"
@@ -17450,8 +17474,11 @@ SLES-53523:
   roundModes:
     vu1RoundMode: 0 # Fixes textures and crashes.
   gsHWFixes:
-    halfPixelOffset: 2 # Fixes bloom misalignment.
-    wildArmsHack: 1 # Fixes bloom misalignment.
+    mipmap: 2 # Mipmap + trilinear, improves ground textures and water textures and reflections.
+    trilinearFiltering: 1
+    textureInsideRT: 1 # Fixes rainbow artifacting around edges of screen.
+    halfPixelOffset: 2 # Fixes misalgined bloom.
+    autoFlush: 1 # Fixes missing bloom intensity and alignment.
 SLES-53524:
   name: "Mortal Kombat - Shaolin Monks"
   region: "PAL-M5"
@@ -17897,6 +17924,10 @@ SLES-53641:
     mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
     trilinearFiltering: 1
     textureInsideRT: 2 # Fixes shadow maps.
+    roundSprite: 2 # Fixes misalgined bloom.
+    mergeSprite: 1 # Fixes misalgined bloom.
+    halfPixelOffset: 2 # Fixes misalgined bloom.
+    autoFlush: 1 # Fixes sun occlusion and brightness.
 SLES-53644:
   name: "Gene Troopers"
   region: "PAL-M5"
@@ -17915,8 +17946,11 @@ SLES-53647:
   roundModes:
     vu1RoundMode: 0 # Fixes textures and crashes.
   gsHWFixes:
-    halfPixelOffset: 2 # Fixes bloom misalignment.
-    wildArmsHack: 1 # Fixes bloom misalignment.
+    mipmap: 2 # Mipmap + trilinear, improves ground textures and water textures and reflections.
+    trilinearFiltering: 1
+    textureInsideRT: 1 # Fixes rainbow artifacting around edges of screen.
+    halfPixelOffset: 2 # Fixes misalgined bloom.
+    autoFlush: 1 # Fixes missing bloom intensity and alignment.
 SLES-53651:
   name: "WWII - Soldier"
   region: "PAL-E"
@@ -19810,6 +19844,10 @@ SLES-54384:
     mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
     trilinearFiltering: 1
     textureInsideRT: 2 # Fixes shadow maps.
+    roundSprite: 2 # Fixes misalgined bloom.
+    mergeSprite: 1 # Fixes misalgined bloom.
+    halfPixelOffset: 2 # Fixes misalgined bloom.
+    autoFlush: 1 # Fixes sun occlusion and brightness.
 SLES-54385:
   name: "Atelier Iris 2 - The Azoth of Destiny"
   region: "PAL-E"
@@ -22818,6 +22856,8 @@ SLES-55609:
 SLES-55610:
   name: "Springdale"
   region: "PAL-M5"
+  gsHWFixes:
+    halfPixelOffset: 1 # Reduces the ghosting effect.
 SLES-55622:
   name: "Disney-Pixar Toy Story 3"
   region: "PAL-M6"
@@ -23250,6 +23290,12 @@ SLKA-15005:
   compat: 5
   gameFixes:
     - EETimingHack # Fixes part II intro screen.
+SLKA-15006:
+  name: "Knight Rider - The Game"
+  region: "NTSC-K"
+  gsHWFixes:
+    autoFlush: 1 # Fixes brake lights.
+    preloadFrameData: 1 # Fixes graphical issues.
 SLKA-15007:
   name: "GrowLanser2"
   region: "NTSC-K"
@@ -24772,6 +24818,17 @@ SLPM-55140:
     mvuFlagSpeedHack: 0 # Fixes invisible wall in front of the door leading to East 3F in the 2nd visit of Apartment world preventing Eileen's Nurse Outfit.
   gsHWFixes:
     halfPixelOffset: 1 # Fixes dark sides.
+SLPM-55141:
+  name: "Destroy All Humans! [THQ Collection]"
+  region: "NTSC-J"
+  gsHWFixes:
+    mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
+    trilinearFiltering: 1
+    textureInsideRT: 2 # Fixes shadow maps.
+    roundSprite: 2 # Fixes misalgined bloom.
+    mergeSprite: 1 # Fixes misalgined bloom.
+    halfPixelOffset: 2 # Fixes misalgined bloom.
+    autoFlush: 1 # Fixes sun occlusion and brightness.
 SLPM-55146:
   name: "Jikkyou Powerful Pro Yakyuu 2009"
   region: "NTSC-J"
@@ -32710,6 +32767,10 @@ SLPM-66430:
     mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
     trilinearFiltering: 1
     textureInsideRT: 2 # Fixes shadow maps.
+    roundSprite: 2 # Fixes misalgined bloom.
+    mergeSprite: 1 # Fixes misalgined bloom.
+    halfPixelOffset: 2 # Fixes misalgined bloom.
+    autoFlush: 1 # Fixes sun occlusion and brightness.
 SLPM-66431:
   name: "WinBack 2 - Project Poseidon"
   region: "NTSC-J"
@@ -36814,6 +36875,8 @@ SLPS-25007:
   region: "NTSC-J"
   clampModes:
     eeClampMode: 2 # Fixes Abnormal AI behavior.
+  gsHWFixes:
+    textureInsideRT: 1 # Fixes texture corruption.
 SLPS-25008:
   name: "Sorcerous Stabber Orphen"
   region: "NTSC-J"
@@ -40696,6 +40759,8 @@ SLPS-73403:
   region: "NTSC-J"
   clampModes:
     eeClampMode: 2 # Fixes Abnormal AI behavior.
+  gsHWFixes:
+    textureInsideRT: 1 # Fixes texture corruption.
 SLPS-73404:
   name: "Klonoa 2 [PlayStation 2 The Best]"
   region: "NTSC-J"
@@ -40885,6 +40950,8 @@ SLUS-20014:
   compat: 5
   clampModes:
     eeClampMode: 2 # Fixes Abnormal AI behavior.
+  gsHWFixes:
+    textureInsideRT: 1 # Fixes texture corruption.
 SLUS-20015:
   name: "Eternal Ring"
   region: "NTSC-U"
@@ -45130,6 +45197,10 @@ SLUS-20945:
     mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
     trilinearFiltering: 1
     textureInsideRT: 2 # Fixes shadow maps.
+    roundSprite: 2 # Fixes misalgined bloom.
+    mergeSprite: 1 # Fixes misalgined bloom.
+    halfPixelOffset: 2 # Fixes misalgined bloom.
+    autoFlush: 1 # Fixes sun occlusion and brightness.
 SLUS-20946:
   name: "Grand Theft Auto - San Andreas"
   region: "NTSC-U"
@@ -46150,8 +46221,11 @@ SLUS-21139:
   roundModes:
     vu1RoundMode: 0 # Fixes textures and crashes.
   gsHWFixes:
-    halfPixelOffset: 2 # Fixes bloom misalignment.
-    wildArmsHack: 1 # Fixes bloom misalignment.
+    mipmap: 2 # Mipmap + trilinear, improves ground textures and water textures and reflections.
+    trilinearFiltering: 1
+    textureInsideRT: 1 # Fixes rainbow artifacting around edges of screen.
+    halfPixelOffset: 2 # Fixes misalgined bloom.
+    autoFlush: 1 # Fixes missing bloom intensity and alignment.
 SLUS-21140:
   name: "Mobile Suit Gundam Seed - Never Ending Tomorrow"
   region: "NTSC-U"
@@ -47900,6 +47974,10 @@ SLUS-21439:
     mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
     trilinearFiltering: 1
     textureInsideRT: 2 # Fixes shadow maps.
+    roundSprite: 2 # Fixes misalgined bloom.
+    mergeSprite: 1 # Fixes misalgined bloom.
+    halfPixelOffset: 2 # Fixes misalgined bloom.
+    autoFlush: 1 # Fixes sun occlusion and brightness.
 SLUS-21440:
   name: "Big Idea's VeggieTales - LarryBoy and the Bad Apple"
   region: "NTSC-U"
@@ -50815,6 +50893,10 @@ SLUS-29150:
     mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
     trilinearFiltering: 1
     textureInsideRT: 2 # Fixes shadow maps.
+    roundSprite: 2 # Fixes misalgined bloom.
+    mergeSprite: 1 # Fixes misalgined bloom.
+    halfPixelOffset: 2 # Fixes misalgined bloom.
+    autoFlush: 1 # Fixes sun occlusion and brightness.
 SLUS-29152:
   name: "Battlefield 2 - Modern Combat [Regular Demo]"
   region: "NTSC-U"
@@ -51007,6 +51089,10 @@ SLUS-29196:
     mipmap: 2 # Mipmap + trilinear, improves ground textures to match sw renderer.
     trilinearFiltering: 1
     textureInsideRT: 2 # Fixes shadow maps.
+    roundSprite: 2 # Fixes misalgined bloom.
+    mergeSprite: 1 # Fixes misalgined bloom.
+    halfPixelOffset: 2 # Fixes misalgined bloom.
+    autoFlush: 1 # Fixes sun occlusion and brightness.
 SLUS-29197:
   name: "Flushed Away [Demo]"
   region: "NTSC-U"
