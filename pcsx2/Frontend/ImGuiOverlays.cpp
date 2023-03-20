@@ -425,7 +425,7 @@ void ImGuiManager::DrawSettingsOverlay()
 		if (GSConfig.UserHacks_AlignSpriteX)
 			APPEND("AS ");
 		if (GSConfig.UserHacks_AutoFlush)
-			APPEND("AF ");
+			APPEND("ATFL ");
 		if (GSConfig.UserHacks_CPUFBConversion)
 			APPEND("FBC ");
 		if (GSConfig.UserHacks_ReadTCOnClose)
@@ -435,7 +435,7 @@ void ImGuiManager::DrawSettingsOverlay()
 		if (GSConfig.UserHacks_DisablePartialInvalidation)
 			APPEND("DPIV ");
 		if (GSConfig.UserHacks_TargetPartialInvalidation)
-			APPEND("TPV ");
+			APPEND("TPI ");
 		if (GSConfig.UserHacks_DisableSafeFeatures)
 			APPEND("DSF ");
 		if (GSConfig.PreloadFrameWithGSData)
