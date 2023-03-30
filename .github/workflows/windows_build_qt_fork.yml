@@ -124,7 +124,7 @@ jobs:
         with:
           path: './bin/**'
           type: 'zip'
-          filename: PCSX2Fork-Windows-${{ inputs.configuration }}-${{ inputs.platform }}-${{ inputs.jobName }}.zip
+          filename: PCSX2Fork-Windows-${{ inputs.platform }}-${{ inputs.jobName }}.zip
           exclusions: '*.bsc *.exp *.ilk *.iobj *.ipdb *.pdb *.lib'
       - name: Get release info
         id: release_info
