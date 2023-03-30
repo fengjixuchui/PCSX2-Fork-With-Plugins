@@ -2382,6 +2382,8 @@ SCED-52869:
     autoFlush: 1 # Fixes car shadows.
     roundSprite: 1 # Fixes misaligned text.
     halfPixelOffset: 2 # Fixes minor ghosting on objects.
+  roundModes:
+    eeRoundMode: 2 # Fixes rainbow highlighting on cars.
 SCED-52880:
   name: "WRC 4 - The Official Game of the FIA World Rally Championship [Demo]"
   region: "PAL-E"
@@ -2391,6 +2393,8 @@ SCED-52880:
     autoFlush: 1 # Fixes car shadows.
     roundSprite: 1 # Fixes misaligned text.
     halfPixelOffset: 2 # Fixes minor ghosting on objects.
+  roundModes:
+    eeRoundMode: 2 # Fixes rainbow highlighting on cars.
 SCED-52899:
   name: "Killzone [Bonus Disc]"
   region: "PAL-M5"
@@ -2415,6 +2419,8 @@ SCED-52945:
     autoFlush: 1 # Fixes car shadows.
     roundSprite: 1 # Fixes misaligned text.
     halfPixelOffset: 2 # Fixes minor ghosting on objects.
+  roundModes:
+    eeRoundMode: 2 # Fixes rainbow highlighting on cars.
 SCED-52946:
   name: "Getaway, The - Black Monday [Demo]"
   region: "PAL-E"
@@ -3681,6 +3687,8 @@ SCES-52389:
     autoFlush: 1 # Fixes car shadows.
     roundSprite: 1 # Fixes misaligned text.
     halfPixelOffset: 2 # Fixes minor ghosting on objects.
+  roundModes:
+    eeRoundMode: 2 # Fixes rainbow highlighting on cars.
 SCES-52405:
   name: "DJ - Decks & FX - House Edition"
   region: "PAL-M9"
@@ -6756,6 +6764,8 @@ SCPS-51004:
 SCPS-51005:
   name: "Samurai"
   region: "NTSC-J"
+  gameFixes:
+    - EETimingHack # Stops crash after intro movie.
 SCPS-51006:
   name: "Alpine Racer 3"
   region: "NTSC-J"
@@ -9262,7 +9272,6 @@ SLAJ-25077:
   region: "NTSC-Unk"
   memcardFilters:
     - "SLAJ-25077"
-    - "SLPM-55122"
     - "SLPM-66307"
     - "SLPM-74247"
     - "SLAJ-25035"
@@ -11807,7 +11816,7 @@ SLES-50921:
   name: "Way of the Samurai"
   region: "PAL-M3"
   gameFixes:
-    - EETimingHack # Stops crash after intro movie
+    - EETimingHack # Stops crash after intro movie.
 SLES-50922:
   name: "Terminator, The - Dawn of Fate"
   region: "PAL-M5"
@@ -23221,6 +23230,8 @@ SLES-55635:
   name: "WWE SmackDown vs. Raw 2011"
   region: "PAL-M4"
   compat: 5
+  gsHWFixes:
+    partialTargetInvalidation: 1 # Fixes broken text.
 SLES-55636:
   name: "Pro Evolution Soccer 2011"
   region: "PAL-M5"
@@ -25158,21 +25169,8 @@ SLPM-55121:
   name: "Fukakutei Sekai no Tantei Shinshi - Akugyou Souma no Jiken File"
   region: "NTSC-J"
 SLPM-55122:
-  name: "Sengoku Musou 2"
+  name: "Gundam Musou 2"
   region: "NTSC-J"
-  memcardFilters:
-    - "SLAJ-25077"
-    - "SLPM-55122"
-    - "SLPM-66307"
-    - "SLPM-74247"
-    - "SLAJ-25035"
-    - "SLPM-65517"
-    - "SLPM-74212"
-    - "SLPM-74235"
-    - "SLAJ-25048"
-    - "SLPM-65718"
-    - "SLPM-74224"
-    - "SLPM-74249"
 SLPM-55127:
   name: "Need for Speed - Undercover"
   region: "NTSC-J"
@@ -28255,6 +28253,18 @@ SLPM-65025:
 SLPM-65026:
   name: "beatmania IIDX 4th style -new songs collection-"
   region: "NTSC-J"
+SLPM-65031:
+  name: "Kessen 2"
+  region: "NTSC-J"
+  patches:
+    7C012435:
+      content: |-
+        comment=COP2 flag instance patch by refraction
+        // A mac flag check just after a vsub which gets in the way, rearranging.
+        patch=0,EE,0016ae90,word,48438800
+        patch=0,EE,0016ae94,word,4BE521AC
+        patch=0,EE,0016ae98,word,30848000
+        patch=0,EE,0016ae9c,word,4BE72B3C
 SLPM-65032:
   name: "Tokyo Bus Guide - Annai"
   region: "NTSC-J"
@@ -31514,6 +31524,8 @@ SLPM-65975:
     autoFlush: 1 # Fixes car shadows.
     roundSprite: 1 # Fixes misaligned text.
     halfPixelOffset: 2 # Fixes minor ghosting on objects.
+  roundModes:
+    eeRoundMode: 2 # Fixes rainbow highlighting on cars.
 SLPM-65976:
   name: "Grandia III [Disc 1 of 2]"
   region: "NTSC-J"
@@ -32946,6 +32958,8 @@ SLPM-66334:
     autoFlush: 1 # Fixes car shadows.
     roundSprite: 1 # Fixes misaligned text.
     halfPixelOffset: 2 # Fixes minor ghosting on objects.
+  roundModes:
+    eeRoundMode: 2 # Fixes rainbow highlighting on cars.
 SLPM-66336:
   name: "Shinseiki Evangelion - Koutetsu no Girlfriend [Special Edition]"
   region: "NTSC-J"
@@ -35619,6 +35633,11 @@ SLPM-68005:
     mipmap: 2 # Fixes blurry textures.
     trilinearFiltering: 1 # Fixes blurry textures.
     cpuFramebufferConversion: 1 # Fixes right side of the screen from garbage textures.
+SLPM-68017:
+  name: "Shin Onimusha - Dawn of Dreams [Saikyou Save Data]"
+  region: "NTSC-J"
+  memcardFilters:
+    - "SLPM-66275"
 SLPM-68018:
   name: "Virtua Fighter - 10th Anniversary Edition"
   region: "NTSC-J"
@@ -35770,6 +35789,8 @@ SLPM-74221:
 SLPM-74222:
   name: "Samurai Kanzenban [PlayStation 2 The Best]"
   region: "NTSC-J"
+  gameFixes:
+    - EETimingHack # Stops crash after intro movie.
 SLPM-74224:
   name: "Sengoku Musou Mushoden [PlayStation 2 The Best]"
   region: "NTSC-J"
@@ -35815,6 +35836,8 @@ SLPM-74232:
   gsHWFixes:
     halfPixelOffset: 2 # Fixes misalignment and upscaling lines.
     getSkipCount: "GSC_ShinOnimusha"
+  memcardFilters:
+    - "SLPM-66275"
 SLPM-74233:
   name: "Shin Onimusha - Dawn of Dreams [PlayStation 2 The Best][Disc 2]"
   region: "NTSC-J"
@@ -35895,7 +35918,6 @@ SLPM-74247:
   region: "NTSC-J"
   memcardFilters:
     - "SLAJ-25077"
-    - "SLPM-55122"
     - "SLPM-66307"
     - "SLPM-74247"
     - "SLAJ-25035"
@@ -35925,6 +35947,8 @@ SLPM-74251:
   gsHWFixes:
     halfPixelOffset: 2 # Fixes misalignment and upscaling lines.
     getSkipCount: "GSC_ShinOnimusha"
+  memcardFilters:
+    - "SLPM-66275"
 SLPM-74252:
   name: "Shin Onimusha - Dawn of Dreams [PlayStation 2 the Best - Reprint Disc 2]"
   region: "NTSC-J"
@@ -36009,6 +36033,8 @@ SLPM-74404:
 SLPM-74405:
   name: "Samurai Complete Edition [PlayStation 2 The Best]"
   region: "NTSC-J"
+  gameFixes:
+    - EETimingHack # Stops crash after intro movie.
 SLPM-74406:
   name: "World Rally Championship [PlayStation 2 The Best]"
   region: "NTSC-J"
@@ -36518,6 +36544,8 @@ SLPS-20177:
 SLPS-20178:
   name: "Samurai"
   region: "NTSC-J"
+  gameFixes:
+    - EETimingHack # Stops crash after intro movie.
 SLPS-20181:
   name: "Alpine Racer 3"
   region: "NTSC-J"
@@ -43224,7 +43252,7 @@ SLUS-20407:
   region: "NTSC-U"
   compat: 5
   gameFixes:
-    - EETimingHack # Stops crash after intro movie
+    - EETimingHack # Stops crash after intro movie.
 SLUS-20408:
   name: "Pitfall - The Lost Expedition"
   region: "NTSC-U"
@@ -50928,6 +50956,8 @@ SLUS-21939:
   name: "WWE SmackDown vs. Raw 2011"
   region: "NTSC-U"
   compat: 5
+  gsHWFixes:
+    partialTargetInvalidation: 1 # Fixes broken text.
 SLUS-21940:
   name: "WWE All-Stars"
   region: "NTSC-U"
