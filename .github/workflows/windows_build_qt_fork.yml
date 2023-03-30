@@ -25,6 +25,10 @@ on:
         required: false
         type: string
         default: msbuild
+      cmakeFlags:
+        required: false
+        type: string
+        default: ""
       qt_binary_url:
         required: false
         type: string
