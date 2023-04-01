@@ -2597,6 +2597,14 @@ SCED-53514:
 SCED-53515:
   name: "Bonus Demo 10"
   region: "PAL-M5"
+SCED-53538:
+  name: "Tekken 5 [Demo]"
+  region: "PAL-M5"
+  clampModes:
+    eeClampMode: 2 # Fixes camera and stops constant coin noises on Pirates Cove.
+  gsHWFixes:
+    alignSprite: 1
+    getSkipCount: "GSC_Tekken5"
 SCED-53622:
   name: "24 - The Game [Demo]"
   region: "PAL-M9"
@@ -11765,6 +11773,8 @@ SLES-50897:
   name: "Super Trucks"
   region: "PAL-M6"
   compat: 5
+  roundModes:
+    eeRoundMode: 0 # Fixes starting position.
   gsHWFixes:
     halfPixelOffset: 2 # Gets rid of fog line.
     roundSprite: 1 # Fixes lines in FMVs.
@@ -14400,8 +14410,10 @@ SLES-52111:
   region: "PAL-M6"
   compat: 5
 SLES-52116:
-  name: "Sitting Duck"
+  name: "Sitting Ducks"
   region: "PAL-M6"
+  gsHWFixes:
+    wildArmsHack: 1 # Fixes blurriness.
 SLES-52117:
   name: "Go Go Copter"
   region: "PAL-M3"
@@ -18907,6 +18919,8 @@ SLES-53863:
 SLES-53866:
   name: "Over the Hedge"
   region: "PAL-E"
+  gsHWFixes:
+    halfPixelOffset: 2 # Fixes fog line.
   speedHacks:
     MTVUSpeedHack: 0 # Fixes bad graphics due to bad T-Bit handling.
 SLES-53867:
@@ -19200,11 +19214,15 @@ SLES-53987:
 SLES-53988:
   name: "Over the Hedge"
   region: "PAL-E-G"
+  gsHWFixes:
+    halfPixelOffset: 2 # Fixes fog line.
   speedHacks:
     MTVUSpeedHack: 0 # Fixes bad graphics due to bad T-Bit handling.
 SLES-53989:
   name: "Over the Hedge"
   region: "PAL-NL"
+  gsHWFixes:
+    halfPixelOffset: 2 # Fixes fog line.
   speedHacks:
     MTVUSpeedHack: 0 # Fixes bad graphics due to bad T-Bit handling.
 SLES-53991:
@@ -19651,6 +19669,8 @@ SLES-54172:
 SLES-54173:
   name: "Over The Hedge"
   region: "PAL-SW"
+  gsHWFixes:
+    halfPixelOffset: 2 # Fixes fog line.
   speedHacks:
     MTVUSpeedHack: 0 # Fixes bad graphics due to bad T-Bit handling.
 SLES-54174:
@@ -26564,6 +26584,8 @@ SLPM-62255:
 SLPM-62256:
   name: "Super Trucks"
   region: "NTSC-J"
+  roundModes:
+    eeRoundMode: 0 # Fixes starting position.
   gsHWFixes:
     halfPixelOffset: 2 # Gets rid of fog line.
     roundSprite: 1 # Fixes lines in FMVs.
@@ -44980,6 +45002,8 @@ SLUS-20748:
   name: "Super Trucks Racing"
   region: "NTSC-U"
   compat: 5
+  roundModes:
+    eeRoundMode: 0 # Fixes starting position.
   gsHWFixes:
     halfPixelOffset: 2 # Gets rid of fog line.
     roundSprite: 1 # Fixes lines in FMVs.
@@ -45653,6 +45677,8 @@ SLUS-20885:
 SLUS-20886:
   name: "Sitting Ducks"
   region: "NTSC-U"
+  gsHWFixes:
+    wildArmsHack: 1 # Fixes blurriness.
 SLUS-20887:
   name: "Adventures of Jimmy Neutron, The - Boy Genius - Attack of the Twonkies"
   region: "NTSC-U"
@@ -47948,6 +47974,8 @@ SLUS-21300:
   name: "Over the Hedge"
   region: "NTSC-U"
   compat: 5
+  gsHWFixes:
+    halfPixelOffset: 2 # Fixes fog line.
   speedHacks:
     MTVUSpeedHack: 0 # Fixes bad graphics due to bad T-Bit handling.
 SLUS-21301:
