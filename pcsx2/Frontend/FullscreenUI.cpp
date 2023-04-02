@@ -3241,6 +3241,8 @@ void FullscreenUI::DrawGraphicsSettingsPage()
 			DrawToggleSetting(bsi, "Bilinear Upscale",
 				"Can smooth out textures due to be bilinear filtered when upscaling. E.g. Brave sun glare.", "EmuCore/GS",
 				"UserHacks_BilinearHack", false, manual_hw_fixes);
+			DrawToggleSetting(bsi, "Unscaled Palette Texture Draws", "Can fix some broken effects which rely on pixel perfect precision.",
+				"EmuCore/GS", "UserHacks_NativePaletteDraw", false, manual_hw_fixes);
 		}
 	}
 
@@ -3740,6 +3742,9 @@ void FullscreenUI::DrawControllerSettingsPage()
 		true, true, false);
 	DrawToggleSetting(bsi, ICON_FA_WIFI " SDL DualShock 4 / DualSense Enhanced Mode",
 		"Provides vibration and LED control support over Bluetooth.", "InputSources", "SDLControllerEnhancedMode", false,
+		bsi->GetBoolValue("InputSources", "SDL", true), false);
+	DrawToggleSetting(bsi, ICON_FA_COG " SDL Raw Input",
+		"Allow SDL to use raw access to input devices.", "InputSources", "SDLRawInput", false,
 		bsi->GetBoolValue("InputSources", "SDL", true), false);
 #endif
 #ifdef _WIN32

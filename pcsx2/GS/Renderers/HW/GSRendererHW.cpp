@@ -55,7 +55,6 @@ GSRendererHW::~GSRendererHW()
 void GSRendererHW::Destroy()
 {
 	g_texture_cache->RemoveAll();
-	GSTextureReplacements::Shutdown();
 	GSRenderer::Destroy();
 }
 
@@ -1483,7 +1482,7 @@ void GSRendererHW::Draw()
 						|| (!context->TEST.DATE && (context->FRAME.FBMSK & GSLocalMemory::m_psm[context->FRAME.PSM].fmsk) == GSLocalMemory::m_psm[context->FRAME.PSM].fmsk);
 	const bool no_ds = (
 		// Depth is always pass/fail (no read) and write are discarded.
-		(zm != 0 && context->TEST.ZTST <= ZTST_ALWAYS) ||
+		(zm != 0 && (!context->TEST.ZTE || context->TEST.ZTST <= ZTST_ALWAYS)) ||
 		// Depth test will always pass
 		(zm != 0 && context->TEST.ZTST == ZTST_GEQUAL && m_vt.m_eq.z && std::min(m_vertex.buff[0].XYZ.Z, max_z) == max_z) ||
 		// Depth will be written through the RT
@@ -1794,6 +1793,18 @@ void GSRendererHW::Draw()
 	// Ensure draw rect is clamped to framebuffer size. Necessary for updating valid area.
 	m_r = m_r.rintersect(GSVector4i::loadh(t_size));
 
+	float target_scale = GetTextureScaleFactor();
+
+	// This upscaling hack is for games which construct P8 textures by drawing a bunch of small sprites in C32,
+	// then reinterpreting it as P8. We need to keep the off-screen intermediate textures at native resolution,
+	// but not propagate that through to the normal render targets. Test Case: Crash Wrath of Cortex.
+	if (no_ds && src && !m_channel_shuffle && GSConfig.UserHacks_NativePaletteDraw && src->m_from_target &&
+		src->m_scale == 1.0f && (src->m_TEX0.PSM == PSM_PSMT8 || src->m_TEX0.TBP0 == m_context->FRAME.Block()))
+	{
+		GL_CACHE("Using native resolution for target based on texture source");
+		target_scale = 1.0f;
+	}
+
 	GSTextureCache::Target* rt = nullptr;
 	GIFRegTEX0 FRAME_TEX0;
 	if (!no_rt)
@@ -1806,8 +1817,11 @@ void GSRendererHW::Draw()
 		// Normally we would use 1024 here to match the clear above, but The Godfather does a 1023x1023 draw instead
 		// (very close to 1024x1024, but apparently the GS rounds down..). So, catch that here, we don't want to
 		// create that target, because the clear isn't black, it'll hang around and never get invalidated.
-		const bool is_square = (t_size.y == t_size.x) && m_r.w >= 1023 && m_vertex.next == 2;
-		rt = g_texture_cache->LookupTarget(FRAME_TEX0, t_size, GetTextureScaleFactor(), GSTextureCache::RenderTarget, true, fm, false, force_preload, IsConstantDirectWriteMemClear(false) && is_square);
+		const bool is_square = (t_size.y == t_size.x) && m_r.w >= 1023 && 
+			((m_index.tail == 2 && m_vt.m_primclass == GS_SPRITE_CLASS) || (m_index.tail == 6 && m_vt.m_primclass == GS_TRIANGLE_CLASS));
+		const bool is_clear = IsConstantDirectWriteMemClear(false) && is_square;
+		rt = g_texture_cache->LookupTarget(FRAME_TEX0, t_size, target_scale, GSTextureCache::RenderTarget, true,
+			fm, false, is_clear, force_preload);
 
 		// Draw skipped because it was a clear and there was no target.
 		if (!rt)
@@ -1827,7 +1841,8 @@ void GSRendererHW::Draw()
 		ZBUF_TEX0.TBW = context->FRAME.FBW;
 		ZBUF_TEX0.PSM = context->ZBUF.PSM;
 
-		ds = g_texture_cache->LookupTarget(ZBUF_TEX0, t_size, GetTextureScaleFactor(), GSTextureCache::DepthStencil, context->DepthWrite(), 0, false, force_preload);
+		ds = g_texture_cache->LookupTarget(ZBUF_TEX0, t_size, target_scale, GSTextureCache::DepthStencil,
+			context->DepthWrite(), 0, false, false, force_preload);
 	}
 
 	if (process_texture)
@@ -1882,9 +1897,6 @@ void GSRendererHW::Draw()
 			cleanup_cancelled_draw();
 			return;
 		}
-
-		// Texture shuffle is not yet supported with strange clamp mode
-		ASSERT(!m_texture_shuffle || (context->CLAMP.WMS < 3 && context->CLAMP.WMT < 3));
 
 		if (src->m_target && IsPossibleChannelShuffle())
 		{
@@ -2033,7 +2045,6 @@ void GSRendererHW::Draw()
 	GSTextureCache::Target* old_ds = nullptr;
 	{
 		// We still need to make sure the dimensions of the targets match.
-		const float up_s = GetTextureScaleFactor();
 		const int new_w = std::max(t_size.x, std::max(rt ? rt->m_unscaled_size.x : 0, ds ? ds->m_unscaled_size.x : 0));
 		const int new_h = std::max(t_size.y, std::max(rt ? rt->m_unscaled_size.y : 0, ds ? ds->m_unscaled_size.y : 0));
 
@@ -2044,7 +2055,7 @@ void GSRendererHW::Draw()
 			const bool new_height = new_h > rt->GetUnscaledHeight();
 			const int old_height = rt->m_texture->GetHeight();
 
-			pxAssert(rt->GetScale() == up_s);
+			pxAssert(rt->GetScale() == target_scale);
 			rt->ResizeTexture(new_w, new_h);
 
 			if (!m_texture_shuffle && !m_channel_shuffle)
@@ -2084,7 +2095,7 @@ void GSRendererHW::Draw()
 			const bool new_height = new_h > ds->GetUnscaledHeight();
 			const int old_height = ds->m_texture->GetHeight();
 
-			pxAssert(ds->GetScale() == up_s);
+			pxAssert(ds->GetScale() == target_scale);
 			ds->ResizeTexture(new_w, new_h);
 
 			if (!m_texture_shuffle && !m_channel_shuffle)
@@ -2734,7 +2745,8 @@ bool GSRendererHW::TestChannelShuffle(GSTextureCache::Target* src)
 		(((m_vt.m_max.p - m_vt.m_min.p) <= GSVector4(64.0f)).mask() & 0x3) == 0x3); // single_page
 
 	// This is a little redundant since it'll get called twice, but the only way to stop us wasting time on copies.
-	return (shuffle && EmulateChannelShuffle(src, true));
+	m_channel_shuffle = (shuffle && EmulateChannelShuffle(src, true));
+	return m_channel_shuffle;
 }
 
 __ri bool GSRendererHW::EmulateChannelShuffle(GSTextureCache::Target* src, bool test_only)
@@ -5088,8 +5100,9 @@ bool GSRendererHW::IsBlendedOrOpaque()
 
 bool GSRendererHW::IsConstantDirectWriteMemClear(bool include_zero)
 {
+	const bool direct_draw = (m_vt.m_primclass == GS_SPRITE_CLASS) || (m_index.tail == 6 && m_vt.m_primclass == GS_TRIANGLE_CLASS);
 	// Constant Direct Write without texture/test/blending (aka a GS mem clear)
-	if ((m_vt.m_primclass == GS_SPRITE_CLASS) && !PRIM->TME // Direct write
+	if (direct_draw && !PRIM->TME // Direct write
 		&& (m_context->FRAME.FBMSK == 0 || (include_zero && m_vt.m_max.c.eq(GSVector4i::zero()))) // no color mask
 		&& !(m_env.SCANMSK.MSK & 2)
 		&& !m_context->TEST.ATE // no alpha test
