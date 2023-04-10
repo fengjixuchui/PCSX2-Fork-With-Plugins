@@ -153,7 +153,7 @@ GSTexture* GSRendererSW::GetOutput(int i, float& scale, int& y_offset)
 		// Display doesn't use texa, and instead uses the equivalent of this
 		GIFRegTEXA texa = {};
 		texa.AEM = 0;
-		texa.TA0 = (curFramebuffer.PSM == PSM_PSMCT24 || curFramebuffer.PSM == PSM_PSGPU24) ? 0x80 : 0;
+		texa.TA0 = (curFramebuffer.PSM == PSMCT24 || curFramebuffer.PSM == PSGPU24) ? 0x80 : 0;
 		texa.TA1 = 0x80;
 
 		// Top left rect
@@ -327,7 +327,7 @@ void GSRendererSW::Draw()
 			// Dump Register state
 			s = GetDrawDumpPath("%05d_context.txt", s_n);
 
-			m_env.Dump(s);
+			m_draw_env->Dump(s);
 			m_context->Dump(s);
 
 			// Dump vertices
@@ -345,7 +345,7 @@ void GSRendererSW::Draw()
 	sd->vertex_count = m_vertex.next;
 	sd->index = (u32*)(sd->buff + sizeof(GSVertexSW) * ((m_vertex.next + 1) & ~1));
 	sd->index_count = m_index.tail;
-	sd->scanmsk_value = m_env.SCANMSK.MSK;
+	sd->scanmsk_value = m_draw_env->SCANMSK.MSK;
 
 	// skip per pixel division if q is constant.
 	// Optimize the division by 1 with a nop. It also means that GS_SPRITE_CLASS must be processed when !m_vt.m_eq.q.
@@ -939,7 +939,7 @@ bool GSRendererSW::GetScanlineGlobalData(SharedData* data)
 {
 	GSScanlineGlobalData& gd = data->global;
 
-	const GSDrawingEnvironment& env = m_env;
+	const GSDrawingEnvironment& env = *m_draw_env;
 	const GSDrawingContext* context = m_context;
 	const GS_PRIM_CLASS primclass = m_vt.m_primclass;
 
@@ -966,7 +966,7 @@ bool GSRendererSW::GetScanlineGlobalData(SharedData* data)
 	// When the format is 24bit (Z or C), DATE ceases to function.
 	// It was believed that in 24bit mode all pixels pass because alpha doesn't exist
 	// however after testing this on a PS2 it turns out nothing passes, it ignores the draw.
-	if ((m_context->FRAME.PSM & 0xF) == PSM_PSMCT24 && m_context->TEST.DATE)
+	if ((m_context->FRAME.PSM & 0xF) == PSMCT24 && m_context->TEST.DATE)
 	{
 		//DevCon.Warning("DATE on a 24bit format, Frame PSM %x", m_context->FRAME.PSM);
 		return false;
@@ -1010,7 +1010,7 @@ bool GSRendererSW::GetScanlineGlobalData(SharedData* data)
 	}
 
 	bool fwrite = (fm & fm_mask) != fm_mask;
-	bool ftest = gd.sel.atst != ATST_ALWAYS || (context->TEST.DATE && context->FRAME.PSM != PSM_PSMCT24);
+	bool ftest = gd.sel.atst != ATST_ALWAYS || (context->TEST.DATE && context->FRAME.PSM != PSMCT24);
 
 	bool zwrite = zm != 0xffffffff;
 	bool ztest = context->TEST.ZTE && context->TEST.ZTST > ZTST_ALWAYS;
@@ -1285,7 +1285,7 @@ bool GSRendererSW::GetScanlineGlobalData(SharedData* data)
 			gd.fga = (env.FOGCOL.U32[0] >> 8) & 0x00ff00ff;
 		}
 
-		if (context->FRAME.PSM != PSM_PSMCT24)
+		if (context->FRAME.PSM != PSMCT24)
 		{
 			gd.sel.date = context->TEST.DATE;
 			gd.sel.datm = context->TEST.DATM;
@@ -1327,9 +1327,15 @@ bool GSRendererSW::GetScanlineGlobalData(SharedData* data)
 		{
 			gd.sel.dthe = 1;
 
-			gd.dimx = (GSVector4i*)m_vertex_heap.alloc(sizeof(env.dimx), 32);
+			if (m_last_dimx != env.DIMX)
+			{
+				m_last_dimx = env.DIMX;
+				ExpandDIMX(m_dimx, env.DIMX);
+			}
 
-			memcpy(gd.dimx, env.dimx, sizeof(env.dimx));
+			gd.dimx = (GSVector4i*)m_vertex_heap.alloc(sizeof(m_dimx), 32);
+
+			std::memcpy(gd.dimx, m_dimx, sizeof(m_dimx));
 		}
 	}
 

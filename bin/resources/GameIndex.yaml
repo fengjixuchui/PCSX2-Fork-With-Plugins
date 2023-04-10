@@ -94,6 +94,8 @@ CPCS-01020:
   compat: 5
   clampModes:
     vuClampMode: 3 # Fixes lighting on character models as caves and other locations don't turn mobs into glow-in-the-dark creatures by themselves.
+  gsHWFixes:
+    maximumBlendingLevel: 0 # Fixes unnecessary load on the GPU.
 GUST-00009:
   name: "Mana Khemia - Alchemists of Al-Revis [Premium Box]"
   region: "NTSC-J"
@@ -150,7 +152,7 @@ PAPX-90506:
     eeClampMode: 3 # Fixes textbox.
   gsHWFixes:
     roundSprite: 2 # Fixes font artifacts.
-    textureInsideRT: 1 # Fixes clown suit textures.
+    partialTargetInvalidation: 1 # Fixes clown suit textures.
 PAPX-90512:
   name: "Gran Turismo 4 - Toyota Prius [Trial]"
   region: "NTSC-J"
@@ -675,6 +677,10 @@ SCAJ-20045:
 SCAJ-20046:
   name: "Siren"
   region: "NTSC-Unk"
+  gsHWFixes:
+    roundSprite: 1 # Fixes gaps between menu options.
+    cpuSpriteRenderBW: 4 # Fixes sky rendering.
+    cpuSpriteRenderLevel: 2 # Needed for above.
 SCAJ-20047:
   name: "Time Crisis 3"
   region: "NTSC-Unk"
@@ -1385,9 +1391,10 @@ SCAJ-20177:
   gameFixes:
     - VuAddSubHack
   gsHWFixes:
-    halfPixelOffset: 1 # Reduces bloom misalignment.
+    halfPixelOffset: 2 # Reduces bloom misalignment.
     roundSprite: 1 # Fixes area transition vertical lines and lessens red forest vertical lines.
     textureInsideRT: 1 # Required for swirl battle transition.
+    nativePaletteDraw: 1
 SCAJ-20178:
   name: "Ape Escape - Million Monkeys"
   region: "NTSC-Unk"
@@ -1488,9 +1495,10 @@ SCAJ-20197:
   gameFixes:
     - VuAddSubHack
   gsHWFixes:
-    halfPixelOffset: 1 # Reduces bloom misalignment.
+    halfPixelOffset: 2 # Reduces bloom misalignment.
     roundSprite: 1 # Fixes area transition vertical lines and lessens red forest vertical lines.
     textureInsideRT: 1 # Required for swirl battle transition.
+    nativePaletteDraw: 1
 SCAJ-20198:
   name: "Everybody's Tennis [PlayStation 2 The Best]"
   region: "NTSC-Unk"
@@ -1557,6 +1565,10 @@ SCAJ-30002:
 SCAJ-30003:
   name: "Siren"
   region: "NTSC-Unk"
+  gsHWFixes:
+    roundSprite: 1 # Fixes gaps between menu options.
+    cpuSpriteRenderBW: 4 # Fixes sky rendering.
+    cpuSpriteRenderLevel: 2 # Needed for above.
 SCAJ-30004:
   name: "Kan Wo Long Xian Shen Wei"
   region: "NTSC-CH"
@@ -2176,6 +2188,10 @@ SCED-52057:
 SCED-52260:
   name: "Forbidden Siren [Demo]"
   region: "PAL-M5"
+  gsHWFixes:
+    roundSprite: 1 # Fixes gaps between menu options.
+    cpuSpriteRenderBW: 4 # Fixes sky rendering.
+    cpuSpriteRenderLevel: 2 # Needed for above.
 SCED-52261:
   name: "Jet Li - Rise to Honor [Demo]"
   region: "PAL-M5"
@@ -2438,6 +2454,8 @@ SCED-52946:
 SCED-52952:
   name: "Jak 3 [Demo]"
   region: "PAL-M5"
+  gameFixes:
+    - InstantDMAHack # Fixes holes in face geometry.
   gsHWFixes:
     mipmap: 2 # Fixes broken textures.
     trilinearFiltering: 1 # Fixes water textures.
@@ -3390,7 +3408,7 @@ SCES-51190:
     eeClampMode: 3 # Fixes textbox.
   gsHWFixes:
     roundSprite: 2 # Fixes font artifacts.
-    textureInsideRT: 1 # Fixes clown suit textures.
+    partialTargetInvalidation: 1 # Fixes clown suit textures.
 SCES-51224:
   name: "War of the Monsters"
   region: "PAL-E"
@@ -3584,6 +3602,10 @@ SCES-51920:
   name: "Forbidden Siren"
   region: "PAL-E"
   compat: 5
+  gsHWFixes:
+    roundSprite: 1 # Fixes gaps between menu options.
+    cpuSpriteRenderBW: 4 # Fixes sky rendering.
+    cpuSpriteRenderLevel: 2 # Needed for above.
 SCES-51971:
   name: "Jet Li - Rise to Honor"
   region: "PAL-E"
@@ -3664,16 +3686,32 @@ SCES-52306:
 SCES-52327:
   name: "Forbidden Siren"
   region: "PAL-F"
+  gsHWFixes:
+    roundSprite: 1 # Fixes gaps between menu options.
+    cpuSpriteRenderBW: 4 # Fixes sky rendering.
+    cpuSpriteRenderLevel: 2 # Needed for above.
 SCES-52328:
   name: "Forbidden Siren"
   region: "PAL-G"
   compat: 5
+  gsHWFixes:
+    roundSprite: 1 # Fixes gaps between menu options.
+    cpuSpriteRenderBW: 4 # Fixes sky rendering.
+    cpuSpriteRenderLevel: 2 # Needed for above.
 SCES-52329:
   name: "Forbidden Siren"
   region: "PAL-I"
+  gsHWFixes:
+    roundSprite: 1 # Fixes gaps between menu options.
+    cpuSpriteRenderBW: 4 # Fixes sky rendering.
+    cpuSpriteRenderLevel: 2 # Needed for above.
 SCES-52330:
   name: "Forbidden Siren - Viviendo la Pesadilla"
   region: "PAL-S"
+  gsHWFixes:
+    roundSprite: 1 # Fixes gaps between menu options.
+    cpuSpriteRenderBW: 4 # Fixes sky rendering.
+    cpuSpriteRenderLevel: 2 # Needed for above.
 SCES-52389:
   name: "WRC 4"
   region: "PAL-M8"
@@ -3793,6 +3831,8 @@ SCES-52460:
   name: "Jak 3"
   region: "PAL-M7"
   compat: 5
+  gameFixes:
+    - InstantDMAHack # Fixes holes in face geometry.
   gsHWFixes:
     mipmap: 2 # Fixes broken textures.
     trilinearFiltering: 1 # Fixes water textures.
@@ -4993,7 +5033,7 @@ SCKA-20014:
     eeClampMode: 3 # Fixes textbox.
   gsHWFixes:
     roundSprite: 2 # Fixes font artifacts.
-    textureInsideRT: 1 # Fixes clown suit textures.
+    partialTargetInvalidation: 1 # Fixes clown suit textures.
 SCKA-20015:
   name: "Time Crisis 3"
   region: "NTSC-K"
@@ -5023,6 +5063,10 @@ SCKA-20018:
 SCKA-20019:
   name: "Siren"
   region: "NTSC-K"
+  gsHWFixes:
+    roundSprite: 1 # Fixes gaps between menu options.
+    cpuSpriteRenderBW: 4 # Fixes sky rendering.
+    cpuSpriteRenderLevel: 2 # Needed for above.
 SCKA-20020:
   name: "SOCOM II - U.S. Navy SEALs"
   region: "NTSC-K"
@@ -5141,6 +5185,8 @@ SCKA-20039:
 SCKA-20040:
   name: "Jak 3"
   region: "NTSC-K"
+  gameFixes:
+    - InstantDMAHack # Fixes holes in face geometry.
   gsHWFixes:
     mipmap: 2 # Fixes broken textures.
     trilinearFiltering: 1 # Fixes water textures.
@@ -5362,9 +5408,10 @@ SCKA-20079:
   gameFixes:
     - VuAddSubHack
   gsHWFixes:
-    halfPixelOffset: 1 # Reduces bloom misalignment.
+    halfPixelOffset: 2 # Reduces bloom misalignment.
     roundSprite: 1 # Fixes area transition vertical lines and lessens red forest vertical lines.
     textureInsideRT: 1 # Required for swirl battle transition.
+    nativePaletteDraw: 1
 SCKA-20081:
   name: "Tekken 5 [PlayStation 2 Big Hit Series]"
   region: "NTSC-K"
@@ -5819,7 +5866,7 @@ SCPS-15033:
     eeClampMode: 3 # Fixes textbox.
   gsHWFixes:
     roundSprite: 2 # Fixes font artifacts.
-    textureInsideRT: 1 # Fixes clown suit textures.
+    partialTargetInvalidation: 1 # Fixes clown suit textures.
 SCPS-15034:
   name: "This is Football 2003"
   region: "NTSC-J"
@@ -5900,6 +5947,10 @@ SCPS-15053:
   name: "Siren"
   region: "NTSC-J"
   compat: 5
+  gsHWFixes:
+    roundSprite: 1 # Fixes gaps between menu options.
+    cpuSpriteRenderBW: 4 # Fixes sky rendering.
+    cpuSpriteRenderLevel: 2 # Needed for above.
 SCPS-15054:
   name: "ChainDive"
   region: "NTSC-J"
@@ -6478,7 +6529,7 @@ SCPS-19215:
     eeClampMode: 3 # Fixes textbox.
   gsHWFixes:
     roundSprite: 2 # Fixes font artifacts.
-    textureInsideRT: 1 # Fixes clown suit textures.
+    partialTargetInvalidation: 1 # Fixes clown suit textures.
 SCPS-19251:
   name: "Wild ARMs - Alter Code F [PlayStation 2 The Best]"
   region: "NTSC-J"
@@ -6556,6 +6607,10 @@ SCPS-19304:
 SCPS-19305:
   name: "Siren [PlayStation 2 The Best]"
   region: "NTSC-J"
+  gsHWFixes:
+    roundSprite: 1 # Fixes gaps between menu options.
+    cpuSpriteRenderBW: 4 # Fixes sky rendering.
+    cpuSpriteRenderLevel: 2 # Needed for above.
 SCPS-19306:
   name: "Dark Chronicle [PlayStation 2 The Best]"
   region: "NTSC-J"
@@ -6563,7 +6618,7 @@ SCPS-19306:
     eeClampMode: 3 # Fixes textbox.
   gsHWFixes:
     roundSprite: 2 # Fixes font artifacts.
-    textureInsideRT: 1 # Fixes clown suit textures.
+    partialTargetInvalidation: 1 # Fixes clown suit textures.
 SCPS-19307:
   name: "Popolocrois - The First Adventure [PlayStation 2 The Best]"
   region: "NTSC-J"
@@ -6601,6 +6656,10 @@ SCPS-19311:
 SCPS-19312:
   name: "Siren [PlayStation 2 The Best]"
   region: "NTSC-J"
+  gsHWFixes:
+    roundSprite: 1 # Fixes gaps between menu options.
+    cpuSpriteRenderBW: 4 # Fixes sky rendering.
+    cpuSpriteRenderLevel: 2 # Needed for above.
 SCPS-19313:
   name: "Wild ARMs - The 4th Detonator [PlayStation 2 The Best]"
   region: "NTSC-J"
@@ -6837,6 +6896,7 @@ SCPS-55002:
   region: "NTSC-J"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
+    alignSprite: 1 # Fixes vertical lines on hidden ghosts.
 SCPS-55003:
   name: "Vampire Night"
   region: "NTSC-J"
@@ -7018,6 +7078,7 @@ SCPS-55043:
   region: "NTSC-J"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
+    alignSprite: 1 # Fixes vertical lines on hidden ghosts.
 SCPS-55044:
   name: "Energy Airforce"
   region: "NTSC-J"
@@ -7041,7 +7102,7 @@ SCPS-55048:
     eeClampMode: 3 # Fixes textbox.
   gsHWFixes:
     roundSprite: 2 # Fixes font artifacts.
-    textureInsideRT: 1 # Fixes clown suit textures.
+    partialTargetInvalidation: 1 # Fixes clown suit textures.
 SCPS-55049:
   name: "King of Fighters 2000, The"
   region: "NTSC-J"
@@ -7120,6 +7181,7 @@ SCPS-56008:
   compat: 5
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
+    alignSprite: 1 # Fixes vertical lines on hidden ghosts.
 SCPS-56009:
   name: "Smash Court Pro Tournament"
   region: "NTSC-K"
@@ -7625,7 +7687,7 @@ SCUS-97213:
     eeClampMode: 3 # Fixes textbox.
   gsHWFixes:
     roundSprite: 2 # Fixes font artifacts.
-    textureInsideRT: 1 # Fixes clown suit textures.
+    partialTargetInvalidation: 1 # Fixes clown suit textures.
 SCUS-97214:
   name: "NCAA GameBreaker 2003"
   region: "NTSC-U"
@@ -7682,7 +7744,7 @@ SCUS-97229:
     eeClampMode: 3 # Fixes textbox.
   gsHWFixes:
     roundSprite: 2 # Fixes font artifacts.
-    textureInsideRT: 1 # Fixes clown suit textures.
+    partialTargetInvalidation: 1 # Fixes clown suit textures.
 SCUS-97230:
   name: "SOCOM - U.S. Navy SEALs"
   region: "NTSC-U"
@@ -7980,6 +8042,8 @@ SCUS-97330:
   name: "Jak 3"
   region: "NTSC-U"
   compat: 5
+  gameFixes:
+    - InstantDMAHack # Fixes holes in face geometry.
   gsHWFixes:
     mipmap: 2 # Fixes broken textures.
     trilinearFiltering: 1 # Fixes water textures.
@@ -8052,6 +8116,10 @@ SCUS-97355:
   name: "Siren"
   region: "NTSC-U"
   compat: 5
+  gsHWFixes:
+    roundSprite: 1 # Fixes gaps between menu options.
+    cpuSpriteRenderBW: 4 # Fixes sky rendering.
+    cpuSpriteRenderLevel: 2 # Needed for above.
 SCUS-97356:
   name: "Network Adapter Start-Up Disc Ver.2.5"
   region: "NTSC-U"
@@ -8157,6 +8225,10 @@ SCUS-97396:
 SCUS-97398:
   name: "Siren [Demo]"
   region: "NTSC-U"
+  gsHWFixes:
+    roundSprite: 1 # Fixes gaps between menu options.
+    cpuSpriteRenderBW: 4 # Fixes sky rendering.
+    cpuSpriteRenderLevel: 2 # Needed for above.
 SCUS-97399:
   name: "God of War"
   region: "NTSC-U"
@@ -8229,6 +8301,8 @@ SCUS-97411:
 SCUS-97412:
   name: "Jak 3 [Demo]"
   region: "NTSC-U"
+  gameFixes:
+    - InstantDMAHack # Fixes holes in face geometry.
   gsHWFixes:
     mipmap: 2 # Fixes broken textures.
     trilinearFiltering: 1 # Fixes water textures.
@@ -8732,6 +8806,8 @@ SCUS-97515:
 SCUS-97516:
   name: "Jak 3 [Greatest Hits]"
   region: "NTSC-U"
+  gameFixes:
+    - InstantDMAHack # Fixes holes in face geometry.
   gsHWFixes:
     mipmap: 2 # Fixes broken textures.
     trilinearFiltering: 1 # Fixes water textures.
@@ -10664,7 +10740,7 @@ SLES-50386:
   region: "PAL-M6"
   compat: 5
   gsHWFixes:
-    getSkipCount: "GSC_CrashBandicootWoC"
+    nativePaletteDraw: 1
 SLES-50390:
   name: "Driven"
   region: "PAL-M5"
@@ -11535,6 +11611,7 @@ SLES-50821:
   compat: 5
   gsHWFixes:
     halfPixelOffset: 2 # Fixes blurriness.
+    alignSprite: 1 # Fixes vertical lines on hidden ghosts.
   patches:
     "22E91837":
       content: |-
@@ -11737,8 +11814,10 @@ SLES-50876:
     - BlitInternalFPSHack # Fixes internal FPS detection.
   gsHWFixes:
     autoFlush: 1
+    cpuCLUTRender: 1 # Fixes janky coloured cars.
     gpuTargetCLUT: 1 # Fixes janky coloured cars.
     textureInsideRT: 1 # Fixes car textures.
+    nativePaletteDraw: 1 # Alleviates text and sky rendering issues.
 SLES-50877:
   name: "TimeSplitters 2"
   region: "PAL-M5"
@@ -12209,7 +12288,7 @@ SLES-51113:
   region: "PAL-M5"
   compat: 5
   gameFixes:
-    - DMABusyHack # Fixes the corrupted fade effect in cutscenes.
+    - InstantDMAHack # Fixes cut-off text.
   gsHWFixes:
     partialTargetInvalidation: 1 # Fixes cutscene blur effects.
 SLES-51114:
@@ -14501,8 +14580,10 @@ SLES-52153:
     - BlitInternalFPSHack # Fixes internal FPS detection.
   gsHWFixes:
     autoFlush: 1
+    cpuCLUTRender: 1 # Fixes janky coloured cars.
     gpuTargetCLUT: 1 # Fixes janky coloured cars.
     textureInsideRT: 1 # Fixes car textures.
+    nativePaletteDraw: 1 # Alleviates text and sky rendering issues.
 SLES-52155:
   name: "EyeToy - L'Eredita"
   region: "PAL-I"
@@ -16874,6 +16955,8 @@ SLES-53099:
     - InstantDMAHack # Game has weird DMA handling (possible cache things?).
   roundModes:
     vu1RoundMode: 0 # Fixes shadow rendering.
+  speedHacks:
+    InstantVU1SpeedHack: 0 # Improves speed by a moderate amount.
 SLES-53100:
   name: "Scooby-Doo! Unmasked"
   region: "PAL-M4"
@@ -17428,22 +17511,26 @@ SLES-53390:
   region: "PAL-E"
   compat: 5
   clampModes:
-    vuClampMode: 0 # Fixes Spider-Man's eye texture colour.
+    vu1ClampMode: 0 # Fixes Spider-Man's eye texture colour.
   gsHWFixes:
     cpuSpriteRenderBW: 2 # Fixes textures.
     partialTargetInvalidation: 1 # Fixes texture distortion.
     mipmap: 2 # Mipmap + trilinear, improves textures to match sw renderer.
     trilinearFiltering: 1
+    autoFlush: 1 # Fixes shadow alignment along with HPO Special (Normal looks better but causes top left glitches).
+    halfPixelOffset: 2
 SLES-53391:
   name: "Ultimate Spider-Man"
   region: "PAL-M5"
   clampModes:
-    vuClampMode: 0 # Fixes Spider-Man's eye texture colour.
+    vu1ClampMode: 0 # Fixes Spider-Man's eye texture colour.
   gsHWFixes:
     cpuSpriteRenderBW: 2 # Fixes textures.
     partialTargetInvalidation: 1 # Fixes texture distortion.
     mipmap: 2 # Mipmap + trilinear, improves textures to match sw renderer.
     trilinearFiltering: 1
+    autoFlush: 1 # Fixes shadow alignment along with HPO Special (Normal looks better but causes top left glitches).
+    halfPixelOffset: 2
 SLES-53393:
   name: "Spartan - Total Warrior"
   region: "PAL-M5"
@@ -18364,12 +18451,14 @@ SLES-53672:
   name: "Ultimate Spider-Man [Limited]"
   region: "PAL-E"
   clampModes:
-    vuClampMode: 0 # Fixes Fixes Spider-Man's eye texture colour.
+    vu1ClampMode: 0 # Fixes Fixes Spider-Man's eye texture colour.
   gsHWFixes:
     cpuSpriteRenderBW: 2 # Fixes textures.
     partialTargetInvalidation: 1 # Fixes texture distortion.
     mipmap: 2 # Mipmap + trilinear, improves textures to match sw renderer.
     trilinearFiltering: 1
+    autoFlush: 1 # Fixes shadow alignment along with HPO Special (Normal looks better but causes top left glitches).
+    halfPixelOffset: 2
 SLES-53676:
   name: "WWE SmackDown! vs. RAW 2006"
   region: "PAL-E"
@@ -20889,18 +20978,20 @@ SLES-54644:
   gameFixes:
     - VuAddSubHack
   gsHWFixes:
-    halfPixelOffset: 1 # Reduces bloom misalignment.
+    halfPixelOffset: 2 # Reduces bloom misalignment.
     roundSprite: 1 # Fixes area transition vertical lines and lessens red forest vertical lines.
     textureInsideRT: 1 # Required for swirl battle transition.
+    nativePaletteDraw: 1
 SLES-54645:
   name: "Valkyrie Profile 2 - Silmeria"
   region: "PAL-F"
   gameFixes:
     - VuAddSubHack
   gsHWFixes:
-    halfPixelOffset: 1 # Reduces bloom misalignment.
+    halfPixelOffset: 2 # Reduces bloom misalignment.
     roundSprite: 1 # Fixes area transition vertical lines and lessens red forest vertical lines.
     textureInsideRT: 1 # Required for swirl battle transition.
+    nativePaletteDraw: 1
 SLES-54646:
   name: "Valkyrie Profile 2 - Silmeria"
   region: "PAL-G"
@@ -20908,9 +20999,10 @@ SLES-54646:
   gameFixes:
     - VuAddSubHack
   gsHWFixes:
-    halfPixelOffset: 1 # Reduces bloom misalignment.
+    halfPixelOffset: 2 # Reduces bloom misalignment.
     roundSprite: 1 # Fixes area transition vertical lines and lessens red forest vertical lines.
     textureInsideRT: 1 # Required for swirl battle transition.
+    nativePaletteDraw: 1
 SLES-54647:
   name: "Valkyrie Profile 2 - Silmeria"
   region: "PAL-I"
@@ -20918,18 +21010,20 @@ SLES-54647:
   gameFixes:
     - VuAddSubHack
   gsHWFixes:
-    halfPixelOffset: 1 # Reduces bloom misalignment.
+    halfPixelOffset: 2 # Reduces bloom misalignment.
     roundSprite: 1 # Fixes area transition vertical lines and lessens red forest vertical lines.
     textureInsideRT: 1 # Required for swirl battle transition.
+    nativePaletteDraw: 1
 SLES-54648:
   name: "Valkyrie Profile 2 - Silmeria"
   region: "PAL-S"
   gameFixes:
     - VuAddSubHack
   gsHWFixes:
-    halfPixelOffset: 1 # Reduces bloom misalignment.
+    halfPixelOffset: 2 # Reduces bloom misalignment.
     roundSprite: 1 # Fixes area transition vertical lines and lessens red forest vertical lines.
     textureInsideRT: 1 # Required for swirl battle transition.
+    nativePaletteDraw: 1
 SLES-54653:
   name: "Freak Out - Extreme Freeride"
   region: "PAL-M5"
@@ -21942,6 +22036,8 @@ SLES-55007:
   name: "Boogie"
   region: "PAL-M7"
   compat: 4
+  gsHWFixes:
+    recommendedBlendingLevel: 3 # Fixes skin colour.
 SLES-55008:
   name: "Riding Star 3"
   region: "PAL-M4"
@@ -22460,6 +22556,9 @@ SLES-55218:
 SLES-55219:
   name: "Hasbro Family Game Night"
   region: "PAL-M4"
+  gsHWFixes:
+    mipmap: 2 # Mipmap + trilinear, fixes textures on battleships model.
+    trilinearFiltering: 1
 SLES-55220:
   name: "Summer Athletics"
   region: "PAL-M5"
@@ -22509,6 +22608,9 @@ SLES-55238:
 SLES-55239:
   name: "Hasbro Family Game Night"
   region: "PAL-I"
+  gsHWFixes:
+    mipmap: 2 # Mipmap + trilinear, fixes textures on battleships model.
+    trilinearFiltering: 1
 SLES-55240:
   name: "Pipe Mania"
   region: "PAL-M5"
@@ -22704,9 +22806,15 @@ SLES-55340:
 SLES-55341:
   name: "Hasbro Family Game Night"
   region: "PAL-G"
+  gsHWFixes:
+    mipmap: 2 # Mipmap + trilinear, fixes textures on battleships model.
+    trilinearFiltering: 1
 SLES-55342:
   name: "Hasbro Family Game Night"
   region: "PAL-E"
+  gsHWFixes:
+    mipmap: 2 # Mipmap + trilinear, fixes textures on battleships model.
+    trilinearFiltering: 1
 SLES-55343:
   name: "Tube Mania"
   region: "PAL-F"
@@ -22731,28 +22839,38 @@ SLES-55349:
   name: "Need for Speed - Undercover"
   region: "PAL-E"
   gsHWFixes:
+    recommendedBlendingLevel: 3 # Improves car reflections.
     halfPixelOffset: 2 # Fixes blurriness.
+    getSkipCount: "GSC_NFSUndercover"
 SLES-55350:
   name: "Need for Speed - Undercover"
   region: "PAL-F-G"
   gsHWFixes:
+    recommendedBlendingLevel: 3 # Improves car reflections.
     halfPixelOffset: 2 # Fixes blurriness.
+    getSkipCount: "GSC_NFSUndercover"
 SLES-55351:
   name: "Need for Speed - Undercover"
   region: "PAL-I-S"
   gsHWFixes:
+    recommendedBlendingLevel: 3 # Improves car reflections.
     halfPixelOffset: 2 # Fixes blurriness.
+    getSkipCount: "GSC_NFSUndercover"
 SLES-55352:
   name: "Need for Speed - Undercover"
   region: "PAL-SCA"
   compat: 5
   gsHWFixes:
+    recommendedBlendingLevel: 3 # Improves car reflections.
     halfPixelOffset: 2 # Fixes blurriness.
+    getSkipCount: "GSC_NFSUndercover"
 SLES-55353:
   name: "Need for Speed - Undercover"
   region: "PAL-M6"
   gsHWFixes:
+    recommendedBlendingLevel: 3 # Improves car reflections.
     halfPixelOffset: 2 # Fixes blurriness.
+    getSkipCount: "GSC_NFSUndercover"
 SLES-55354:
   name: "Shin Megami Tensei - Persona 3 FES"
   region: "PAL-E"
@@ -24448,6 +24566,8 @@ SLKA-25219:
   compat: 5
   clampModes:
     vuClampMode: 3 # Fixes lighting on character models as caves and other locations don't turn mobs into glow-in-the-dark creatures by themselves.
+  gsHWFixes:
+    maximumBlendingLevel: 0 # Fixes unnecessary load on the GPU.
 SLKA-25221:
   name: "Busin 0 - Wizardry Alternative Neo"
   region: "NTSC-K"
@@ -25256,7 +25376,9 @@ SLPM-55127:
   name: "Need for Speed - Undercover"
   region: "NTSC-J"
   gsHWFixes:
+    recommendedBlendingLevel: 3 # Improves car reflections.
     halfPixelOffset: 2 # Fixes blurriness.
+    getSkipCount: "GSC_NFSUndercover"
 SLPM-55131:
   name: "World Soccer Winning Eleven 2009"
   region: "NTSC-J"
@@ -25461,7 +25583,9 @@ SLPM-55244:
   name: "Need for Speed - Undercover [Ea-SY! 1980]"
   region: "NTSC-J"
   gsHWFixes:
+    recommendedBlendingLevel: 3 # Improves car reflections.
     halfPixelOffset: 2 # Fixes blurriness.
+    getSkipCount: "GSC_NFSUndercover"
 SLPM-55245:
   name: "Himawari - Pebble in the Sky"
   region: "NTSC-J"
@@ -25623,6 +25747,7 @@ SLPM-60167:
   region: "NTSC-J"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
+    alignSprite: 1 # Fixes vertical lines on hidden ghosts.
 SLPM-60149:
   name: "Ace Combat 04 - Shattered Skies [Trial]"
   region: "NTSC-J"
@@ -26213,7 +26338,7 @@ SLPM-62114:
   name: "Crash Bandicoot 4 - Sakuretsu! Majin Power"
   region: "NTSC-J"
   gsHWFixes:
-    getSkipCount: "GSC_CrashBandicootWoC"
+    nativePaletteDraw: 1
 SLPM-62115:
   name: "EX Jinsei Game [Doukonban]"
   region: "NTSC-J"
@@ -28146,12 +28271,12 @@ SLPM-64509:
   name: "Crash Bandicoot - Return of the Demon King [English Dub Edition]" # Wrath of Cortex
   region: "NTSC-K"
   gsHWFixes:
-    getSkipCount: "GSC_CrashBandicootWoC"
+    nativePaletteDraw: 1
 SLPM-64513:
   name: "Crash Bandicoot - Mawangui Buwhal" # Wrath of Cortex
   region: "NTSC-K"
   gsHWFixes:
-    getSkipCount: "GSC_CrashBandicootWoC"
+    nativePaletteDraw: 1
 SLPM-64514:
   name: "Legends of Wrestling"
   region: "NTSC-K"
@@ -30764,8 +30889,10 @@ SLPM-65741:
     - BlitInternalFPSHack # Fixes internal FPS detection.
   gsHWFixes:
     autoFlush: 1
+    cpuCLUTRender: 1 # Fixes janky coloured cars.
     gpuTargetCLUT: 1 # Fixes janky coloured cars.
     textureInsideRT: 1 # Fixes car textures.
+    nativePaletteDraw: 1 # Alleviates text and sky rendering issues.
 SLPM-65742:
   name: "Cool Girl [Konami the Best]"
   region: "NTSC-J"
@@ -31209,6 +31336,8 @@ SLPM-65869:
   compat: 5
   clampModes:
     vuClampMode: 3 # Fixes lighting on character models as caves and other locations don't turn mobs into glow-in-the-dark creatures by themselves.
+  gsHWFixes:
+    maximumBlendingLevel: 0 # Fixes unnecessary load on the GPU.
 SLPM-65870:
   name: "Magic Teacher Negima - Honor Version"
   region: "NTSC-J"
@@ -32817,6 +32946,8 @@ SLPM-66280:
   compat: 5
   clampModes:
     vuClampMode: 3 # Fixes lighting on character models as caves and other locations don't turn mobs into glow-in-the-dark creatures by themselves.
+  gsHWFixes:
+    maximumBlendingLevel: 0 # Fixes unnecessary load on the GPU.
 SLPM-66281:
   name: "Sonic Riders"
   region: "NTSC-J"
@@ -33275,12 +33406,14 @@ SLPM-66404:
   name: "Ultimate Spider-Man"
   region: "NTSC-J"
   clampModes:
-    vuClampMode: 0 # Fixes Spider-Man's eye texture colour.
+    vu1ClampMode: 0 # Fixes Spider-Man's eye texture colour.
   gsHWFixes:
     cpuSpriteRenderBW: 2 # Fixes textures.
     partialTargetInvalidation: 1 # Fixes texture distortion.
     mipmap: 2 # Mipmap + trilinear, improves textures to match sw renderer.
     trilinearFiltering: 1
+    autoFlush: 1 # Fixes shadow alignment along with HPO Special (Normal looks better but causes top left glitches).
+    halfPixelOffset: 2
 SLPM-66405:
   name: "Radirgy Precious"
   region: "NTSC-J"
@@ -33329,9 +33462,10 @@ SLPM-66419:
   gameFixes:
     - VuAddSubHack
   gsHWFixes:
-    halfPixelOffset: 1 # Reduces bloom misalignment.
+    halfPixelOffset: 2 # Reduces bloom misalignment.
     roundSprite: 1 # Fixes area transition vertical lines and lessens red forest vertical lines.
     textureInsideRT: 1 # Required for swirl battle transition.
+    nativePaletteDraw: 1
 SLPM-66420:
   name: "Front Mission 4 [Ultimate Hits]"
   region: "NTSC-J"
@@ -34799,9 +34933,10 @@ SLPM-66782:
   gameFixes:
     - VuAddSubHack
   gsHWFixes:
-    halfPixelOffset: 1 # Reduces bloom misalignment.
+    halfPixelOffset: 2 # Reduces bloom misalignment.
     roundSprite: 1 # Fixes area transition vertical lines and lessens red forest vertical lines.
     textureInsideRT: 1 # Required for swirl battle transition.
+    nativePaletteDraw: 1
 SLPM-66783:
   name: "Idol Janshi Suchie-Pai 4 [Limited Edition]"
   region: "NTSC-J"
@@ -35796,7 +35931,7 @@ SLPM-74003:
   name: "Crash Bandicoot 4 - Sakuretsu! Majin Power! [PlayStation 2 The Best]"
   region: "NTSC-J"
   gsHWFixes:
-    getSkipCount: "GSC_CrashBandicootWoC"
+    nativePaletteDraw: 1
 SLPM-74004:
   name: "Maximo - Ghosts to Glory [PlayStation 2 The Best]"
   region: "NTSC-J"
@@ -36003,6 +36138,8 @@ SLPM-74245:
   region: "NTSC-J"
   clampModes:
     vuClampMode: 3 # Fixes lighting on character models as caves and other locations don't turn mobs into glow-in-the-dark creatures by themselves.
+  gsHWFixes:
+    maximumBlendingLevel: 0 # Fixes unnecessary load on the GPU.
 SLPM-74246:
   name: "Capcom vs. SNK 2 - Millionaire Fighting 2001 [PlayStation 2 the Best - Reprint]"
   region: "NTSC-J"
@@ -36028,6 +36165,8 @@ SLPM-74248:
   region: "NTSC-J"
   clampModes:
     vuClampMode: 3 # Fixes lighting on character models as caves and other locations don't turn mobs into glow-in-the-dark creatures by themselves.
+  gsHWFixes:
+    maximumBlendingLevel: 0 # Fixes unnecessary load on the GPU.
 SLPM-74249:
   name: "Sengoku Musou Mushoden [PlayStation 2 The Best]"
   region: "NTSC-J"
@@ -37843,6 +37982,7 @@ SLPS-25074:
   compat: 5
   gsHWFixes:
     halfPixelOffset: 2 # Fixes blurriness.
+    alignSprite: 1 # Fixes vertical lines on hidden ghosts.
   patches:
     9883194E:
       content: |-
@@ -40872,6 +41012,8 @@ SLPS-25917:
   name: "Sacred Blaze"
   region: "NTSC-J"
   gsHWFixes:
+    cpuSpriteRenderBW: 1 # Fixes half screen effects.
+    cpuSpriteRenderLevel: 1 # Needed for above.
     getSkipCount: "GSC_SacredBlaze"
 SLPS-25922:
   name: "Vitamin Z [Limited Edition]"
@@ -41474,6 +41616,7 @@ SLPS-73255:
   region: "NTSC-J"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
+    alignSprite: 1 # Fixes vertical lines on hidden ghosts.
 SLPS-73256:
   name: "Fatal Frame II - Crimson Butterfly [PlayStation 2 the Best - Reprint]"
   region: "NTSC-J"
@@ -41533,6 +41676,7 @@ SLPS-73405:
   region: "NTSC-J"
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
+    alignSprite: 1 # Fixes vertical lines on hidden ghosts.
 SLPS-73406:
   name: "DOA 2 - Hardcore [PlayStation 2 The Best]"
   region: "NTSC-J"
@@ -42587,7 +42731,7 @@ SLUS-20238:
   region: "NTSC-U"
   compat: 5
   gsHWFixes:
-    getSkipCount: "GSC_CrashBandicootWoC"
+    nativePaletteDraw: 1
 SLUS-20239:
   name: "Driven"
   region: "NTSC-U"
@@ -43256,6 +43400,7 @@ SLUS-20388:
   compat: 5
   gsHWFixes:
     halfPixelOffset: 2 # Reduces blurriness.
+    alignSprite: 1 # Fixes vertical lines on hidden ghosts.
   patches:
     339A0B8C:
       content: |-
@@ -44250,8 +44395,10 @@ SLUS-20587:
     - BlitInternalFPSHack # Fixes internal FPS detection.
   gsHWFixes:
     autoFlush: 1
+    cpuCLUTRender: 1 # Fixes janky coloured cars.
     gpuTargetCLUT: 1 # Fixes janky coloured cars.
     textureInsideRT: 1 # Fixes car textures.
+    nativePaletteDraw: 1 # Alleviates text and sky rendering issues.
 SLUS-20588:
   name: "Activision Anthology"
   region: "NTSC-U"
@@ -45596,12 +45743,14 @@ SLUS-20870:
   region: "NTSC-U"
   compat: 5
   clampModes:
-    vuClampMode: 0 # Fixes wrong texture colour.
+    vu1ClampMode: 0 # Fixes wrong texture colour.
   gsHWFixes:
     cpuSpriteRenderBW: 2 # Fixes textures.
     partialTargetInvalidation: 1 # Fixes texture distortion.
     mipmap: 2 # Mipmap + trilinear, improves textures to match sw renderer.
     trilinearFiltering: 1
+    autoFlush: 1 # Fixes shadow alignment along with HPO Special (Normal looks better but causes top left glitches).
+    halfPixelOffset: 2
 SLUS-20871:
   name: "Naval Ops - Commander"
   region: "NTSC-U"
@@ -46195,6 +46344,8 @@ SLUS-20978:
   name: "Power Drome"
   region: "NTSC-U"
   compat: 4
+  gsHWFixes:
+    autoFlush: 1
   patches:
     42E15DEF:
       content: |-
@@ -47890,12 +48041,14 @@ SLUS-21285:
   name: "Ultimate Spider-Man [Limited Edition]"
   region: "NTSC-U"
   clampModes:
-    vuClampMode: 0 # Fixes Spider-Man's eyes texture.
+    vu1ClampMode: 0 # Fixes Spider-Man's eyes texture.
   gsHWFixes:
     cpuSpriteRenderBW: 2 # Fixes textures.
     partialTargetInvalidation: 1 # Fixes texture distortion.
     mipmap: 2 # Mipmap + trilinear, improves textures to match sw renderer.
     trilinearFiltering: 1
+    autoFlush: 1 # Fixes shadow alignment along with HPO Special (Normal looks better but causes top left glitches).
+    halfPixelOffset: 2
 SLUS-21286:
   name: "WWE SmackDown! vs. RAW 2006"
   region: "NTSC-U"
@@ -48903,9 +49056,10 @@ SLUS-21452:
   gameFixes:
     - VuAddSubHack
   gsHWFixes:
-    halfPixelOffset: 1 # Reduces bloom misalignment.
-    roundSprite: 1 # Fixes area transition vertical lines.
+    halfPixelOffset: 2 # Reduces bloom misalignment.
+    roundSprite: 1 # Fixes area transition vertical lines and lessens red forest vertical lines.
     textureInsideRT: 1 # Required for swirl battle transition.
+    nativePaletteDraw: 1
 SLUS-21453:
   name: "Disney's Meet the Robinsons"
   region: "NTSC-U"
@@ -49908,6 +50062,8 @@ SLUS-21681:
   name: "Boogie"
   region: "NTSC-U"
   compat: 4
+  gsHWFixes:
+    recommendedBlendingLevel: 3 # Fixes skin colour.
 SLUS-21682:
   name: "Rock Band"
   region: "NTSC-U"
@@ -50497,7 +50653,9 @@ SLUS-21801:
   region: "NTSC-U"
   compat: 5
   gsHWFixes:
+    recommendedBlendingLevel: 3 # Improves car reflections.
     halfPixelOffset: 2 # Fixes blurriness.
+    getSkipCount: "GSC_NFSUndercover"
 SLUS-21802:
   name: "Naked Brothers Band - The Video Game"
   region: "NTSC-U"
@@ -50513,6 +50671,9 @@ SLUS-21805:
   name: "Hasbro Family Game Night"
   region: "NTSC-U"
   compat: 5
+  gsHWFixes:
+    mipmap: 2 # Mipmap + trilinear, fixes textures on battleships model.
+    trilinearFiltering: 1
 SLUS-21806:
   name: "Barbie Horse Adventures - Riding Camp"
   region: "NTSC-U"
@@ -51361,7 +51522,7 @@ SLUS-29010:
   name: "Crash Bandicoot - The Wrath of Cortex [Demo]"
   region: "NTSC-U"
   gsHWFixes:
-    getSkipCount: "GSC_CrashBandicootWoC"
+    nativePaletteDraw: 1
 SLUS-29011:
   name: "WWF SmackDown! - Just Bring It [Demo]"
   region: "NTSC-U"
@@ -52198,12 +52359,14 @@ TCPS-10158:
   name: "Ultimate Spider-Man"
   region: "NTSC-J"
   clampModes:
-    vuClampMode: 0 # Fixes Spider-Man's eye texture colour.
+    vu1ClampMode: 0 # Fixes Spider-Man's eye texture colour.
   gsHWFixes:
     cpuSpriteRenderBW: 2 # Fixes textures.
     partialTargetInvalidation: 1 # Fixes texture distortion.
     mipmap: 2 # Mipmap + trilinear, improves textures to match sw renderer.
     trilinearFiltering: 1
+    autoFlush: 1 # Fixes shadow alignment along with HPO Special (Normal looks better but causes top left glitches).
+    halfPixelOffset: 2
 TCPS-10159:
   name: "Suzuki TT Super Bikes - Real Road Racing"
   region: "NTSC-J"
@@ -52264,9 +52427,9 @@ VW067-J1:
   name: "Crash Bandicoot 4 - Sakuretsu! Majin Power!"
   region: "NTSC-J"
   gsHWFixes:
-    getSkipCount: "GSC_CrashBandicootWoC"
+    nativePaletteDraw: 1
 VW067-J2:
   name: "Crash Bandicoot 4 - Sakuretsu! Majin Power! [PlayStation 2 The Best]"
   region: "NTSC-J"
   gsHWFixes:
-    getSkipCount: "GSC_CrashBandicootWoC"
+    nativePaletteDraw: 1

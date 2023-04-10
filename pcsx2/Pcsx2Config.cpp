@@ -22,7 +22,6 @@
 #include "common/StringUtil.h"
 #include "Config.h"
 #include "GS.h"
-#include "HostDisplay.h"
 #include "CDVD/CDVDcommon.h"
 #include "MemoryCardFile.h"
 #include "USB/USB.h"
@@ -444,6 +443,7 @@ Pcsx2Config::GSOptions::GSOptions()
 	UserHacks_MergePPSprite = false;
 	UserHacks_WildHack = false;
 	UserHacks_BilinearHack = false;
+	UserHacks_NativePaletteDraw = false;
 
 	DumpReplaceableTextures = false;
 	DumpReplaceableMipmaps = false;
@@ -659,6 +659,7 @@ void Pcsx2Config::GSOptions::LoadSave(SettingsWrapper& wrap)
 	GSSettingBoolEx(UserHacks_MergePPSprite, "UserHacks_merge_pp_sprite");
 	GSSettingBoolEx(UserHacks_WildHack, "UserHacks_WildHack");
 	GSSettingBoolEx(UserHacks_BilinearHack, "UserHacks_BilinearHack");
+	GSSettingBoolEx(UserHacks_NativePaletteDraw, "UserHacks_NativePaletteDraw");
 	GSSettingIntEnumEx(UserHacks_TextureInsideRt, "UserHacks_TextureInsideRt");
 	GSSettingBoolEx(UserHacks_TargetPartialInvalidation, "UserHacks_TargetPartialInvalidation");
 	GSSettingBoolEx(UserHacks_EstimateTextureRegion, "UserHacks_EstimateTextureRegion");
@@ -778,6 +779,7 @@ void Pcsx2Config::GSOptions::MaskUserHacks()
 	UserHacks_MergePPSprite = false;
 	UserHacks_WildHack = false;
 	UserHacks_BilinearHack = false;
+	UserHacks_NativePaletteDraw = false;
 	UserHacks_DisableSafeFeatures = false;
 	UserHacks_HalfBottomOverride = -1;
 	UserHacks_HalfPixelOffset = 0;
@@ -810,6 +812,7 @@ void Pcsx2Config::GSOptions::MaskUpscalingHacks()
 	UserHacks_MergePPSprite = false;
 	UserHacks_WildHack = false;
 	UserHacks_BilinearHack = false;
+	UserHacks_NativePaletteDraw = false;
 	UserHacks_HalfPixelOffset = 0;
 	UserHacks_RoundSprite = 0;
 	UserHacks_TCOffsetX = 0;

@@ -123,14 +123,14 @@ private:
 	{
 		int x = 0, y = 0;
 		int start = 0, end = 0, total = 0;
-		int offset = 0;
 		u8* buff = nullptr;
 		GIFRegBITBLTBUF m_blit = {};
+		bool write = false;
 
 		GSTransferBuffer();
 		virtual ~GSTransferBuffer();
 
-		void Init(int tx, int ty, const GIFRegBITBLTBUF& blit);
+		void Init(int tx, int ty, const GIFRegBITBLTBUF& blit, bool write);
 		bool Update(int tw, int th, int bpp, int& len);
 
 	} m_tr;
@@ -215,14 +215,14 @@ public:
 	};
 
 	GIFPath m_path[4] = {};
-	GIFRegPRIM* PRIM = nullptr;
+	const GIFRegPRIM* PRIM = nullptr;
 	GSPrivRegSet* m_regs = nullptr;
 	GSLocalMemory m_mem;
 	GSDrawingEnvironment m_env = {};
-	GSDrawingEnvironment m_backup_env = {};
 	GSDrawingEnvironment m_prev_env = {};
-	GSVector4i temp_draw_rect = {};
+	const GSDrawingEnvironment* m_draw_env = &m_env;
 	GSDrawingContext* m_context = nullptr;
+	GSVector4i temp_draw_rect = {};
 	u32 m_crc = 0;
 	CRC::Game m_game = {};
 	std::unique_ptr<GSDumpBase> m_dump;
@@ -642,9 +642,9 @@ public:
 
 		// Calculate framebuffer read offsets, should be considered if only one circuit is enabled, or difference is more than 1 line.
 		// Only considered if "Anti-blur" is enabled.
-		void CalculateFramebufferOffset()
+		void CalculateFramebufferOffset(bool scanmask)
 		{
-			if (GSConfig.PCRTCAntiBlur && PCRTCSameSrc)
+			if (GSConfig.PCRTCAntiBlur && PCRTCSameSrc && !scanmask)
 			{
 				if (abs(PCRTCDisplays[1].framebufferOffsets.y - PCRTCDisplays[0].framebufferOffsets.y) == 1
 					&& PCRTCDisplays[0].displayRect.y == PCRTCDisplays[1].displayRect.y)
@@ -785,12 +785,12 @@ public:
 					offset.x = (PCRTCDisplays[1 - zeroDisplay.x].displayOffset.x - PCRTCDisplays[zeroDisplay.x].displayOffset.x) / (VideoModeDividers[videomode].x + 1);
 					offset.y = (PCRTCDisplays[1 - zeroDisplay.y].displayOffset.y - PCRTCDisplays[zeroDisplay.y].displayOffset.y) / (VideoModeDividers[videomode].y + 1);
 
-					if (offset.x >= 4 || !GSConfig.PCRTCAntiBlur)
+					if (offset.x >= 4 || !GSConfig.PCRTCAntiBlur || scanmask)
 					{
 						PCRTCDisplays[1 - zeroDisplay.x].displayRect.x += offset.x;
 						PCRTCDisplays[1 - zeroDisplay.x].displayRect.z += offset.x;
 					}
-					if (offset.y >= 4 || !GSConfig.PCRTCAntiBlur)
+					if (offset.y >= 4 || !GSConfig.PCRTCAntiBlur || scanmask)
 					{
 						PCRTCDisplays[1 - zeroDisplay.y].displayRect.y += offset.y - int_off[1 - zeroDisplay.y];
 						PCRTCDisplays[1 - zeroDisplay.y].displayRect.w += offset.y - int_off[1 - zeroDisplay.y];
@@ -868,6 +868,9 @@ public:
 	/// Returns the appropriate directory for draw dumping.
 	static std::string GetDrawDumpPath(const char* format, ...);
 
+	/// Expands dither matrix, suitable for software renderer.
+	static void ExpandDIMX(GSVector4i* dimx, const GIFRegDIMX DIMX);
+
 	void ResetHandlers();
 	void ResetPCRTC();
 
@@ -881,7 +884,6 @@ public:
 	virtual void Reset(bool hardware_reset);
 	virtual void UpdateSettings(const Pcsx2Config::GSOptions& old_config);
 
-	void CopyEnv(GSDrawingEnvironment* dest, GSDrawingEnvironment* src, int ctx);
 	void Flush(GSFlushReason reason);
 	void FlushPrim();
 	bool TestDrawChanged();
@@ -918,7 +920,17 @@ public:
 
 	PRIM_OVERLAP PrimitiveOverlap();
 	GIFRegTEX0 GetTex0Layer(u32 lod);
-
-	/// Returns true if the specified texture address matches the frame or Z buffer.
-	bool IsTBPFrameOrZ(u32 tbp) const;
 };
+
+// We put this in the header because of Multi-ISA.
+inline void GSState::ExpandDIMX(GSVector4i* dimx, const GIFRegDIMX DIMX)
+{
+	dimx[1] = GSVector4i(DIMX.DM00, 0, DIMX.DM01, 0, DIMX.DM02, 0, DIMX.DM03, 0);
+	dimx[0] = dimx[1].xxzzlh();
+	dimx[3] = GSVector4i(DIMX.DM10, 0, DIMX.DM11, 0, DIMX.DM12, 0, DIMX.DM13, 0);
+	dimx[2] = dimx[3].xxzzlh();
+	dimx[5] = GSVector4i(DIMX.DM20, 0, DIMX.DM21, 0, DIMX.DM22, 0, DIMX.DM23, 0);
+	dimx[4] = dimx[5].xxzzlh();
+	dimx[7] = GSVector4i(DIMX.DM30, 0, DIMX.DM31, 0, DIMX.DM32, 0, DIMX.DM33, 0);
+	dimx[6] = dimx[7].xxzzlh();
+}

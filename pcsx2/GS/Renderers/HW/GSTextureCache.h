@@ -205,7 +205,6 @@ public:
 	{
 	public:
 		const int m_type = 0;
-		const bool m_depth_supported = false;
 		bool m_dirty_alpha = true;
 		bool m_is_frame = false;
 		bool m_used = false;
@@ -217,7 +216,7 @@ public:
 		int readbacks_since_draw = 0;
 
 	public:
-		Target(const GIFRegTEX0& TEX0, const bool depth_supported, const int type);
+		Target(const GIFRegTEX0& TEX0, const int type);
 		~Target();
 
 		void ResizeDrawn(const GSVector4i& rect);
@@ -245,8 +244,8 @@ public:
 
 		void PreloadLevel(int level);
 
-		void Write(const GSVector4i& r, int layer);
-		void Flush(u32 count, int layer);
+		void Write(const GSVector4i& r, int layer, const GSOffset& off);
+		void Flush(u32 count, int layer, const GSOffset& off);
 
 	public:
 		HashCacheEntry* m_from_hash_cache = nullptr;
@@ -317,7 +316,7 @@ public:
 		std::unordered_set<Source*> m_surfaces;
 		std::array<FastList<Source*>, MAX_PAGES> m_map;
 
-		void Add(Source* s, const GIFRegTEX0& TEX0, const GSOffset& off);
+		void Add(Source* s, const GIFRegTEX0& TEX0);
 		void RemoveAll();
 		void RemoveAt(Source* s);
 	};
@@ -437,7 +436,8 @@ public:
 	Source* LookupDepthSource(const GIFRegTEX0& TEX0, const GIFRegTEXA& TEXA, const GIFRegCLAMP& CLAMP, const GSVector4i& r, bool palette = false);
 
 	Target* FindTargetOverlap(u32 bp, u32 end_block, int type, int psm);
-	Target* LookupTarget(GIFRegTEX0 TEX0, const GSVector2i& size, float scale, int type, bool used, u32 fbmask = 0, const bool is_frame = false, bool preload = GSConfig.PreloadFrameWithGSData, bool is_clear = false);
+	Target* LookupTarget(GIFRegTEX0 TEX0, const GSVector2i& size, float scale, int type, bool used = true, u32 fbmask = 0,
+		bool is_frame = false, bool is_clear = false, bool preload = GSConfig.PreloadFrameWithGSData);
 	Target* LookupDisplayTarget(GIFRegTEX0 TEX0, const GSVector2i& size, float scale);
 
 	/// Looks up a target in the cache, and only returns it if the BP/BW/PSM match exactly.
@@ -457,6 +457,10 @@ public:
 
 	/// Removes any sources which point to the specified target.
 	void InvalidateSourcesFromTarget(const Target* t);
+
+	/// Replaces a source's texture externally. Required for some CRC hacks.
+	void ReplaceSourceTexture(Source* s, GSTexture* new_texture, float new_scale, const GSVector2i& new_unscaled_size,
+		HashCacheEntry* hc_entry, bool new_texture_is_shared);
 
 	bool Move(u32 SBP, u32 SBW, u32 SPSM, int sx, int sy, u32 DBP, u32 DBW, u32 DPSM, int dx, int dy, int w, int h);
 	bool ShuffleMove(u32 BP, u32 BW, u32 PSM, int sx, int sy, int dx, int dy, int w, int h);
